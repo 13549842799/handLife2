@@ -43,7 +43,7 @@
             },
             "icons" : {
                 "ios" : {
-                    "appstore" : "C:/Users/WZJSB-20/Desktop/new2.png",
+                    "appstore" : "static/icon.png",
                     "ipad" : {
                         "app" : "unpackage/res/icons/76x76.png",
                         "app@2x" : "unpackage/res/icons/152x152.png",
@@ -77,7 +77,7 @@
             },
             "splashscreen" : {
                 "android" : {
-                    "xxhdpi" : "C:/Users/WZJSB-20/Desktop/黑贞.png"
+                    "xxhdpi" : "static/desk.png"
                 }
             }
         }
