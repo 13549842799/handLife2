@@ -21,21 +21,21 @@
 		{
 			"path": "pages/center/center",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "个人中心"
 			}
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
+		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "掌上人生2",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarBackgroundColor": "#2F85FC",
+		"backgroundColor": "#FFFFFF"
 	},
 	"tabBar": {
-        "color": "#7A7E83",
-        "selectedColor": "#3cc51f",
+        "color": "#000000",
+        "selectedColor": "#2F85FC",
+        "backgroundColor": "#FFFFFF",
         "borderStyle": "black",
-        "backgroundColor": "#ffffff",
         "list": [{
             "pagePath": "pages/index/index",
             // "iconPath": "static/image/icon_component.png",
