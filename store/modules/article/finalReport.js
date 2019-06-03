@@ -1,0 +1,1 @@
+import report from '../../../api/article/finalReport.js'

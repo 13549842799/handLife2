@@ -6,17 +6,11 @@
 
 <script>
 	import {
-	    mapState
+	    mapState,
+	    mapMutations
 	} from 'vuex'
 	
-	import {
-		loginKey,
-		$get
-	} from '../../http.js'
-	
-	import {
-		adminUrl
-	} from '../../base_variable.js'
+	import loginApi from '../../api/login.js'
 	
 	export default {
 		data() {
@@ -24,41 +18,23 @@
 				title: 'Hello'
 			}
 		},
-		computed: mapState(['forcedLogin', 'hasLogin', 'userName']),
+		computed: mapState(['forcedLogin', 'hasLogin', 'nikeName']),
 		onLoad() {
-			if (this.hasLogin) {
-				return
-			}
-			console.log('进入')
-			let lk = uni.getStorageSync(loginKey)
-			console.log('lk:' + lk)
-			if (lk !== null) {
-				let time = lk.availableTime
-				if ((new Date()).getTime() < lk.availableTime) {
+			let lk = loginApi.getLoginMessage() //同步获取缓存返回值是字符串
+			if (lk) {
+				this.login(lk);
+				console.log('存在缓存记录')
+				let time = lk.availableDate
+				console.log("time:" + time)
+				if ((new Date()).getTime() < time) {
+					console.log('没有超时')
 					return
 				}
-				let params = {
-					url: adminUrl + '/reflush.do',
-					data: {
-						accountName: lk.name,
-						token: lk.token
-					}
-				}
-				$get(params).then(res => {
-					uni.setStorage({
-						key: loginKey,
-						data: {
-							name: res.name,
-							token: res.token,
-							availableTime: res.availableDate
-						},
-						success: () => {
-							console.log('刷新:[name]' + res.name  + ',[token]' + res.token + ',[失效时间]' + new Date( res.availableDate))
-						}
-					})
-				})
+				console.log('刷新超时时间')
+				loginApi.reflushToken({accountName: lk.name, token: lk.token})
 				return
 			}
+			console.log('跳转')
 			uni.showModal({
 				title: '未登录',
 				content: '您未登录，需要登录后才能继续',
@@ -68,16 +44,17 @@
 				showCancel: !this.forcedLogin,
 				success: (res) => {
 					if (res.confirm) {
+						let url = 'login/login'
 						/**
 						 * 如果需要强制登录，使用reLaunch方式
 						 */
 						if (this.forcedLogin) {
 							uni.reLaunch({
-								url: 'login/login'
+								url
 							});
 						} else {
 							uni.navigateTo({
-								url: 'login/login'
+								url
 							});
 						}
 					}
@@ -85,7 +62,7 @@
 			});
 		},
 		methods: {
-
+            ...mapMutations(['login']), //...es6新特性 拓展运算符  把对象的可遍历属性拷贝到另一个对象中
 		}
 	}
 </script>

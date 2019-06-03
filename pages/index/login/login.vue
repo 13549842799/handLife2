@@ -27,19 +27,12 @@
 </template>
 
 <script>
-	import service from '../../../service.js';
 	import {
 	    mapState,
 	    mapMutations
 	} from 'vuex'
 	import mInput from '../../../components/m-input.vue'
-	import {
-		adminUrl
-	} from '../../../base_variable.js'
-	import {
-		$post,
-		loginKey
-	} from '../../../http.js'
+	import httpApi from '../../../api/login.js'
 	
 	export default {
 		components: {
@@ -110,28 +103,10 @@
 		         * 检测用户账号密码是否在已注册的用户列表中
 		         * 实际开发中，使用 uni.request 将账号信息发送至服务端，客户端在回调函数中获取结果信息。
 		         */
-				let requestParams = {
-					url: adminUrl + '/loginAsyn.do',
-					data: {
-						userName: this.account,
-						password: this.password,
-						code: '100100'
-					}
-				}
-				$post(requestParams).then(res => {
-					console.log('成功调用')
-					uni.setStorage({
-						key: loginKey,
-						data: {
-							name: res.session.name,
-							token: res.session.token,
-							availableTime: res.session.availableDate
-						},
-						success: () => {
-							console.log('成功:[name]' + res.session.name  + ',[token]' + res.session.token + ',[失效时间]' + new Date( res.session.availableDate))
-						}
-					})
-					this.toMain(this.account)
+				httpApi.userLogin({userName: this.account, password: this.password, code: '100100'}).then(res => {
+					console.log('成功调用', res.session)
+					httpApi.saveLoginMessage(res.session)
+					this.toMain(res.session)
 				}).catch(err => {
 					uni.showToast({
 					    icon: 'none',
@@ -159,8 +134,8 @@
 		            }
 		        });
 		    },
-		    toMain(userName) {
-		        this.login(userName);
+		    toMain(session) {
+		        this.login(session);
 		        /**
 		         * 强制登录时使用reLaunch方式跳转过来
 		         * 返回首页也使用reLaunch方式

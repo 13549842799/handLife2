@@ -73,7 +73,7 @@ export const $AjaxPromise = function (url, params, type, dataType, config) {
           case 400:
             reject(res)
 			uni.reLaunch({
-			    url: '/pages/index/login/login.vue'
+			    url: './pages/index/login/login.vue'
 			});
         }
       }

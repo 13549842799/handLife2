@@ -23,6 +23,12 @@
 			"style": {
 				"navigationBarTitleText": "个人中心"
 			}
+		},
+		{
+			"path": "pages/center/accountManager",
+			"style": {
+				"navigationBarTitleText": "账号管理"
+			}
 		}
 	],
 	"globalStyle": {

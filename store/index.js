@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import login from './modules/article/finalReport'
+import center from './modules/center'
+import dataUtil from './../common/dataUtil.js'
 
 Vue.use(Vuex)
 
@@ -10,24 +13,47 @@ const store = new Vuex.Store({
          */
         forcedLogin: true,
         hasLogin: false,
-        userName: ""
+        accountName: '',
+		nikename: '',
+		avatar: '/static/logo.png',
+		bindPhone: ''
     },
     mutations: {
-        login(state, userName) {
-            state.userName = userName || '新用户';
+        login(state, session) {
+			state.accountName = session.accountname
+            state.nikename = session.nikename || session.accountName;
+			state.avatar = session.avatar || state.avatar
+			state.bindPhone = session.bindPhone
             state.hasLogin = true;
         },
         logout(state) {
-            state.userName = "";
+            state.nikename = '';
+			state.accountName = ''
+			state.avatar  = '/static/logo.png'
+			state.bindPhone = ''
             state.hasLogin = false;
-        }
+        },
+		alterCache (sess) {
+			let s = this.state
+			sess.forEach((val, key) => {
+				s[key] = val
+			})
+		}
     },
+	getters: {
+		encryptionPhone: state =>  {
+			return dataUtil.encryption(state.bindPhone, 3, 4) // 因为这里起始从0开始，所以是3
+		}
+	},
 	actions: {
 		loginValid () {
 			
 		}
 	},
-	modules: {}
+	modules: {
+		login,
+		center
+	}
 })
 
 export default store
