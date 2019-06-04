@@ -1,21 +1,24 @@
 <template>
-	<view class="viewZZ" >
-		<view>
-			<view>{{title}}</view>
-			<view>{{smallTitle}}</view>
-			<view>
+	<modal-view :hidden.sync='visible' @confirm="confirmSureResult">
+		<view slot='title' class="title-view">
+			<text>{{title}}</text>
+			<text class="dilog-smallTitle">{{smallTitle}}</text>
+		</view>
+		<view slot='text' style="padding: 30upx; height: 160upx; justify-content: center; align-items: center;">
+			<view class="modal-content">
 				<input type="text" v-model="viewData"/>
 			</view>
-			<view>
-				<button @tap="cancel">取消</button>
-				<button @tap="clickSure">确定</button>
-			</view>
 		</view>
-	</view>
+	</modal-view>
 </template>
 
 <script>
+	import modalView from './x-modal/x-modal.vue'
+	
 	export default {
+		components: {
+			modalView
+		},
 		props: {
 			title: {
 				type: String
@@ -30,7 +33,7 @@
 		},
 		data() {
 			return {
-				visible: false,
+				visible: true,
 				viewData: ''
 			};
 		},
@@ -39,25 +42,38 @@
 		},
 		methods: {
 			open () {
-				this.visible = true
-			},
-			clickSure () {
-				this.submit(this.viewData)
-			},
-			cancel () {
-				this.viewData = '',
 				this.visible = false
+				this.viewData = ''
+			},
+			confirmSureResult () {
+				this.submit(this.viewData)
 			}
 		}
 	}
 </script>
 
 <style>
-  .viewZZ {
-	  background-color: #C8C7CC;
+  .title-view {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin-top: 20upx;
+	text-align: center;
+	margin-bottom: 50upx;
   }
   
-  .viewZZ > .diog {
-	  display: flex;
+  .dilog-smallTitle {
+	  font-size: 30upx;
+	  color: #C8C7CC;
+	  margin-top: 30upx;
+  }
+  
+  .modal-content {
+	  justify-content: center;
+	  background-color: #F2F2F2;
+	  font-size: 40upx;
+	  color: #555555;
+	  padding: 20upx;
+	  border-radius: 20upx;
   }
 </style>

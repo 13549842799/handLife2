@@ -38,7 +38,10 @@ export default {
 			console.log('保存:', res)
 			v.saveLoginMessage(res)
 		}).catch(err => {
-			console.log(err)
+			console.log('重定向登录:' + err)
+			uni.reLaunch({
+				url: '/pages/index/login/login'
+			});
 		})
 	},
 	/**

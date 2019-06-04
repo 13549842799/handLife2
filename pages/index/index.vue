@@ -34,7 +34,6 @@
 				loginApi.reflushToken({accountName: lk.name, token: lk.token})
 				return
 			}
-			console.log('跳转')
 			uni.showModal({
 				title: '未登录',
 				content: '您未登录，需要登录后才能继续',

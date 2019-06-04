@@ -3,7 +3,7 @@
 		<view class="account-list">
 			<!-- 个人信息 -->
 			<view  class="account-list-item">
-				<view class="account-list-item-ul">
+				<view class="account-list-item-ul" hover-class="tap-style" :hover-stay-time="remainTime" @tap="changeAvatar">
 					<text>头像</text>
 					<view class="account-list-item-ul-right">					
 						<text class="item-text">&#xe65e;</text>
@@ -26,12 +26,13 @@
 			</view>
 			<!-- 职员相关 -->
 			<view class="account-list-item">
-				<view class="account-list-item-ul">
+				<!-- <view class="account-list-item-ul">
 					<text>真实姓名</text>
 					<view class="account-list-item-ul-right">					
 						<text class="left-text">{{employee.name}}</text>
 					</view>	
-				</view>
+				</view> -->
+				<list-item title="真实姓名" :val="employee.name"></list-item>
 				<view class="account-list-item-ul">
 					<text>编号</text>
 					<view class="account-list-item-ul-right">					
@@ -44,9 +45,11 @@
 						<text class="left-text">{{encryptionIdCard}}</text>
 					</view>	
 				</view>
-				<view class="account-list-item-ul">
-					<text>详细</text>
-				</view>
+				<navigator url="employee">
+					<view class="account-list-item-ul">
+						<text>详细</text>
+					</view>
+				</navigator>
 			</view>
 			<!-- 安全设置 -->
 			<view class="account-list-item">
@@ -65,16 +68,7 @@
 				</view>
 			</view>
 		</view>
-		<modal-view :hidden.sync='show' @confirm="submitNikeName">
-			<view slot='title' style="title-view">
-				<text>请输入昵称</text>
-			</view>
-			<view slot='text'>
-				<view style='font-size: 14px;color: #f00;padding: 15px;'>
-					<input type="text" v-model="newNikeName"/>
-				</view>
-			</view>
-		</modal-view>
+		<dialog-view ref="dialog" title="请输入昵称" smallTitle="起个好听的名字,让它更加容易被记住!" :submit="submitNikeName"></dialog-view>
 	</view>
 </template>
 
@@ -88,24 +82,23 @@
 	import loginApi from '../../api/login.js'
 	import centerApi from '../../api/center.js'
 	import dataUtil from '../../common/dataUtil.js'
-	
-	import modalView from '../../components/x-modal/x-modal.vue'
 
+    import listItem from '../../components/list-item.vue'
+    import dialogView from '../../components/inputDlog.vue'
 	
 	export default {
 		components: {
-			modalView
+			listItem,
+			dialogView
 		},
 		data () {
 			return {
 				employee: {},
-				remainTime: 100,
-				show: true,
-				newNikeName: ''
+				remainTime: 100
 			}
 		},
 		computed: {
-			...mapState(['accountName', 'nikename', 'avatar', 'alterCache']),
+			...mapState(['accountName', 'nikename', 'avatar']),
 			...mapGetters(['encryptionPhone']),
 			encryptionIdCard () {
 				return dataUtil.encryption(this.employee.idCard, 3, 4)
@@ -121,21 +114,37 @@
 			})
 		},
 		methods: {
+			...mapMutations(['alterCache']),
 			showNikeNameEdit () {
 				console.log('编辑昵称')
-				this.show = false
+				this.$refs.dialog.open()
 			},
-			submitNikeName () {
+			submitNikeName (name) {
 				let v = this
-				centerApi.editNikeName(this.newNikeName).then(res => {
-					console.log('成功')
+				centerApi.editNikeName(name).then(res => {
 					let map = new Map()
-					map.set('nikename', this.newNikeName)
-					v.alterCache(this.newNikeName)
+					map.set('nikename', name)
+					v.alterCache(map)
 					//修改缓存信息
 				}).catch(err => {
-					console.log('失败：' + err)
+					console.log(err)
+					uni.showModal({
+						title: '更改失败',
+						content: err.data.message,
+						showCancel: false
+					})
 				})
+			},
+			changeAvatar () {
+				console.log('修改头像')
+				uni.chooseImage({
+					count: 6, //默认9
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['camera'], //从相册选择 
+					success: function (res) {
+						console.log(JSON.stringify(res.tempFilePaths));
+					}
+				});
 			}
 		}
 	}
@@ -204,8 +213,5 @@
 		background-color: #EFEFF4;
 		box-shadow: 1upx -1upx 1upx 1upx #DDDDDD inset;
 		
-	}
-	.title-view {
-		text-align: center;
 	}
 </style>

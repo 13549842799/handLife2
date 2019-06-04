@@ -20,8 +20,8 @@ const store = new Vuex.Store({
     },
     mutations: {
         login(state, session) {
-			state.accountName = session.accountname
-            state.nikename = session.nikename || session.accountName;
+			state.accountName = session.name
+            state.nikename = session.nikename || session.name;
 			state.avatar = session.avatar || state.avatar
 			state.bindPhone = session.bindPhone
             state.hasLogin = true;
@@ -33,10 +33,10 @@ const store = new Vuex.Store({
 			state.bindPhone = ''
             state.hasLogin = false;
         },
-		alterCache (sess) {
-			let s = this.state
+		alterCache (state, sess) {
+			console.log(sess)
 			sess.forEach((val, key) => {
-				s[key] = val
+				state[key] = val
 			})
 		}
     },

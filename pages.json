@@ -29,6 +29,12 @@
 			"style": {
 				"navigationBarTitleText": "账号管理"
 			}
+		},
+		{
+			"path": "pages/center/employee",
+			"style": {
+				"navigationBarTitleText": "职员信息"
+			}
 		}
 	],
 	"globalStyle": {

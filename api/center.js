@@ -25,9 +25,14 @@ export default {
 	},
 	/**
 	 * 获取职员相关信息
+	 * @param {int} type = 0 | 1
 	 */
-	employeeInfo () {
-		return $get({url: employeeUrl + '/info.re'})
+	employeeInfo (type) {
+		let p = {url: employeeUrl + '/info.re'}
+		if (type) {
+			p.data = {type}
+		}
+		return $get(p)
 	},
 	/**
 	 * 修改当前用户的昵称

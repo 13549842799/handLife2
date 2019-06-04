@@ -7,6 +7,8 @@ Vue.config.productionTip = false
 
 Vue.prototype.$store = store
 
+Vue.prototype.$screen = uni.getSystemInfoSync()
+
 App.mpType = 'app'
 
 const app = new Vue({
