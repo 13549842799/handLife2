@@ -37,6 +37,10 @@ export class HttpObj {
   }
 }
 
+/**
+ * 发送post请求
+ * @param {Object} obj
+ */
 export const $get = function (obj) {
 	return $AjaxPromise(obj.url, obj.data, 'GET', 'json', obj.config)
 }
@@ -49,6 +53,10 @@ export const $get = function (obj) {
  */
 export const $post = function (obj) {
 	return $AjaxPromise(obj.url, obj.data, 'POST', 'json', obj.config)
+}
+
+export const $delete = function (obj) {
+	return $AjaxPromise(obj.url, obj.data, 'DELETE', 'json', obj.config)
 }
 
 export const $AjaxPromise = function (url, params, type, dataType, config) {

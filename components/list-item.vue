@@ -1,10 +1,13 @@
 <template>
-	<view class="list-item-ul" hover-class="tap-style" :hover-stay-time="remainTime">
-		<text>{{title}}</text>
-		<view class="list-item-ul-right">			
-			<text v-if="sign" class="item-text">&#xe65e;</text>
-			<text class="left-text">{{val}}</text>
-		</view>
+	<view class="list-item-ul" :hover-class="hoverClass"  :hover-stay-time="remainTime" @tap="tapEvent">
+		<slot>
+			<text>{{title}}</text>
+			<view class="list-item-ul-right">			
+				<text v-if="sign" class="item-text">&#xe65e;</text>
+				<text class="left-text" v-if="isText">{{val}}</text>
+				<image class="avatar-style" :src="image" v-else></image>
+			</view>
+		</slot>
 	</view>
 </template>
 
@@ -13,7 +16,7 @@
 		props: {
 			title: {
 				type: String,
-				required: true
+				required: false
 			},
 			val: {
 				type: [String, Number, Object],
@@ -22,6 +25,25 @@
 			sign: {
 				type: Boolean,
 				default: true
+			},
+			onTap: {
+				type: Function,
+				required: false
+			},
+			onTapStyle: {
+				type: Boolean,
+				default: true
+			},
+			type: {
+				type: String,
+				default: 'text',
+				validator:  val => {
+					return ['text', 'img'].indexOf(val) !== -1
+				}
+			},
+			image: {
+				type: String,
+				required: false
 			}
 		},
 		data() {
@@ -29,7 +51,19 @@
 				remainTime: 100
 			}
 		},
-		methods: {
+		computed: {
+			onTapEvent () {
+				return this.onTap !== null && this.onTap !== undefined
+			},
+			tapEvent () {
+				return this.onTapEvent ? this.onTap : () => {console.log('默认方法')}
+			},
+			hoverClass () {
+				return this.onTapEvent && this.onTapStyle ? "tap-style" : "none"
+			},
+			isText () {
+				return this.type === 'text'
+			}
 		}
 	}
 </script>
@@ -64,7 +98,7 @@
 		color: #C8C7CC;
 	}
 	
-	.item-text, .left-text {
+	.item-text, .left-text, .avatar-style {
 		margin-right: 20upx;
 	}
 	
@@ -72,5 +106,11 @@
 		background-color: #EFEFF4;
 		box-shadow: 1upx -1upx 1upx 1upx #DDDDDD inset;
 		
+	}
+	
+	.avatar-style {
+		width: 80upx;
+		height: 80upx;
+		border-radius: 150upx;
 	}
 </style>

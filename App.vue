@@ -13,6 +13,7 @@
 </script>
 
 <style>
+	
 	/*每个页面公共css */
 	body,
 	page {
@@ -115,4 +116,28 @@
 	button.primary {
 		background-color: #0faeff;
 	}
+	
+	/* 字体图标*/
+	/* @font-face {
+	  font-family: 'iconfont'; 
+	  src: url('//at.alicdn.com/t/font_1231269_j17q41f3taa.eot');
+	  src: url('//at.alicdn.com/t/font_1231269_j17q41f3taa.eot?#iefix') format('embedded-opentype'),
+	  url('//at.alicdn.com/t/font_1231269_j17q41f3taa.woff2') format('woff2'),
+	  url('//at.alicdn.com/t/font_1231269_j17q41f3taa.woff') format('woff'),
+	  url('//at.alicdn.com/t/font_1231269_j17q41f3taa.ttf') format('truetype'),
+	  url('//at.alicdn.com/t/font_1231269_j17q41f3taa.svg#iconfont') format('svg');
+	}
+	
+	.iconfont {
+	  font-family: "iconfont" !important;
+	  font-size: 16px;
+	  font-style: normal;
+	  -webkit-font-smoothing: antialiased;
+	  -moz-osx-font-smoothing: grayscale;
+	}
+	
+	.icon-baocun-tianchong:before {
+	  content: "\e66b";
+	} */
+	
 </style>

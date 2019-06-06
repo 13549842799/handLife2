@@ -15,7 +15,37 @@
 		{
 			"path": "pages/article/article",
 			"style": {
-				"navigationBarTitleText": "文章"
+				"navigationBarTitleText": "个人文字记录"
+			}
+		},
+		{
+			"path": "pages/article/finalReport/finalReport",
+			"style": {
+				"navigationBarTitleText": "总结"
+			}
+		},
+		{
+			"path": "pages/article/diary/diary",
+			"style": {
+				"navigationBarTitleText": "个人日记"
+			}
+		},
+		{
+			"path": "pages/article/diary/diaryEdit",
+			"style": {
+				"app-plus": {  
+					"titleNView": {						
+						"backgroundColor": "#2F85FC",
+						"titleColor": "#FFFFFF",
+						"titleText": "新建",
+						"buttons": [{
+							"float": "right",
+							"fontSrc": "/static/css/iconfont.ttf",
+							"text": "\ue66b",
+							"fontSize": "40upx"
+						}]
+					}  
+				}
 			}
 		},
 		{
@@ -36,7 +66,15 @@
 				"navigationBarTitleText": "职员信息"
 			}
 		}
-	],
+	    ,{
+            "path" : "pages/article/finalReport/finalReport",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/article/diary/diary",
+            "style" : {}
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "掌上人生2",

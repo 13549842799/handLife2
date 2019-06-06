@@ -3,69 +3,24 @@
 		<view class="account-list">
 			<!-- 个人信息 -->
 			<view  class="account-list-item">
-				<view class="account-list-item-ul" hover-class="tap-style" :hover-stay-time="remainTime" @tap="changeAvatar">
-					<text>头像</text>
-					<view class="account-list-item-ul-right">					
-						<text class="item-text">&#xe65e;</text>
-						<image class="avatar-style" :src="avatar"></image>
-					</view>	
-				</view>
-				<view class="account-list-item-ul">
-					<text>用户名</text>
-					<view class="account-list-item-ul-right">					
-						<text class="left-text">{{accountName}}</text>
-					</view>	
-				</view>
-				<view class="account-list-item-ul" hover-class="tap-style" :hover-stay-time="remainTime" @tap="showNikeNameEdit">
-					<text>昵称</text>
-					<view class="account-list-item-ul-right" >					
-						<text class="item-text">&#xe65e;</text>
-						<text class="left-text">{{nikename}}</text>
-					</view>
-				</view>
+				<list-item title="头像"  type="img" :image="avatar" :onTap="changeAvatar"></list-item>
+				<list-item title="用户名" :val="accountName" :sign="false"></list-item>
+				<list-item title="昵称" :val="nikename" :onTap="showNikeNameEdit"></list-item>
 			</view>
 			<!-- 职员相关 -->
 			<view class="account-list-item">
-				<!-- <view class="account-list-item-ul">
-					<text>真实姓名</text>
-					<view class="account-list-item-ul-right">					
-						<text class="left-text">{{employee.name}}</text>
-					</view>	
-				</view> -->
-				<list-item title="真实姓名" :val="employee.name"></list-item>
-				<view class="account-list-item-ul">
-					<text>编号</text>
-					<view class="account-list-item-ul-right">					
-						<text class="left-text">{{employee.ecode}}</text>
-					</view>	
-				</view>
-				<view class="account-list-item-ul">
-					<text>身份证号码</text>
-					<view class="account-list-item-ul-right">					
-						<text class="left-text">{{encryptionIdCard}}</text>
-					</view>	
-				</view>
+				<list-item title="真实姓名" :val="employee.name" :sign="false"></list-item>
+				<list-item title="编号" :val="employee.ecode" :sign="false"></list-item>
+				<list-item title="身份证号码" :val="encryptionIdCard" :sign="false"></list-item>
 				<navigator url="employee">
-					<view class="account-list-item-ul">
-						<text>详细</text>
-					</view>
+					<list-item><text>详细</text></list-item>
 				</navigator>
 			</view>
 			<!-- 安全设置 -->
 			<view class="account-list-item">
-				<view class="account-list-item-ul">
-					<text class="">密码</text>
-					<view class="account-list-item-ul-right">					
-						<text class="item-text">&#xe65e;</text>
-					</view>			
-				</view>
-				<view class="account-list-item-ul">
-					<text class="">手机绑定</text>
-					<view class="account-list-item-ul-right">					
-						<text class="item-text">&#xe65e;</text>
-						<text class="left-text">{{encryptionPhone}}</text>
-					</view>			
-				</view>
+				<list-item title="昵称" :val="nikename" :onTap="showNikeNameEdit"></list-item>
+				<list-item title="密码" ></list-item>
+				<list-item title="手机绑定" :val="encryptionPhone"></list-item>
 			</view>
 		</view>
 		<dialog-view ref="dialog" title="请输入昵称" smallTitle="起个好听的名字,让它更加容易被记住!" :submit="submitNikeName"></dialog-view>
