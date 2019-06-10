@@ -5,7 +5,8 @@ import {
 import {
 	$get,
 	$post,
-	loginKey
+	loginKey,
+	initHeaders
 } from './../http.js'
 
 export default {
@@ -40,7 +41,7 @@ export default {
 		}).catch(err => {
 			console.log('重定向登录:' + err)
 			uni.reLaunch({
-				url: '/pages/index/login/login'
+				url: '../pages/index/login/login'
 			});
 		})
 	},
@@ -50,16 +51,12 @@ export default {
 	 * @param {Object} succ 成功的回调函数
 	 */
 	saveLoginMessage (sessionInfo, succ) {
-		uni.setStorage({
-			key: loginKey,
-			data: sessionInfo,
-			success: () => {
-				console.log('成功:[name]' + sessionInfo.name  + ',[token]' + sessionInfo.token + ',[失效时间]' + new Date( sessionInfo.availableDate) + ',nikename:' + sessionInfo.nikename)
-				if (succ) {
-					succ()
-				}
-			}
-		})
+		uni.setStorageSync(loginKey, sessionInfo)
+		initHeaders()
+		console.log('成功:[name]' + sessionInfo.name  + ',[token]' + sessionInfo.token + ',[失效时间]' + new Date( sessionInfo.availableDate) + ',nikename:' + sessionInfo.nikename)
+		if (succ) {
+			succ()
+		}
 	},
 	
 	/**
