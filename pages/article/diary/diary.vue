@@ -13,12 +13,6 @@
 				<common-button @MyClick="goToEditPage(l.id, l.title)">编辑</common-button>
 			</common-item>
 		</view>
-		<!-- <common-list :list="page.list">
-			<template v-slot:default="slotProps">
-				<common-button @MyClick="deleteDiaryEvent(slotProps.sign.id, slotProps.sign.title)" >删除</common-button>
-				<common-button @MyClick="goToEditPage(slotProps.sign.id, slotProps.sign.title)">编辑</common-button>
-			</template>
-		</common-list> -->
 	</view>
 </template>
 
@@ -27,14 +21,12 @@
 	
 	import {MyPage} from '../../../common/pageUtil.js'
 	
-	import commonList from '../../../components/common-list.vue'
 	import commonButton from '../../../components/common-button.vue'
 	
 	import commonItem from '../../../components/list/common-list-item'
 	
 	export default {
 		components: {
-			commonList,
 			commonButton,
 			commonItem
 		},

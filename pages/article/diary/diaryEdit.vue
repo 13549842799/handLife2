@@ -3,6 +3,7 @@
 		<!-- <uni-nav-bar left-icon="back" left-text="返回" right-text="菜单" title="导航栏组件" :fixed="true" :status-bar="true"></uni-nav-bar> -->
 		<view class="diary-edit-content-title">
 			<input class="diary-title-input"  :class="{'diary-title-input-on': titleInput}" v-model="diary.title" placeholder="请输入标题" placeholder-class="diary-placeholder" maxlength="50"  @focus="titleInput=true" @blur="titleInput=false"/>
+		    <view class="diary-title-date" @tap="showPicker = true"><text>{{diary.date}}</text></view>
 		</view>
 		<view class="diary-edit-content-body">
 			<!-- <web-view :src="src" @message="handlerMessage"></web-view> -->
@@ -51,6 +52,7 @@
 		</view>
 		<inputDlog ref="classifyDlog" title="请输入分类名" :submit="addClassify"></inputDlog>
 		<inputDlog ref="labelDlog" title="请输入标签名" :submit="addLabel"></inputDlog>
+		<mx-date-picker :show="showPicker" type="date" :value="diary.date" format="yyyy-mm-dd"  @confirm="selectDate" @cancel="selectDate" />
 	</view>
 </template>
 
@@ -72,6 +74,10 @@
 	import inputDlog from '../../../components/inputDlog'
 	
 	import labelImg from '../../../components/label-img'
+	
+	import MxDatePicker from "@/components/mx-datepicker/mx-datepicker"
+	
+	import dataUtil from '../../../common/dataUtil.js'
 
     const saveType = ['草稿', '私密', '发布']
 
@@ -80,7 +86,8 @@
 			uniNavBar,
 			buttomMenu,
 			menuItem,
-			labelImg
+			labelImg,
+			MxDatePicker
 		},
 		data () {
 			return {
@@ -88,12 +95,14 @@
 					id: null,
 					title: '',
 					content: '',
-					status: 0
+					status: 0,
+					date: dataUtil.dateFormat('yyyy-MM-dd', new Date())
 				},
 				classify: [],
 				labels: [],
 				titleInput: false,
-				src: 'http://localhost:8085/?token=' + userToken.token + '&user=' + userToken.user
+				src: 'http://localhost:8085/?token=' + userToken.token + '&user=' + userToken.user, // 暂时无用
+				showPicker: false //时间选择器开关
 			}
 		},
 		onLoad (option) {
@@ -149,10 +158,23 @@
 			let labels = ''
 			v.labels.map((obj, index) => {
 				if (obj.check) {
-					labels += obj.id
+					labels += ',' + obj.id
 				}
 			})
-			v.diary.labels = labels
+			v.diary.labels = labels.substr(1)
+			diaryApi.saveDiary(v.diary).then(res => {
+				if (v.diary.id === null) {
+					v.diary.id = res.id
+				}
+				uni.showToast({
+					title: '保存成功'
+				})
+			}).catch(err => {
+				uni.showToast({
+					title: err.message,
+					icon: 'none'
+				})
+			})
 		},
 		methods: {
 			/**
@@ -230,6 +252,16 @@
 						icon: "none"
 					})
 				})
+			},
+			/**
+			 * 选择容器
+			 * @param {Object} e
+			 */
+			selectDate (e) {
+				this.showPicker = false
+				if (e) {
+					this.diary.date = e.value
+				}
 			}
 		},
 		computed: {
@@ -268,14 +300,19 @@
 		font-size: 30upx;
 		padding: 10upx 20upx;
 		border-bottom: 1upx solid #EFEFF4;
-	}
-	
-	.diary-edit-content-title input {
-		
+		flex-direction: row;
+		height: 50upx;
 	}
 	
 	.diary-title-input {
-		width: 700upx;
+		width: 500upx;
+	}
+	
+	.diary-title-date {
+		width: 220upx;
+		line-height: 50upx;
+		justify-content: center;
+		border-left: 1upx solid #EFEFF4;
 	}
 	
 	.diary-title-input-on {
@@ -293,7 +330,7 @@
 	
 	.diary-edit-content-body-text {
 		width: 100%;
-		height: 950upx;
+		height: 650upx;
 	}
 	
 	.diary-edit-foot {

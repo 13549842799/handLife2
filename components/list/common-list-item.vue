@@ -4,7 +4,7 @@
 			<view>
 				<text>{{obj[rules["title"]]}}</text>
 			</view>
-			<view class="common-list-item-title-right">
+			<view class="common-list-item-title-right" :style="{width: slotLength}">
 				<slot></slot>
 			</view>
 		</view>
@@ -31,6 +31,10 @@
 			mapper: {
 				type: Object,
 				required: false
+			},
+			slotLength: {
+				type: String,
+				default: '40%'
 			}
 		},
 		data() {
@@ -103,7 +107,6 @@
 	}
 	
 	.common-list-item-title-right {
-		width: 60%;
 		flex-direction: row-reverse;
 	}
 	
