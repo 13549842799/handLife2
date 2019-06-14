@@ -37,6 +37,14 @@ export class HttpObj {
   }
 }
 
+export function initHeaders () {
+	headers = null
+}
+
+export const userToken = () => {
+	return {'user': headers.X-user, 'token': headers.X-token}
+}
+
 /**
  * 发送post请求
  * @param {Object} obj
@@ -59,6 +67,38 @@ export const $delete = function (obj) {
 	return $AjaxPromise(obj.url, obj.data, 'DELETE', 'json', obj.config)
 }
 
+/**
+ * 带有加载图标的post请求
+ * @param {Object} obj
+ */
+export const $postLoading = function (obj) {
+	obj.type = 'POST'
+	return $Loading(obj)
+}
+
+/**
+ * 开启了加载图标的直接发送请求方法
+ * 在发送请求前会在页面中出现加载中的图标，然后在请求结束后消失
+ * @param {Object} obj
+ */
+export const $Loading = function (obj) {
+	uni.showLoading({
+    title: '加载中'
+})
+	if (!obj.config) {
+		obj.config = {}
+	}
+	let c = obj.config.complete
+	let t = () => {
+		if (c) {
+			c()
+		}
+		uni.hideLoading()
+	}
+	obj.config.complete = t
+	return $AjaxPromise(obj.url, obj.data, obj.type, 'json', obj.config)
+}
+
 export const $AjaxPromise = function (url, params, type, dataType, config) {
   config = config !== null && config !== undefined ? config : {}
   return new Promise(function (resolve, reject) {
@@ -76,12 +116,12 @@ export const $AjaxPromise = function (url, params, type, dataType, config) {
             break
           case 100:
           case 300:
-            reject(res)
+            reject(res.data)
             break
           case 400:
-            reject(res)
+            reject(res.data)
 			uni.reLaunch({
-			    url: './pages/index/login/login.vue'
+			    url: '/pages/index/login/login'
 			});
         }
       }

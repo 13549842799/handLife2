@@ -7,12 +7,18 @@
 			<text style="color: #F8F8F8;">|</text>
 			<view><text>新建</text></view>
 		</view>
-		<common-list :list="page.list">
+		<view style="width: 100%;">
+			<common-item :obj="l" v-for="(l, index) in page.list" v-bind:key="index">
+				<common-button @MyClick="deleteDiaryEvent(l.id, l.title)" >删除</common-button>
+				<common-button @MyClick="goToEditPage(l.id, l.title)">编辑</common-button>
+			</common-item>
+		</view>
+		<!-- <common-list :list="page.list">
 			<template v-slot:default="slotProps">
 				<common-button @MyClick="deleteDiaryEvent(slotProps.sign.id, slotProps.sign.title)" >删除</common-button>
 				<common-button @MyClick="goToEditPage(slotProps.sign.id, slotProps.sign.title)">编辑</common-button>
 			</template>
-		</common-list>
+		</common-list> -->
 	</view>
 </template>
 
@@ -24,10 +30,13 @@
 	import commonList from '../../../components/common-list.vue'
 	import commonButton from '../../../components/common-button.vue'
 	
+	import commonItem from '../../../components/list/common-list-item'
+	
 	export default {
 		components: {
 			commonList,
-			commonButton
+			commonButton,
+			commonItem
 		},
 		data() {
 			return {

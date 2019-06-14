@@ -4,30 +4,96 @@
 		<view class="diary-edit-content-title">
 			<input class="diary-title-input"  :class="{'diary-title-input-on': titleInput}" v-model="diary.title" placeholder="请输入标题" placeholder-class="diary-placeholder" maxlength="50"  @focus="titleInput=true" @blur="titleInput=false"/>
 		</view>
-		<view>
-			<editor id="editor" class="ql-container" :placeholder="placeholder" @ready="onEditorReady"></editor>
+		<view class="diary-edit-content-body">
+			<!-- <web-view :src="src" @message="handlerMessage"></web-view> -->
+			<textarea class="diary-edit-content-body-text" v-model="diary.content" placeholder="请输入内容" placeholder-style="color: #E0E0E0;" maxlength="-1"></textarea>
 		</view>
+		<view class="diary-edit-foot">
+            <buttom-menu>
+				<template v-slot:top>
+					<view style="width: 100%; height: 100%;flex-direction: column-reverse;">
+						<view>
+							<label-img v-for="l in checkedLabels" :name="l.name" :key="l.id" size="small"></label-img>
+						</view>
+					</view>
+				</template>
+				<menu-item :title="classifyName" ref="titleDiv">
+					<view class="menu-item-hover-view-classify">
+						<view class="menu-item-hover-view-classify-list">
+							<view v-for="c in classify" :key="c.id" @tap="selectClassify(c.id)" hover-class="select-classify" :hover-start-time="0" :hover-stay-time="1000">
+							    <text>{{c.name}}</text>
+							</view>
+						</view>
+						<view @tap="openClassifyDiog" hover-class="select-classify" :hover-start-time="0" :hover-stay-time="1000">
+							<text>创建分类</text>
+						</view>
+					</view>
+				</menu-item>
+				<menu-item title="标签">
+					<view class="menu-item-hover-view-labels">
+						<view class="menu-item-hover-view-labels-list">
+							<checkbox-group @change="checkboxChange">
+								<label class="checkbox-label" v-for="label in labels" :key="label.id">
+									<view>
+										<checkbox :value="label.id" :checked="label.check" style="transform:scale(0.7)"/>
+									</view>
+									<view>{{label.name}}</view>
+								</label>
+							</checkbox-group>
+						</view>
+						<view>
+							<text @tap="openLabelDlog">创建标签</text>
+						</view>
+					</view>
+				</menu-item>
+				<menu-item :title="typeName" :menuAble="false" :tapEvent="alterSaveType"></menu-item>
+			</buttom-menu>
+		</view>
+		<inputDlog ref="classifyDlog" title="请输入分类名" :submit="addClassify"></inputDlog>
+		<inputDlog ref="labelDlog" title="请输入标签名" :submit="addLabel"></inputDlog>
 	</view>
 </template>
 
 <script>
 	import diaryApi from '../../../api/article/diary.js'
 	
+	import classifyApi from '../../../api/article/classify.js'
+	
+	import labelApi from '../../../api/article/label.js'
+	
+	import {userToken} from '../../../http.js'
+	
 	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar"
 	
+	import buttomMenu from '../../../components/buttom-menu/buttom-menu'
+	
+	import menuItem from '../../../components/buttom-menu/menu-item'
+	
+	import inputDlog from '../../../components/inputDlog'
+	
+	import labelImg from '../../../components/label-img'
+
+    const saveType = ['草稿', '私密', '发布']
+
 	export default {
 		components: {
-			uniNavBar
+			uniNavBar,
+			buttomMenu,
+			menuItem,
+			labelImg
 		},
 		data () {
 			return {
 				diary: {
 					id: null,
 					title: '',
-					content: ''
+					content: '',
+					status: 0
 				},
+				classify: [],
+				labels: [],
 				titleInput: false,
-				placeholder: '开始输入...'
+				src: 'http://localhost:8085/?token=' + userToken.token + '&user=' + userToken.user
 			}
 		},
 		onLoad (option) {
@@ -39,35 +105,149 @@
 			}
 			// 编辑日记
 			//1.设置导航栏为日记标题
-			uni.setNavigationBarTitle({
-				title: "编辑"
-			})
-			uni.showLoading({
-				title: '加载中',
-				mask: true
-			})
-			diaryApi.getDiary(id, {
-				complete: function () {
-					uni.hideLoading()
-				}
-			}).then(res => {
+			uni.setNavigationBarTitle( { title: "编辑"} )
+			uni.showLoading( { title: '加载中', mask: true } )
+			//2.加载日记
+			diaryApi.getDiary(id, { complete: res => {uni.hideLoading()} } ).then(res => {
 				v.diary = res
-			}).catch(err => {
-				console.log(err)
-			})
+			}).catch(err => { console.log(err) })
+			//3.加载分类列表
+			classifyApi.getClassifies({'childType': 1}).then(res => {
+				v.classify = res
+			}).catch(err => {console.log(err)})
+			//4.加载标签列表
+			labelApi.getLabelsList().then(res => {
+				if (res === null || res === undefined || res.length === 0) {
+					v.labels = res
+					return
+				}
+				let temp = res
+				//4.1 根据日记自己的所选标签通过id匹配总的标签确定是否已被选中，根据是否被选中添加check的值， 选中 true， 没有 false
+				temp.map((label, index) => {
+					v.$set(label, 'check', v.diary.labelList.some(l => {
+						return l.id === label.id
+					}))
+					label.id = label.id.toString()
+				})
+				v.labels = temp
+			}).catch(err => {console.log(err)})
 		},
+		/**
+		 * 导航栏按钮响应事件 (保存日记)
+		 */
 		onNavigationBarButtonTap () {
 			console.log("点击了保存")
+			let v = this
+			if (v.diary.title.trim() === '') {
+				uni.showToast({
+					title: '标题不能为空',
+					icon: "none"
+				})
+				return
+			}
+			//获取选中的标签的id组字符串
+			let labels = ''
+			v.labels.map((obj, index) => {
+				if (obj.check) {
+					labels += obj.id
+				}
+			})
+			v.diary.labels = labels
 		},
 		methods: {
-			onEditorReady() {
-                uni.createSelectorQuery().select('#editor').context((res) => {
-                    this.editorCtx = res.context
-                }).exec()
-            },
-            undo() {
-                this.editorCtx.undo()
-            }
+			/**
+			 * 选择日记的分类
+			 * @param {Object} id
+			 */
+			selectClassify (id) {
+				this.diary.classify = id
+				this.$refs.titleDiv.closeMenu()
+			},
+			/**
+			 * 打开添加分类的弹窗
+			 */
+			openClassifyDiog () {
+				this.$refs.classifyDlog.open()
+			},
+			/**
+			 * 添加日记分类
+			 * @param {Object} name
+			 */
+			addClassify (name) {
+				let v = this
+				classifyApi.addClassify( {name: name, childType: 1} ).then(res => {
+					v.classify.push(res)
+					v.diary.classify = res.id
+					uni.showToast({
+						title: '创建成功'
+					})
+				}).catch(err => {
+					uni.showToast({
+						title: err.message,
+						icon: "none"
+					})
+				})
+			},
+			/**
+			 * 标签的多选框选择事件
+			 * @param {Object} val
+			 */
+			checkboxChange (e) {
+				let v = this
+				let arr = e.detail.value
+				for (let i = 0; i < v.labels.length; i ++) {
+					v.labels[i].check =  arr.findIndex(o => { return o === v.labels[i].id }) !== -1
+				}
+			},
+			/**
+			 * 通过点击修改保存的类型
+			 */
+			alterSaveType () {
+				this.diary.status = this.diary.status === 2 ? 0 : this.diary.status + 1
+			},
+			/**
+			 * 打开标签创建输入框
+			 */
+			openLabelDlog () {
+				this.$refs.labelDlog.open()
+			},
+			/**
+			 * 添加标签
+			 * @param {Object} name
+			 */
+			addLabel (name) {
+				let v = this
+				labelApi.addLabel({name: name}).then(res => {
+					res.id = res.id.toString()
+					res.check  = true
+					v.labels.push(res)
+					uni.showToast({
+						title: '创建成功'
+					})
+				}).catch(err => {
+					uni.showToast({
+						title: err.message,
+						icon: "none"
+					})
+				})
+			}
+		},
+		computed: {
+			classifyName () {
+				let v = this
+				let cls = v.classify.find(o => {
+					return v.diary.classify === o.id
+				})
+				return cls !== undefined && cls !== null ? cls.name : '分类'
+			},
+			typeName () {
+				return saveType[this.diary.status]
+			},
+			checkedLabels () {
+				return this.labels.filter(l => {
+					return l.check
+				})
+			}
 		}
 	}
 </script>
@@ -107,13 +287,100 @@
 		color: #D5D5D5;
 	}
 	
-	.container {
-        padding: 10px;
-    }
-
-    #editor {
-        width: 100%;
-        height: 300px;
-        background-color: #CCCCCC;
-    }
+	.diary-edit-content-body {
+		padding: 20upx 30upx;
+	}
+	
+	.diary-edit-content-body-text {
+		width: 100%;
+		height: 950upx;
+	}
+	
+	.diary-edit-foot {
+		position: absolute;
+		bottom: 0upx;
+		height: 150upx;
+		width: 100%;
+		flex-direction: column;
+	}
+	
+	.diary-edit-foot-label {
+		height: 50upx;
+	}
+	
+	.diary-edit-foot-menu {
+		line-height: 100upx;
+		color: #C8C7CC;
+		flex-direction: row;
+		height: 100upx;
+		border-top: 1upx solid #EFEFF4;
+	}
+	
+	.diary-edit-foot-menu-item {
+		width: 33%;
+		font-size: 30upx;
+	}
+	
+	.diary-edit-foot-menu-item > view  > text {
+		width: 100%;
+		text-align: center;
+	}
+	
+	.menu-item-hover-view-classify, .menu-item-hover-view-labels {
+		height: 400upx;
+		width: 250upx;
+		flex-direction: column;
+		font-size: 20upx;
+		background-color: #FFFFFF;
+	}
+	
+	.menu-item-hover-view-classify {
+		border-top: 1upx solid #C8C7CC;
+		border-right: 1upx solid #C8C7CC;
+	}
+	
+	.menu-item-hover-view-classify text {
+		width: 100%;
+		text-align: center;
+	}
+	
+	.menu-item-hover-view-classify-list {
+		flex-direction: column;
+		height: 80%;
+		overflow: auto;
+	}
+	
+	.menu-item-hover-view-classify-list > view {
+		
+	}
+	
+	.select-classify {
+		background-color: #EFEFF4;
+		color: #999999;
+		box-shadow: 1upx -1upx 1upx 1upx #E0E0E0 inset;
+	}
+	
+	.menu-item-hover-view-labels {
+		border: 0.5upx solid #C8C7CC;
+	}
+	.menu-item-hover-view-labels-list {
+		flex-direction: column;
+		height: 80%;
+		overflow: auto;
+	}
+	
+	.menu-item-hover-view-labels > view  > text {
+		width: 100%;
+		text-align: center;
+	}
+	
+	.checkbox-label {
+		flex-direction: row;
+		display: flex;
+		padding: 10upx 10upx;
+		height: 40upx;
+		line-height: 40upx;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 </style>

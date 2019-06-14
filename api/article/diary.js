@@ -5,7 +5,8 @@ import {
 import {
 	$get,
 	$post,
-	$delete
+	$delete,
+	$postLoading
 } from './../../http.js'
 
 export default {
@@ -33,5 +34,12 @@ export default {
 	 */
 	deleteOwnerDiary (id) {
 		return $delete({url: diaryUrl + '/s/' + id + '/delete.do'})
+	},
+	/**
+	 * 保存日记
+	 * @param {Object} params
+	 */
+	saveDiary(params) {
+		return $postLoading({url: diaryUrl + '/addOrUpdate.do', data: params})
 	}
 }

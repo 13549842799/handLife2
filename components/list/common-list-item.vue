@@ -1,33 +1,31 @@
 <template>
-	<view class="common-list-content">
-		<view class="common-list-item" v-for="l in list" v-bind:key="l[rules['id']]">
-			<view class="common-list-item-title">
-				<view>
-					<text>{{l[rules["title"]]}}</text>
-				</view>
-				<view class="common-list-item-title-right">
-					<slot v-bind:l = "l"></slot>
-				</view>
+	<view class="common-list-item">
+		<view class="common-list-item-title">
+			<view>
+				<text>{{obj[rules["title"]]}}</text>
 			</view>
-			<view class="common-list-item-content">
-				<rich-text :nodes="getFirstP(l[rules['content']])"></rich-text>
+			<view class="common-list-item-title-right">
+				<slot></slot>
 			</view>
-			<view class="common-list-item-foot">
-				<text>{{l[rules['date']]}}</text>
-			</view>
+		</view>
+		<view class="common-list-item-content">
+			<rich-text :nodes="getFirstP(obj[rules['content']])"></rich-text>
+		</view>
+		<view class="common-list-item-foot">
+			<text>{{obj[rules['date']]}}</text>
 		</view>
 	</view>
 </template>
 
 <script>
-	import htmlParser from './../common/html-parser.js'
+	import htmlParser from '../../common/html-parser.js'
 	
 	export default {
 		props: {
-			list: {
-				type: Array,
+			obj: {
+				type: Object,
 				default: () => {
-					return []
+					return {}
 				}
 			},
 			mapper: {
@@ -53,6 +51,9 @@
 			 * @param {Object} html
 			 */
 			getFirstP (html) {
+				if (!html) {
+					return ''
+				}
 				let index_begin = html.indexOf("<p>")
 				let index_end = html.indexOf("</p>")
 				return this.parseHtml(html.substring(index_begin, index_end + 4))
@@ -82,10 +83,6 @@
 	view {
 		display: flex;
 	}
-    .common-list-content {
-		width: 100%;
-	}
-	
 	.common-list-item {
 		width: 100%;
 		flex-direction: column;
@@ -117,5 +114,4 @@
 	.common-list-item-foot {
 		font-size: 25upx;
 	}
-	
 </style>

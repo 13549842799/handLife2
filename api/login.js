@@ -6,6 +6,7 @@ import {
 	$get,
 	$post,
 	loginKey,
+	baseUrl,
 	initHeaders
 } from './../http.js'
 
@@ -41,7 +42,7 @@ export default {
 		}).catch(err => {
 			console.log('重定向登录:' + err)
 			uni.reLaunch({
-				url: '../pages/index/login/login'
+				url: 'pages/index/login/login'
 			});
 		})
 	},
