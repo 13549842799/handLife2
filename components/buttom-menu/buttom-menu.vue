@@ -1,9 +1,9 @@
 <template>
-	<view class="screen-foot-menu" :style="{height: height + 'upx'}">
-		<view class="screen-foot-menu-top" :style="{height: topHeight + 'upx'}">
+	<view class="screen-foot-menu" :style="{height: height + 'px'}">
+		<view class="screen-foot-menu-top" :style="{height: topHeight + 'px'}">
 			<slot name="top"></slot>
 		</view>
-		<view class="screen-foot-menu-top-menu" :style="{height: menuHeight + 'upx', 'line-height': menuHeight + 'upx'}">
+		<view class="screen-foot-menu-top-menu" :style="{height: menuHeight + 'px', 'line-height': menuHeight + 'px'}">
 			<slot></slot>
 		</view>
 	</view>
@@ -15,15 +15,15 @@
         props: {
 			height: {
 				type: Number,
-				default: 150
+				default: 80
 			},
 			topHeight: {
 				type: Number,
-				default: 70
+				default: 30
 			},
 			menuHeight: {
 				type: Number,
-				default: 80
+				default: 50
 			}
 		}
 	}

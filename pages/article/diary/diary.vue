@@ -5,12 +5,14 @@
 			<text style="color: #F8F8F8;">|</text>
 			<view><text>搜索</text></view>
 			<text style="color: #F8F8F8;">|</text>
-			<view><text>新建</text></view>
+			<view @tap="goToNewDiaryPage"><text>新建</text></view>
 		</view>
-		<view style="width: 100%;">
-			<common-item :obj="l" v-for="(l, index) in page.list" v-bind:key="index">
-				<common-button @MyClick="deleteDiaryEvent(l.id, l.title)" >删除</common-button>
-				<common-button @MyClick="goToEditPage(l.id, l.title)">编辑</common-button>
+		<view class="diary-content-list">
+			<common-item :obj="l" v-for="(l, index) in page.list" v-bind:key="index" @customizeEvent="longPressEvent" style="width: 100%">
+				<my-button @MyClick="readdiary(l)">查看</my-button>
+				<my-button @MyClick="goToEditPage(l.id, l.title)">编辑</my-button>
+				<my-button @MyClick="deleteDiaryEvent(l.id, l.title)">删除</my-button>
+				
 			</common-item>
 		</view>
 	</view>
@@ -23,12 +25,16 @@
 	
 	import commonButton from '../../../components/common-button.vue'
 	
+	import MyButton from '../../../components/button/MyButton'
+	
 	import commonItem from '../../../components/list/common-list-item'
+	
 	
 	export default {
 		components: {
 			commonButton,
-			commonItem
+			commonItem,
+			MyButton
 		},
 		data() {
 			return {
@@ -37,9 +43,13 @@
 			}
 		},
 		methods: {
-			test ({name, title}) {
-				console.log('name' + name)
-				console.log('title' + title)
+			/**
+			 * 跳转到新建日记的页面
+			 */
+			goToNewDiaryPage () {
+				uni.navigateTo({
+					url: './diaryEdit'
+				})
 			},
 			deleteDiaryEvent (id, title) {
 				let v = this
@@ -69,12 +79,18 @@
 				uni.navigateTo({
 					url: 'diaryEdit?id=' + id + '&title=' + title
 				})
+			},
+			/**
+			 * 查看日记
+			 */
+			readdiary (diary) {
+				console.log('查看日记')
 			}
 		},
 		onLoad() {
 			let v = this
 			v.page = new MyPage({searchFunction: diaryApi.getDiaryList})
-            console.log(v.page)
+            console.log('page:', v.page)
 		}
 	}
 </script>
@@ -85,7 +101,7 @@
 	}
 	
 	.diary-content {
-		width: 750upx;
+		width: 100%;
 		flex-direction: column;
 	}
 	
@@ -105,5 +121,9 @@
 		width: 100%;
 		text-align: center;
 		color: #F8F8F8;
+	}
+	
+	.diary-content-list {
+		flex-direction: column;
 	}
 </style>

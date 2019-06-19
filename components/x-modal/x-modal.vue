@@ -4,8 +4,7 @@
 			<slot name='title'>
 				<view class="modal-text-center modal-title">
 					{{title}}
-				</view>
-				
+				</view>			
 			</slot>
 			<slot name='text'>
 				<view class="modal-main modal-text-center">
@@ -19,7 +18,7 @@
 					@click="cancel"
 					v-if="!noCancel"
 				>
-					{{cancelText}}
+					<text style="width: 100%; text-align: center;">{{cancelText}}</text>
 				</view>
 				<view 
 					class="modal-col" 
@@ -122,10 +121,31 @@
 	transition: all .2s;
 	will-change: auto;
 	opacity: 0;
-	.modal-content{background: #fff;width: 80%;border-radius: 6px;overflow: hidden;position: relative;padding-bottom: 50px;-webkit-transform: scale3d(.465, .465, .465); transform: scale3d(.465, .465, .465);transition: all .2s;will-change: auto;}
+	.modal-content{
+		background: #fff;
+		width: 80%;
+		border-radius: 6px;
+		overflow: hidden;
+		position: relative;
+		padding-bottom: 50px;
+		-webkit-transform: scale3d(.465, .465, .465); 
+		transform: scale3d(.465, .465, .465);
+		transition: all .2s;will-change: auto;
+		flex-direction: column;
+	}
 	
 	.modal-row {display: -webkit-box;display: -ms-flexbox;display: flex;-ms-flex-wrap: wrap;flex-wrap: wrap;position: absolute !important;left: 0;right: 0;bottom: 0;height: 50px;line-height: 50px;text-align: center;font-size: 18px;color: rgb(3, 3, 3);}
-	.modal-col {-ms-flex-preferred-size: 0;flex-basis: 0;-webkit-box-flex: 1;-ms-flex-positive: 1;flex-grow: 1;max-width: 100%;position: relative;transition: all .1s;}
+	.modal-col {
+		-ms-flex-preferred-size: 0;
+		flex-basis: 0;
+		-webkit-box-flex: 1;
+		-ms-flex-positive: 1;
+		flex-grow: 1;
+		max-width: 100%;
+		position: relative;
+		transition: all .1s;
+        text-align: center;
+	}
 	
 	.modal-active{background: #f2f2f2;}
 	.modal-title{font-size: 18px;text-align: center;padding: 1em 1.6em .3em;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}

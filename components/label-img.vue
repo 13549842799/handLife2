@@ -1,5 +1,5 @@
 <template>
-	<text class="text-label-style-baise" :class="fontSizeClass">{{name}}</text>
+	<text class="text-label-style-baise" :class="{'text-label-style-small': Small, 'text-label-style-mini': Mini, 'text-label-style-large': large}">{{name}}</text>
 </template>
 
 <script>
@@ -17,6 +17,9 @@
 				}
 			}
 		},
+		data () {
+			return {}
+		},
 		computed: {
 			large () {
 				return this.size === 'large'
@@ -26,13 +29,6 @@
 			},
 			Small () {
 				return this.size === 'small'
-			},
-			fontSizeClass () {
-				return {
-					'text-label-style-large': this.large,
-					'text-label-style-mini': this.Mini,
-					'text-label-style-small': this.Small
-				}
 			}
 		}
 	}
@@ -62,9 +58,9 @@
 	}
 	
 	.text-label-style-small {
-		font-size: 15upx;
+		font-size: 20upx;
 		line-height: 40upx;
 		height: 40upx;
-		padding: 0 10upx;
+		padding: 0 20upx;
 	}
 </style>

@@ -49,6 +49,18 @@
 			}
 		},
 		{
+			"path": "pages/article/classify/classify",
+			"style": {
+				"navigationBarTitleText": "分类"
+			}
+		},
+		 {
+		    "path" : "pages/article/label/label",
+		    "style" : {
+				"navigationBarTitleText": "标签"
+			}
+		},
+		{
 			"path": "pages/center/center",
 			"style": {
 				"navigationBarTitleText": "个人中心"
@@ -66,14 +78,6 @@
 				"navigationBarTitleText": "职员信息"
 			}
 		}
-	    ,{
-            "path" : "pages/article/finalReport/finalReport",
-            "style" : {}
-        }
-        ,{
-            "path" : "pages/article/diary/diary",
-            "style" : {}
-        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

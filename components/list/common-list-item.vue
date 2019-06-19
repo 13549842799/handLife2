@@ -1,18 +1,20 @@
 <template>
-	<view class="common-list-item">
-		<view class="common-list-item-title">
-			<view>
-				<text>{{obj[rules["title"]]}}</text>
+	<view class="common-list-content">
+		<view class="common-list-item" @tap="buttonGroup">
+			<view class="common-list-item-title">
+				<view>
+					<text >{{obj[rules["title"]]}}</text>
+				</view>
 			</view>
-			<view class="common-list-item-title-right" :style="{width: slotLength}">
-				<slot></slot>
+			<view class="common-list-item-content">
+				<rich-text :nodes="getFirstP(obj[rules['content']])"></rich-text>
 			</view>
+			<view class="common-list-item-foot">
+				<text>{{obj[rules['date']]}}</text>
+			</view>		
 		</view>
-		<view class="common-list-item-content">
-			<rich-text :nodes="getFirstP(obj[rules['content']])"></rich-text>
-		</view>
-		<view class="common-list-item-foot">
-			<text>{{obj[rules['date']]}}</text>
+		<view v-show="visable" class="hide-view">
+			<slot></slot>
 		</view>
 	</view>
 </template>
@@ -39,7 +41,7 @@
 		},
 		data() {
 			return {
-				
+				visable: false
 			};
 		},
 		methods: {
@@ -61,6 +63,10 @@
 				let index_begin = html.indexOf("<p>")
 				let index_end = html.indexOf("</p>")
 				return this.parseHtml(html.substring(index_begin, index_end + 4))
+			},
+			buttonGroup () {
+				console.log('测试')
+				this.visable = !this.visable
 			}
 		},
 		computed: {
@@ -87,10 +93,14 @@
 	view {
 		display: flex;
 	}
-	.common-list-item {
-		width: 100%;
+	.common-list-content {
+		width: 750upx;
 		flex-direction: column;
 		border-bottom: 0.5upx solid #F2F2F2;
+	}
+	.common-list-item {
+		width: 750upx;
+		flex-direction: column;
 	}
 	
 	.common-list-item > view {
@@ -99,6 +109,7 @@
 	}
 	
 	.common-list-item-title {
+		width: 680upx;
 		font-size: 40upx;
 		font-family: "SimHei";
 		justify-content: space-between;
@@ -116,5 +127,12 @@
 	
 	.common-list-item-foot {
 		font-size: 25upx;
+	}
+	
+	.hide-view {
+		width: 100%;
+		flex-direction: row;
+		justify-content: center;
+		padding: 10upx 0;
 	}
 </style>

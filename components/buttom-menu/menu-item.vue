@@ -1,10 +1,16 @@
 <template>
 	<view class="screen-foot-menu-top-menu-item" :style="{width: width}" tabindex="0" @blur="visable=false">
 		<view class="menu-item-menu">
-			<view v-if="visable" class="menu-item-menu-view" ><slot></slot></view>
+			<view v-if="visable" class="menu-item-menu-view" >
+				<view style="z-index: 901;">
+					<slot></slot>
+				</view>
+				<view class="backgroud-view" @tap="cancel">
+				</view>
+			</view>
 		</view>
-		<view style="width: 100%" :style="{'font-size': size + 'upx'}" @tap.stop="showMenu">
-			<text  class="screen-foot-menu-top-menu-item-text">{{title}}</text>
+		<view style="width: 100%" :style="{'font-size': size + 'px'}" @tap.stop="showMenu">
+			<text  class="screen-foot-menu-top-menu-item-text">{{ptitle}}</text>
 		</view>
 	</view>
 </template>
@@ -18,19 +24,19 @@
 			},
 			width: {
 				type: String,
-				default: '33.2%'
+				default: uni.upx2px(240) + 'px'
 			},
 			size: {
 				type: Number,
-				default: 30
+				default: 16
 			},
 			menuAble: {
 				type: Boolean,
 				default: true
 			},
 			tapEvent: {
-				type: Function,
-				required: false
+				type: Boolean,
+				default: false
 			}
 		},
 		data () {
@@ -41,7 +47,8 @@
 		methods: {
 			showMenu () {
 				if (this.tapEvent) {
-					this.tapEvent()
+					console.log('showMenu:click;')
+					this.$emit('MyClick')
 				}
 				if (this.menuAble) {
 					console.log('点击')
@@ -52,6 +59,14 @@
 			},
 			closeMenu () {
 				this.visable = false
+			},
+			cancel () {
+				this.visable = false
+			}
+		},
+		computed: {
+			ptitle () {
+				return this.title
 			}
 		}
 	}
@@ -60,6 +75,17 @@
 <style>
 	view {
 		display: flex;
+	}
+	
+	.backgroud-view {
+		position: fixed !important;
+		z-index: 900;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-color: #CCCCCC;
+		opacity: 0.1;
 	}
 	
 	.screen-foot-menu-top-menu-item {

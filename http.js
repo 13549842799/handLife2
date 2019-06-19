@@ -76,6 +76,11 @@ export const $postLoading = function (obj) {
 	return $Loading(obj)
 }
 
+export const $deleteLoading = function (obj) {
+	obj.type = 'DELETE'
+	return $Loading(obj)
+}
+
 /**
  * 开启了加载图标的直接发送请求方法
  * 在发送请求前会在页面中出现加载中的图标，然后在请求结束后消失

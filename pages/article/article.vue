@@ -1,20 +1,30 @@
 <template>
 	<view class="article-content">
-        <navigator hover-class="articleTapStyle" url="finalReport/finalReport">
-			<view>
-				<text>总结</text>
+		<view class="article-content-menu">
+			<view class="article-content-menu-column">
+				<view hover-class="articleTapStyle" @tap="goToPage('finalReport/finalReport')">
+					<text>总结</text>
+				</view>
+				<view hover-class="articleTapStyle" @tap="goToPage('')">
+					<text>灵感</text>
+				</view>
 			</view>
-		</navigator>
-		<view hover-class="articleTapStyle">
-			<text>灵感</text>
-		</view>
-		<navigator hover-class="articleTapStyle" url="diary/diary">
-			<view hover-class="articleTapStyle">
-				<text>日记</text>
+			<view class="article-content-menu-column">
+				<view hover-class="articleTapStyle" @tap="goToPage('diary/diary')">
+					<text>日记</text>
+				</view>
+				<view hover-class="articleTapStyle" @tap="goToPage('')">
+					<text>小说</text>
+				</view>
 			</view>
-		</navigator>
-		<view hover-class="articleTapStyle">
-			<text>小说</text>
+			<view class="article-content-menu-column">
+				<view hover-class="articleTapStyle" @tap="goToPage('classify/classify')">
+					<text>分类</text>
+				</view>
+				<view hover-class="articleTapStyle" @tap="goToPage('label/label')">
+					<text>标签</text>
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -25,6 +35,14 @@
 			return {}
 		},
 		methods: {
+			goToPage (url) {
+				if (!url) {
+					return
+				}
+				uni.navigateTo({
+					url: url
+				})
+			}
 		}
 	}
 </script>
@@ -37,28 +55,49 @@
 	.article-content {
 		width: 750upx;
 		flex-direction: column;
-		justify-content: center;
-		
+		background-color: #F5F5F5;
 	}
 	
-	.article-content view {
+	.article-content-menu {
+		width: 750upx;
+		flex-direction: column;
+		margin-top: 50upx;
+	}
+	
+	.article-content-menu-column {
+		flex-direction: row;
+		height: 150upx;
+		width: 100%;
+	}
+	
+	.article-content-menu-column > view {
+		width: 50%;
+		height: 150upx;
+		border: 1upx solid #F8F8F8;
+		background-color: #FFFFFF;
+	}
+	
+	.article-content-menu-column > view > text {
+		width: 100%;
+		height: 100%;
+		line-height: 150upx;
+		font-size: 30upx;
+		text-align: center;
+	}
+	
+	/* .article-content view {
 		width: 400upx;
 		height: 120upx;
-	    border: 1upx solid #DDDDDD;
 		border-radius: 10upx;
 		margin-bottom: 50upx;
 		margin-left: auto;
 		margin-right: auto;
 		justify-content: center;
-	}
-	
-	.article-content view > text {
-		line-height: 120upx;
-		font-size: 30upx;
-	}
+	} */
+
 	
 	.articleTapStyle {
-		background-color: #EFEFF4;
+		background-color: #EFEFF4 !important;
 		box-shadow: 1upx -1upx 1upx 1upx #EFEFF4 inset;
 	}
 </style>

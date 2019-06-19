@@ -5,7 +5,7 @@ import {
 import {
 	$get,
 	$post,
-	$delete,
+	$deleteLoading,
 	$postLoading
 } from './../../http.js'
 
@@ -31,5 +31,18 @@ export default {
 			data: params
 		}
 		return $postLoading(p)
+	},
+	editLabel (id, name) {
+		let p = {
+			url: labelUrl + '/update_app.do',
+			data: {
+				id: id,
+				name: name
+			}
+		}
+		return $postLoading(p)
+	},
+	delteLabel (id) {
+		return $deleteLoading({url: labelUrl + '/s/' + id + '/delete.do'})
 	}
 }

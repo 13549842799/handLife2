@@ -2,11 +2,21 @@
 	<view class="diary-edit-content">
 		<!-- <uni-nav-bar left-icon="back" left-text="返回" right-text="菜单" title="导航栏组件" :fixed="true" :status-bar="true"></uni-nav-bar> -->
 		<view class="diary-edit-content-title">
-			<input class="diary-title-input"  :class="{'diary-title-input-on': titleInput}" v-model="diary.title" placeholder="请输入标题" placeholder-class="diary-placeholder" maxlength="50"  @focus="titleInput=true" @blur="titleInput=false"/>
-		    <view class="diary-title-date" @tap="showPicker = true"><text>{{diary.date}}</text></view>
+			<input class="diary-title-input" :adjust-position="false"  :class="{'diary-title-input-on': titleInput}" v-model="diary.title" placeholder="请输入标题" placeholder-class="diary-placeholder" maxlength="50"  @focus="titleInput=true" @blur="titleInput=false"/>
+		    <view class="diary-title-date">
+				<!-- <text>{{diary.date}}</text> -->
+				<!-- <ruiDatePicker
+					fields="second"
+					start="2010-00-00 00:00:00"
+					end="2030-12-30 23:59:59"
+					:value="diary.date"
+					@change="bindChange"
+					@cancel="bindCancel"
+				></ruiDatePicker> -->
+				<picker mode="date" :value="diary.date" @change="bindDateChange">{{diary.date}}</picker>
+			</view>
 		</view>
 		<view class="diary-edit-content-body">
-			<!-- <web-view :src="src" @message="handlerMessage"></web-view> -->
 			<textarea class="diary-edit-content-body-text" v-model="diary.content" placeholder="请输入内容" placeholder-style="color: #E0E0E0;" maxlength="-1"></textarea>
 		</view>
 		<view class="diary-edit-foot">
@@ -19,10 +29,10 @@
 					</view>
 				</template>
 				<menu-item :title="classifyName" ref="titleDiv">
-					<view class="menu-item-hover-view-classify">
+					<view class="menu-item-hover-view-classify">						
 						<view class="menu-item-hover-view-classify-list">
-							<view v-for="c in classify" :key="c.id" @tap="selectClassify(c.id)" hover-class="select-classify" :hover-start-time="0" :hover-stay-time="1000">
-							    <text>{{c.name}}</text>
+							<view class="menu-item-hover-view-classify-list-view" v-for="c in classify"  :key="c.id" @tap="selectClassify(c.id)" hover-class="select-classify" :hover-start-time="0" :hover-stay-time="1000">
+								<text class="menu-item-hover-view-classify-list-text">{{c.name}}</text>
 							</view>
 						</view>
 						<view @tap="openClassifyDiog" hover-class="select-classify" :hover-start-time="0" :hover-stay-time="1000">
@@ -47,12 +57,11 @@
 						</view>
 					</view>
 				</menu-item>
-				<menu-item :title="typeName" :menuAble="false" :tapEvent="alterSaveType"></menu-item>
+				<menu-item :title="typeName" :menuAble="false" :tapEvent="true" @MyClick="alterSaveType"></menu-item>
 			</buttom-menu>
 		</view>
 		<inputDlog ref="classifyDlog" title="请输入分类名" :submit="addClassify"></inputDlog>
 		<inputDlog ref="labelDlog" title="请输入标签名" :submit="addLabel"></inputDlog>
-		<mx-date-picker :show="showPicker" type="date" :value="diary.date" format="yyyy-mm-dd"  @confirm="selectDate" @cancel="selectDate" />
 	</view>
 </template>
 
@@ -75,8 +84,6 @@
 	
 	import labelImg from '../../../components/label-img'
 	
-	import MxDatePicker from "@/components/mx-datepicker/mx-datepicker"
-	
 	import dataUtil from '../../../common/dataUtil.js'
 
     const saveType = ['草稿', '私密', '发布']
@@ -86,8 +93,7 @@
 			uniNavBar,
 			buttomMenu,
 			menuItem,
-			labelImg,
-			MxDatePicker
+			labelImg
 		},
 		data () {
 			return {
@@ -96,18 +102,35 @@
 					title: '',
 					content: '',
 					status: 0,
+					classify: null,
 					date: dataUtil.dateFormat('yyyy-MM-dd', new Date())
 				},
 				classify: [],
 				labels: [],
 				titleInput: false,
-				src: 'http://localhost:8085/?token=' + userToken.token + '&user=' + userToken.user, // 暂时无用
-				showPicker: false //时间选择器开关
+				src: 'http://localhost:8085/?token=' + userToken.token + '&user=' + userToken.user // 暂时无用
 			}
 		},
 		onLoad (option) {
 			let id = option.id
 			let v = this
+			//1.加载分类列表
+			classifyApi.getClassifies({'childType': 1}).then(res => {
+				v.classify = res
+			}).catch(err => {console.log(err)})
+			//2.加载标签列表
+			labelApi.getLabelsList().then (res => {
+				if (res === null || res === undefined || res.length === 0) {
+					v.labels = []
+					return
+				}
+				res.map(l => {
+					l.id = l.id.toString()
+					v.$set(l, 'check', false)
+				})
+				v.labels = res	
+			}).catch(err => { console.log(err) })
+			//3.判断是编辑还是新建
 			if (!id) {
 				// 新建日记
 				return
@@ -119,27 +142,15 @@
 			//2.加载日记
 			diaryApi.getDiary(id, { complete: res => {uni.hideLoading()} } ).then(res => {
 				v.diary = res
-			}).catch(err => { console.log(err) })
-			//3.加载分类列表
-			classifyApi.getClassifies({'childType': 1}).then(res => {
-				v.classify = res
-			}).catch(err => {console.log(err)})
-			//4.加载标签列表
-			labelApi.getLabelsList().then(res => {
-				if (res === null || res === undefined || res.length === 0) {
-					v.labels = res
-					return
-				}
-				let temp = res
-				//4.1 根据日记自己的所选标签通过id匹配总的标签确定是否已被选中，根据是否被选中添加check的值， 选中 true， 没有 false
-				temp.map((label, index) => {
-					v.$set(label, 'check', v.diary.labelList.some(l => {
-						return l.id === label.id
-					}))
-					label.id = label.id.toString()
+	            // 初始化已选标签
+				//2.1 根据日记自己的所选标签通过id匹配总的标签确定是否已被选中，根据是否被选中添加check的值， 选中 true， 没有 false
+				v.labels.map((label, index) => {
+					label.check = v.diary.labelList.some(l => {
+						return l.id.toString() === label.id
+					})
 				})
-				v.labels = temp
-			}).catch(err => {console.log(err)})
+				console.log(v.labels)
+			}).catch(err => { console.log(err) })
 		},
 		/**
 		 * 导航栏按钮响应事件 (保存日记)
@@ -225,6 +236,7 @@
 			 * 通过点击修改保存的类型
 			 */
 			alterSaveType () {
+				console.log(this.diary)
 				this.diary.status = this.diary.status === 2 ? 0 : this.diary.status + 1
 			},
 			/**
@@ -254,13 +266,12 @@
 				})
 			},
 			/**
-			 * 选择容器
+			 * 日期修改事件
 			 * @param {Object} e
 			 */
-			selectDate (e) {
-				this.showPicker = false
-				if (e) {
-					this.diary.date = e.value
+			bindDateChange (e) {
+				if (e && e.detail) {
+					this.diary.date = e.detail.value
 				}
 			}
 		},
@@ -276,6 +287,7 @@
 				return saveType[this.diary.status]
 			},
 			checkedLabels () {
+				console.log(this.labels)
 				return this.labels.filter(l => {
 					return l.check
 				})
@@ -295,7 +307,7 @@
 	}
 	
 	.diary-edit-content-title {
-		width: 100%;
+		width: 710upx;
 		margin-top: 20upx;
 		font-size: 30upx;
 		padding: 10upx 20upx;
@@ -309,7 +321,7 @@
 	}
 	
 	.diary-title-date {
-		width: 220upx;
+		width: 250upx;
 		line-height: 50upx;
 		justify-content: center;
 		border-left: 1upx solid #EFEFF4;
@@ -329,7 +341,7 @@
 	}
 	
 	.diary-edit-content-body-text {
-		width: 100%;
+		width: 690upx;
 		height: 650upx;
 	}
 	
@@ -337,7 +349,7 @@
 		position: absolute;
 		bottom: 0upx;
 		height: 150upx;
-		width: 100%;
+		width: 750upx;
 		flex-direction: column;
 	}
 	
@@ -367,7 +379,7 @@
 		height: 400upx;
 		width: 250upx;
 		flex-direction: column;
-		font-size: 20upx;
+		font-size: 25upx;
 		background-color: #FFFFFF;
 	}
 	
@@ -387,8 +399,10 @@
 		overflow: auto;
 	}
 	
-	.menu-item-hover-view-classify-list > view {
-		
+	.menu-item-hover-view-classify-list-view {
+	}
+	
+	.menu-item-hover-view-classify-list-text {	
 	}
 	
 	.select-classify {

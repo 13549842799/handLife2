@@ -1,5 +1,5 @@
 <template>
-	<button class="text-btn" :plain="true" size="mini" @tap="touchEvent"><slot></slot></button>
+	<button class="text-btn mini-btn" :plain="true" size="mini" @tap="touchEvent"><slot></slot></button>
 </template>
 
 <script>
@@ -19,8 +19,8 @@
 
 <style>
 	.text-btn {
-		border: 0upx;
-		margin: 0upx 10upx;
-		padding: 0upx;
+		border: 2upx;
+		margin: 0px 10upx;
+		padding: 0px;
 	}
 </style>
