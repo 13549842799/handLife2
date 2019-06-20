@@ -6,6 +6,7 @@ import {
 	$get,
 	$post,
 	$delete,
+	$getLoading,
 	$postLoading,
 	$deleteLoading
 } from './../../http.js'
@@ -20,7 +21,7 @@ export default {
 			url: classifyUrl + '/list.re',
 			data: params
 		}
-		return $get(p)
+		return $getLoading(p)
 	},
 	/**
 	 * 添加分类

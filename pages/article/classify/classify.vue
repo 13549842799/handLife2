@@ -28,8 +28,8 @@
 		</view>
 		<view class="content-classify-conent">
 			<view class="content-classify-conent-list">
-				<!-- <common-item :obj="l" v-for="l in list[current - 1]" :key="l.id" :mapper="mapper" style="width: 100%"></common-item> -->
-				<list-item v-for="l in list[current - 1]" v-bind:key="l.id">
+				<!-- 此处不能直接使用二维数组，需要使用计算属性直接获取对应的数组 -->
+				<list-item v-for="(l, index) in currentList" v-bind:key="index">
 					<view class="content-classify-conent-list-item" @longpress.stop="deleteClassify(l)">
 						<text>{{l.name}}</text>
 						<view class="classify-icon-view" @tap="editClassify(l)">
@@ -173,6 +173,9 @@
 			},
 			novelSelect () {
 				return this.current === 4
+			},
+			currentList () {
+				return this.list[this.current - 1]
 			}
 		}
 	}

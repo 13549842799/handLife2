@@ -44,6 +44,10 @@
 			image: {
 				type: String,
 				required: false
+			},
+			obj: {
+				type: Object,
+				default: () => { return {} }
 			}
 		},
 		data() {

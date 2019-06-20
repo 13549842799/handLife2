@@ -5,6 +5,7 @@ import {
 import {
 	$get,
 	$post,
+	$getLoading,
 	$deleteLoading,
 	$postLoading
 } from './../../http.js'
@@ -19,7 +20,7 @@ export default {
 			url: labelUrl + '/list.re',
 			data: params
 		}
-		return $get(p)
+		return $getLoading(p)
 	},
 	/**
 	 * 添加标签

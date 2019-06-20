@@ -76,6 +76,11 @@ export const $postLoading = function (obj) {
 	return $Loading(obj)
 }
 
+export const $getLoading = function (obj) {
+	obj.type = 'GET'
+	return $Loading(obj)
+}
+
 export const $deleteLoading = function (obj) {
 	obj.type = 'DELETE'
 	return $Loading(obj)

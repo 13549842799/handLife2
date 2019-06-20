@@ -107,7 +107,7 @@
   }
   
   .placeholder-input {
-	  font-size: 20upx;
+	  font-size: 30upx;
 	  color: #E0E0E0;
   }
 </style>

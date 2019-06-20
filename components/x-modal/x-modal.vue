@@ -26,7 +26,7 @@
 					:style="{color: confirmColor}"
 					@click="confirm"
 				>
-					{{confirmText}}
+					<text style="width: 100%; text-align: center;">{{confirmText}}</text>
 				</view>
 			</view>
 		</view>
