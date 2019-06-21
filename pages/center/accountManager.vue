@@ -5,7 +5,7 @@
 			<view  class="account-list-item">
 				<list-item title="头像"  type="img" :image="avatar" :onTap="changeAvatar"></list-item>
 				<list-item title="用户名" :val="accountName" :sign="false"></list-item>
-				<list-item title="昵称" :val="nikename" :onTap="showNikeNameEdit"></list-item>
+				<list-item title="昵称" :val="nikename" @MyTap="showNikeNameEdit"></list-item>
 			</view>
 			<!-- 职员相关 -->
 			<view class="account-list-item">
@@ -18,12 +18,11 @@
 			</view>
 			<!-- 安全设置 -->
 			<view class="account-list-item">
-				<list-item title="昵称" :val="nikename" :onTap="showNikeNameEdit"></list-item>
 				<list-item title="密码" ></list-item>
 				<list-item title="手机绑定" :val="encryptionPhone"></list-item>
 			</view>
 		</view>
-		<dialog-view ref="dialog" title="请输入昵称" smallTitle="起个好听的名字,让它更加容易被记住!" :submit="submitNikeName"></dialog-view>
+		<dialog-view ref="dialog"></dialog-view>
 	</view>
 </template>
 
@@ -72,22 +71,25 @@
 			...mapMutations(['alterCache']),
 			showNikeNameEdit () {
 				console.log('编辑昵称')
-				this.$refs.dialog.open()
-			},
-			submitNikeName (name) {
 				let v = this
-				centerApi.editNikeName(name).then(res => {
-					let map = new Map()
-					map.set('nikename', name)
-					v.alterCache(map)
-					//修改缓存信息
-				}).catch(err => {
-					console.log(err)
-					uni.showModal({
-						title: '更改失败',
-						content: err.data.message,
-						showCancel: false
-					})
+				this.$refs.dialog.show({
+					title: '请输入昵称',
+					smallTitle: '起个好听的名字,让它更加容易被记住!',
+					submit: (name) => {
+						centerApi.editNikeName(name).then(res => {
+							let map = new Map()
+							map.set('nikename', name)
+							v.alterCache(map)
+							//修改缓存信息
+						}).catch(err => {
+							console.log(err)
+							uni.showModal({
+								title: '更改失败',
+								content: err.data.message,
+								showCancel: false
+							})
+						})
+					}
 				})
 			},
 			changeAvatar () {

@@ -21,7 +21,7 @@ export default {
 		 * 实际开发中，使用 uni.request 将账号信息发送至服务端，客户端在回调函数中获取结果信息。
 		 */
 		let requestParams = {
-			url: adminUrl + '/loginAsyn.do',
+			url: adminUrl + '/loginAsynFromPhone.do',
 			data: params
 		}
 		return $post(requestParams)

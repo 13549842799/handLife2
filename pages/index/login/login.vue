@@ -105,9 +105,15 @@
 		         */
 				httpApi.userLogin({userName: this.account, password: this.password, code: '100100'}).then(res => {
 					console.log('成功调用', res.session)
+					let admin = res.admin
+					res.session.avatar = admin.avatar
+					res.session.nikename = admin.nikename
+					res.session.bindPhone = admin.bindPhone
+					console.log(res.session)
 					httpApi.saveLoginMessage(res.session)
 					this.toMain(res.session)
 				}).catch(err => {
+					console.log(err)
 					uni.showToast({
 					    icon: 'none',
 					    title: '用户账号或密码不正确',

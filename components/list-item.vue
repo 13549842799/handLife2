@@ -1,5 +1,5 @@
 <template>
-	<view class="list-item-ul" :hover-class="hoverClass"  :hover-stay-time="remainTime" @tap="tapEvent">
+	<view class="list-item-ul" :hover-class="hoverClass"  :hover-stay-time="remainTime" @tap="tagNewEvent">
 		<slot>
 			<text>{{title}}</text>
 			<view class="list-item-ul-right">			
@@ -53,6 +53,11 @@
 		data() {
 			return {
 				remainTime: 100
+			}
+		},
+		methods: {
+			tagNewEvent () {
+				this.$emit('MyTap')
 			}
 		},
 		computed: {

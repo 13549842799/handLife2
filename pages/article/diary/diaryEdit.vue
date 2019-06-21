@@ -60,8 +60,8 @@
 				<menu-item :title="typeName" :menuAble="false" :tapEvent="true" @MyClick="alterSaveType"></menu-item>
 			</buttom-menu>
 		</view>
-		<inputDlog ref="classifyDlog" title="请输入分类名" :submit="addClassify"></inputDlog>
-		<inputDlog ref="labelDlog" title="请输入标签名" :submit="addLabel"></inputDlog>
+		<inputDlog ref="classifyDlog"></inputDlog>
+		<inputDlog ref="labelDlog"></inputDlog>
 	</view>
 </template>
 
@@ -197,28 +197,27 @@
 				this.$refs.titleDiv.closeMenu()
 			},
 			/**
-			 * 打开添加分类的弹窗
+			 * 打开添加分类的弹窗,添加日记分类
 			 */
 			openClassifyDiog () {
-				this.$refs.classifyDlog.open()
-			},
-			/**
-			 * 添加日记分类
-			 * @param {Object} name
-			 */
-			addClassify (name) {
 				let v = this
-				classifyApi.addClassify( {name: name, childType: 1} ).then(res => {
-					v.classify.push(res)
-					v.diary.classify = res.id
-					uni.showToast({
-						title: '创建成功'
-					})
-				}).catch(err => {
-					uni.showToast({
-						title: err.message,
-						icon: "none"
-					})
+				this.$refs.classifyDlog.show({
+					title: '请输入分类名',
+					placeholder: '分类名不能超过7个字',
+					submit: (name) => {
+						classifyApi.addClassify( {name: name, childType: 1} ).then(res => {
+							v.classify.push(res)
+							v.diary.classify = res.id
+							uni.showToast({
+								title: '创建成功'
+							})
+						}).catch(err => {
+							uni.showToast({
+								title: err.message,
+								icon: "none"
+							})
+						})
+					}
 				})
 			},
 			/**
@@ -240,29 +239,31 @@
 				this.diary.status = this.diary.status === 2 ? 0 : this.diary.status + 1
 			},
 			/**
-			 * 打开标签创建输入框
-			 */
-			openLabelDlog () {
-				this.$refs.labelDlog.open()
-			},
-			/**
-			 * 添加标签
+			 * 打开标签创建输入框,添加标签
 			 * @param {Object} name
 			 */
-			addLabel (name) {
+			openLabelDlog () {
 				let v = this
-				labelApi.addLabel({name: name}).then(res => {
-					res.id = res.id.toString()
-					res.check  = true
-					v.labels.push(res)
-					uni.showToast({
-						title: '创建成功'
-					})
-				}).catch(err => {
-					uni.showToast({
-						title: err.message,
-						icon: "none"
-					})
+				this.$refs.labelDlog.show({
+					title: '请输入标签名',
+					submit: (name) => {
+						labelApi.addLabel({name: name}).then(res => {
+						    console.log(v.diary)
+							 console.log(res)
+							res.id = res.id.toString()
+							res.check  = true
+							v.labels.push(res)
+							uni.showToast({
+								title: '创建成功'
+							})
+						}).catch(err => {
+							console.log(err)
+							uni.showToast({
+								title: err.message,
+								icon: "none"
+							})
+						})
+					}
 				})
 			},
 			/**
