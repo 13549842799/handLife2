@@ -12,6 +12,7 @@ export class MyPage {
 		} else {
 		  this.pageSize = 15
 		}
+		this.currentCount = 0;
 		this.total = 1 // 总条数
 		this.list = []
 		this.params = {}
@@ -20,28 +21,50 @@ export class MyPage {
 		  value: [null],
 		  key: []
 		}
-		this.search = searchFunction
+		this.search = searchFunction  //查询列表的api请求
 		this.requestLine({})
     }
 	requestLine = requestLine
 	deleteLine = deleteLine
+	getNextLine = requestNextLine
+}
+
+/**
+ * 获取下一页
+ */
+function requestNextLine ({filter, params, reflush = true, type = true, validMax = true}) {
+	//validMax: 校验是否已经是最新一页了	
+	let pn = this.pageNum + 1
+	if (validMax && pn > this.pages) {
+		console.log('已经是最新一页了')
+		return
+	}
+	this.requestLine({filter, params, pn, reflush, type})
 }
 
 /**
  * 发送请求
  */
-function requestLine ({filter, params, pageNum = 1, config}) {
+function requestLine ({filter, params, pageNum = 1, reflush = true, type = true}) {
 		let f = createFilter(this.filter, filter)
 		this.pageNum = pageNum
-		let newParams = this.params
+		let newParams = params !== null && params != undefined ? params : this.params
 		newParams.pageNum = this.pageNum
 		newParams.pageSize = this.pageSize
-		if (params) {
-			newParams = params
+		let config = null
+		if (reflush) {
+			uni.startPullDownRefresh({})
+			config = {complete: () => { uni.stopPullDownRefresh() } }
 		}
 		newParams = objUtil.newfilterObject(newParams, f.key, f.value)
-		this.search(newParams).then(res => {
-			this.list = this.list.concat(res.list)
+		this.search(newParams, config).then(res => {
+			if (type) {
+				this.list = this.list.concat(res.list)
+				this.currentCount += res.list.length
+			} else {
+				this.list = res.list
+				this.currentCount = res.list.length
+			}		
 			this.total = res.total
 			this.pages = res.pages
 		}).catch(err => {

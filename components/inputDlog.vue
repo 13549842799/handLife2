@@ -70,6 +70,7 @@
 			 * @param {Object} p <title, smallTitle, submit>
 			 */
 			show (p) {
+				this.viewData = null
 				this.open()
 				if (p) {
 					this.param = p,

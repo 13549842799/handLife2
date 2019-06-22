@@ -19,6 +19,12 @@
 </template>
 
 <script>
+	
+	import {
+	    mapState,
+	    mapMutations
+	} from 'vuex'
+	
 	import diaryApi from '../../../api/article/diary.js'
 	
 	import {MyPage} from '../../../common/pageUtil.js'
@@ -42,6 +48,11 @@
 				page: {}
 			}
 		},
+		computed: {
+			...mapState({
+				status: state => state.diary.status
+			})
+		},
 		methods: {
 			/**
 			 * 跳转到新建日记的页面
@@ -62,23 +73,17 @@
 						}
 						diaryApi.deleteOwnerDiary(id).then(res => {
 							v.page.deleteLine('id', id)
-							uni.showToast({
-								title: '删除成功',
-								duration: 2000
-							})
+							uni.showToast({title: '删除成功', icon: "none", duration: 2000})
 						}).catch(err => {
 							console.log(err)
 						})
 					},
-					fail() {
-						console.log('页面交互失败')
-					}
+					fail() { console.log('页面交互失败') }
 				})
 			},
 			goToEditPage (id, title) {
-				uni.navigateTo({
-					url: 'diaryEdit?id=' + id + '&title=' + title
-				})
+				this.status = 1
+				uni.navigateTo({ url: 'diaryEdit?id=' + id + '&title=' + title })
 			},
 			/**
 			 * 查看日记
@@ -91,6 +96,18 @@
 			let v = this
 			v.page = new MyPage({searchFunction: diaryApi.getDiaryList})
             console.log('page:', v.page)
+		},
+		onShow (e) {
+			if (this.status === 1) {
+				this.page.requestLine({type: false})
+			}
+		},
+		/* onPullDownRefresh (e) { //下拉刷新
+			console.log(JSON.stringify(e))
+		}, */
+		onReachBottom (e) { //上拉触底事件监听
+			console.log('onReach:', JSON.stringify(e))
+			this.page.getNextLine({})
 		}
 	}
 </script>

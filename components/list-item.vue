@@ -4,7 +4,7 @@
 			<text>{{title}}</text>
 			<view class="list-item-ul-right">			
 				<text v-if="sign" class="item-text">&#xe65e;</text>
-				<text class="left-text" v-if="isText">{{val}}</text>
+				<text class="left-text" v-if="showValue">{{val}}</text>
 				<image class="avatar-style" :src="image" v-else></image>
 			</view>
 		</slot>
@@ -70,8 +70,8 @@
 			hoverClass () {
 				return this.onTapEvent && this.onTapStyle ? "tap-style" : "none"
 			},
-			isText () {
-				return this.type === 'text'
+			showValue () {
+				return this.type === 'text' && this.val !== null && this.val !== undefined
 			}
 		}
 	}
@@ -80,6 +80,13 @@
 <style>
 	view {
 		display: flex;
+	}
+	
+	@font-face {
+		font-family: texticons;
+		font-weight: normal;
+		font-style: normal;
+		src: url('https://at.alicdn.com/t/font_984210_5cs13ndgqsn.ttf') format('truetype');
 	}
 	
 	.list-item-ul {

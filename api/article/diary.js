@@ -21,10 +21,11 @@ export default {
 	 * 获取分页的带查询的日记列表
 	 * @param {Object} params
 	 */
-	getDiaryList (params) {
+	getDiaryList (params, config) {
 		let p = {
 			url: diaryUrl + '/list.re',
-			data: params
+			data: params,
+			config: config
 		}
 		return $get(p)
 	},

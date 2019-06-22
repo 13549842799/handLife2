@@ -27,9 +27,9 @@
 				this.login(lk);
 				console.log('存在缓存记录')
 				let time = lk.availableDate
+				console.log('超时时间：', time)
 				console.log("time:" + time)
 				if ((new Date()).getTime() < time) {
-					console.log('没有超时')
 					return
 				}
 				console.log('刷新超时时间')

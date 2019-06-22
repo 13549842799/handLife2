@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import login from './modules/article/finalReport'
 import center from './modules/center'
+import diary from './modules/article/diary.js'
 import dataUtil from './../common/dataUtil.js'
 
 Vue.use(Vuex)
@@ -52,7 +53,8 @@ const store = new Vuex.Store({
 	},
 	modules: {
 		login,
-		center
+		center,
+		diary
 	}
 })
 

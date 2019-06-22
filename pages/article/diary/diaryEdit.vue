@@ -17,9 +17,14 @@
 			</view>
 		</view>
 		<view class="diary-edit-content-body">
-			<textarea class="diary-edit-content-body-text" v-model="diary.content" placeholder="请输入内容" placeholder-style="color: #E0E0E0;" maxlength="-1"></textarea>
+			<textarea class="diary-edit-content-body-text" 
+			          v-model="diary.content" 
+					  placeholder="请输入内容" 
+					  placeholder-style="color: #E0E0E0;" 
+					  maxlength="-1"
+			></textarea>
 		</view>
-		<view class="diary-edit-foot">
+		<view class="diary-edit-foot" v-show="footVisable">
             <buttom-menu>
 				<template v-slot:top>
 					<view style="width: 100%; height: 100%;flex-direction: column-reverse;">
@@ -66,6 +71,11 @@
 </template>
 
 <script>
+	import {
+	    mapState,
+	    mapMutations
+	} from 'vuex'
+	
 	import diaryApi from '../../../api/article/diary.js'
 	
 	import classifyApi from '../../../api/article/classify.js'
@@ -108,7 +118,8 @@
 				classify: [],
 				labels: [],
 				titleInput: false,
-				src: 'http://localhost:8085/?token=' + userToken.token + '&user=' + userToken.user // 暂时无用
+				footVisable: true,
+				window: uni.getSystemInfoSync()
 			}
 		},
 		onLoad (option) {
@@ -145,24 +156,24 @@
 	            // 初始化已选标签
 				//2.1 根据日记自己的所选标签通过id匹配总的标签确定是否已被选中，根据是否被选中添加check的值， 选中 true， 没有 false
 				v.labels.map((label, index) => {
-					label.check = v.diary.labelList.some(l => {
-						return l.id.toString() === label.id
-					})
+					label.check = v.diary.labelList.some(l => { return l.id.toString() === label.id })
 				})
-				console.log(v.labels)
 			}).catch(err => { console.log(err) })
+		},
+		/**
+		 * 屏幕尺寸监听事件
+		 * @param {Object} e
+		 */
+		onResize (e) { 
+			this.footVisable = !(e.size.windowWidth === this.window.windowWidth && e.size.windowHeight < this.window.windowHeight)
 		},
 		/**
 		 * 导航栏按钮响应事件 (保存日记)
 		 */
 		onNavigationBarButtonTap () {
-			console.log("点击了保存")
 			let v = this
 			if (v.diary.title.trim() === '') {
-				uni.showToast({
-					title: '标题不能为空',
-					icon: "none"
-				})
+				uni.showToast({ title: '标题不能为空', icon: "none" })
 				return
 			}
 			//获取选中的标签的id组字符串
@@ -176,18 +187,17 @@
 			diaryApi.saveDiary(v.diary).then(res => {
 				if (v.diary.id === null) {
 					v.diary.id = res.id
+					v.alterListStatus(1) //修改日记模块状态 方便返回列表的时候刷新，否则日记列表页面不会显示新创建的日记
 				}
-				uni.showToast({
-					title: '保存成功'
-				})
+				uni.showToast({ title: '保存成功' })
 			}).catch(err => {
-				uni.showToast({
-					title: err.message,
-					icon: 'none'
-				})
+				uni.showToast({ title: err.message, icon: 'none' })
 			})
 		},
 		methods: {
+			 ...mapMutations({
+				 'alterListStatus': 'diary/alterStatus'
+			 }),
 			/**
 			 * 选择日记的分类
 			 * @param {Object} id
@@ -200,6 +210,7 @@
 			 * 打开添加分类的弹窗,添加日记分类
 			 */
 			openClassifyDiog () {
+				console.log('open')
 				let v = this
 				this.$refs.classifyDlog.show({
 					title: '请输入分类名',
@@ -235,7 +246,6 @@
 			 * 通过点击修改保存的类型
 			 */
 			alterSaveType () {
-				console.log(this.diary)
 				this.diary.status = this.diary.status === 2 ? 0 : this.diary.status + 1
 			},
 			/**
@@ -248,20 +258,13 @@
 					title: '请输入标签名',
 					submit: (name) => {
 						labelApi.addLabel({name: name}).then(res => {
-						    console.log(v.diary)
-							 console.log(res)
 							res.id = res.id.toString()
 							res.check  = true
 							v.labels.push(res)
-							uni.showToast({
-								title: '创建成功'
-							})
+							uni.showToast({ title: '创建成功' })
 						}).catch(err => {
 							console.log(err)
-							uni.showToast({
-								title: err.message,
-								icon: "none"
-							})
+							uni.showToast({ title: err.message, icon: "none" })
 						})
 					}
 				})
@@ -304,7 +307,7 @@
 	
 	.diary-edit-content {
 		flex-direction: column;
-		width: 750upx;
+		width: 100%;
 	}
 	
 	.diary-edit-content-title {
@@ -343,14 +346,15 @@
 	
 	.diary-edit-content-body-text {
 		width: 690upx;
-		height: 650upx;
+		height: 800upx;
+		background-color: #FFFFFF;
 	}
 	
 	.diary-edit-foot {
-		position: absolute;
+		position:position;
 		bottom: 0upx;
 		height: 150upx;
-		width: 750upx;
+		width: 100%;
 		flex-direction: column;
 	}
 	

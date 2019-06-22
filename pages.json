@@ -27,7 +27,8 @@
 		{
 			"path": "pages/article/diary/diary",
 			"style": {
-				"navigationBarTitleText": "个人日记"
+				"navigationBarTitleText": "个人日记",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
