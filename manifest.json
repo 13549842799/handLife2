@@ -2,8 +2,8 @@
     "name" : "掌上人生2",
     "appid" : "__UNI__94C2DC1",
     "description" : "个人生活管理app",
-    "versionName" : "1.0.0",
-    "versionCode" : "100",
+    "versionName" : "1.0.2",
+    "versionCode" : 102,
     "transformPx" : false,
     "app-plus" : {
         /* 5+App特有相关 */
