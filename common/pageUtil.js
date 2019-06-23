@@ -44,6 +44,11 @@ function requestNextLine ({filter, params, reflush = true, type = true, validMax
 
 /**
  * 发送请求
+ * filter
+ * params:
+ * pageNum:
+ * reflush
+ * type: 是否追加列表  
  */
 function requestLine ({filter, params, pageNum = 1, reflush = true, type = true}) {
 		let f = createFilter(this.filter, filter)

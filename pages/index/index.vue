@@ -20,6 +20,7 @@
 		},
 		computed: mapState(['forcedLogin', 'hasLogin', 'nikeName']),
 		onLoad() {
+			console.log('版本：', plus.runtime.version)
 			const res = uni.getSystemInfoSync()
 			console.log(res)
 			let lk = loginApi.getLoginMessage() //同步获取缓存返回值是字符串

@@ -123,6 +123,10 @@
 			}
 		},
 		onLoad (option) {
+			// #ifdef APP-PLUS
+			// 锁定屏幕方向
+			plus.screen.lockOrientation('portrait-primary'); //锁定
+			// #endif
 			let id = option.id
 			let v = this
 			//1.加载分类列表

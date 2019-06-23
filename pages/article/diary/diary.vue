@@ -95,9 +95,10 @@
 		onLoad() {
 			let v = this
 			v.page = new MyPage({searchFunction: diaryApi.getDiaryList})
-            console.log('page:', v.page)
+            console.log('onload')
 		},
 		onShow (e) {
+			console.log('onshow_diary')
 			if (this.status === 1) {
 				this.page.requestLine({type: false})
 			}
@@ -105,8 +106,7 @@
 		/* onPullDownRefresh (e) { //下拉刷新
 			console.log(JSON.stringify(e))
 		}, */
-		onReachBottom (e) { //上拉触底事件监听
-			console.log('onReach:', JSON.stringify(e))
+		onReachBottom () { //上拉触底事件监听
 			this.page.getNextLine({})
 		}
 	}

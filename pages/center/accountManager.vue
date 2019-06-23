@@ -3,7 +3,7 @@
 		<view class="account-list">
 			<!-- 个人信息 -->
 			<view  class="account-list-item">
-				<list-item title="头像"  type="img" :image="avatar" :onTap="changeAvatar"></list-item>
+				<list-item title="头像"  type="img" :image="avatar" @MyTap="changeAvatar"></list-item>
 				<list-item title="用户名" :val="accountName" :sign="false"></list-item>
 				<list-item title="昵称" :val="nikename" @MyTap="showNikeNameEdit"></list-item>
 			</view>
@@ -97,9 +97,20 @@
 				uni.chooseImage({
 					count: 6, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['camera'], //从相册选择 
+					sourceType: ['album'], //从相册选择 
 					success: function (res) {
 						console.log(JSON.stringify(res.tempFilePaths));
+						uni.uploadFile({
+							url: 'https://www.example.com/upload', //仅为示例，非真实的接口地址
+							filePath: tempFilePaths[0],
+							name: 'file',
+							formData: {
+								'user': 'test'
+							},
+							success: (uploadFileRes) => {
+								console.log(uploadFileRes.data);
+							}
+						});
 					}
 				});
 			}

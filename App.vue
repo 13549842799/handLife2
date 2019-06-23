@@ -2,6 +2,54 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			// #ifdef APP-PLUS
+			// 锁定屏幕方向
+			plus.screen.lockOrientation('portrait-primary'); //锁定
+			// 检测升级
+			uni.request({
+				url: 'http://www.caiyangzhi.com/O.OBusinessPlan/api/system/appVersion/version.re', //检查更新的服务器地址
+				/* data: {
+					appid: plus.runtime.appid,
+					version: plus.runtime.version,
+					imei: plus.device.imei
+				} */
+				fail(res) {
+					console.log('获取升级信息:', JSON.stringify(res))
+				},
+				success: (res) => {
+					console.log('success', res)
+					if (res.statusCode !== 200 || res.data.status !== 200 ) {
+						return
+					}
+					let verNo = null
+					if (plus.runtime.versio !== res.data.data.versionNo) {
+						// 提醒用户更新
+						uni.showModal({
+							title: '更新提示',
+							content: '检测有新版本,是否选择更新',
+							success: (showResult) => {
+								if (showResult.confirm) {
+									plus.runtime.openURL(res.data.data.path);
+								}
+							}
+						})
+					}
+					/* if (res.statusCode == 200 && res.data.isUpdate) {
+						let openUrl = plus.os.name === 'iOS' ? res.data.iOS : res.data.Android;
+						// 提醒用户更新
+						uni.showModal({
+							title: '更新提示',
+							content: res.data.note ? res.data.note : '是否选择更新',
+							success: (showResult) => {
+								if (showResult.confirm) {
+									plus.runtime.openURL(openUrl);
+								}
+							}
+						})
+					} */
+				}
+			})
+			// #endif
 		},
 		onShow: function() {
 			console.log('App Show')
