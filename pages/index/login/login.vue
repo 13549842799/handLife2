@@ -116,7 +116,7 @@
 					console.log(err)
 					uni.showToast({
 					    icon: 'none',
-					    title: '用户账号或密码不正确',
+					    title: err.message
 					})
 				})
 		    },

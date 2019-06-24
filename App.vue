@@ -18,11 +18,11 @@
 				},
 				success: (res) => {
 					console.log('success', res)
-					if (res.statusCode !== 200 || res.data.status !== 200 ) {
+					if (res.statusCode !== 200 || res.data.status !== 200 || res.data.data === null) {
 						return
 					}
 					let verNo = null
-					if (plus.runtime.versio !== res.data.data.versionNo) {
+					if (plus.runtime.version !== res.data.data.versionNo) {
 						// 提醒用户更新
 						uni.showModal({
 							title: '更新提示',
