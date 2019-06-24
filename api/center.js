@@ -23,6 +23,9 @@ export default {
 		}
 		return $get(params)
 	},
+	avatarAlterUrl () {
+		return adminUrl + '/alterAvatar.do'
+	},
 	/**
 	 * 获取职员相关信息
 	 * @param {int} type = 0 | 1

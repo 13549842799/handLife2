@@ -33,6 +33,8 @@
 		mapGetters
 	} from 'vuex'
 	
+	import httpUtil from '../../http.js'
+	
 	import loginApi from '../../api/login.js'
 	import centerApi from '../../api/center.js'
 	import dataUtil from '../../common/dataUtil.js'
@@ -97,15 +99,21 @@
 				uni.chooseImage({
 					count: 6, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['album'], //从相册选择 
+					sourceType: ['camera'], //从相册选择 
 					success: function (res) {
+						
+						let obj = uni.getStorageSync('loginState');
+						let tempFilePaths = res.tempFilePaths
 						console.log(JSON.stringify(res.tempFilePaths));
 						uni.uploadFile({
-							url: 'https://www.example.com/upload', //仅为示例，非真实的接口地址
+							url: centerApi.avatarAlterUrl(), 
 							filePath: tempFilePaths[0],
-							name: 'file',
+							name: 'img',
+							header: {
+								'X-user': obj.name,
+								'X-token': obj.token
+							},
 							formData: {
-								'user': 'test'
 							},
 							success: (uploadFileRes) => {
 								console.log(uploadFileRes.data);
