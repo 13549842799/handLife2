@@ -141,4 +141,39 @@ export const $AjaxPromise = function (url, params, type, dataType, config) {
   })
 }
 
+/**
+ * @param {String} url 上传的请求地址
+ * @param {String} fileName 上传的文件的name属性
+ * @param {String} filePath 上传的文件在本地的临时路径
+ * @param {Object} data 格外的参数  
+ */
+export const $upload = function ({url, fileName, filePath, data}) {
+	if (!headers) {
+	  let obj = uni.getStorageSync(loginKey)
+	  headers = {
+		'X-user': obj.name,
+	    'X-token': obj.token
+	  }
+	}
+	return new Promise(function (resolve, reject) {
+		uni.uploadFile({
+            url: url, 
+            filePath: filePath,
+            name: fileName,
+            formData: data,
+			header: headers,
+            success: (uploadFileRes) => {
+				let status = uploadFileRes.statusCode
+				switch (status) {
+					case 200:
+					    resolve(JSON.parse(uploadFileRes.data))
+					    break;
+					default:
+					    reject(uploadFileRes)
+				}
+            }
+        });
+	})
+}
+
 

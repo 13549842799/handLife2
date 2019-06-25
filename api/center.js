@@ -5,7 +5,8 @@ import {
 
 import {
 	$get,
-	$post
+	$post,
+	$upload
 } from './../http.js'
 
 export default {
@@ -23,8 +24,19 @@ export default {
 		}
 		return $get(params)
 	},
-	avatarAlterUrl () {
-		return adminUrl + '/alterAvatar.do'
+	/**
+	 * 修改头像
+	 * @param {Object} fileName 文件的name属性
+	 * @param {Object} filePath 文件的本地路基
+	 * @param {Object} data  本次请求的额外参数
+	 */
+	avatarAlter (fileName, filePath, data) {
+		return $upload({
+			url: adminUrl + '/alterAvatar.do',
+			fileName: fileName,
+			filePath: filePath,
+			data: data
+		})
 	},
 	/**
 	 * 获取职员相关信息
@@ -44,5 +56,6 @@ export default {
 	editNikeName (nikeName) {
 		return $post({url: adminUrl + '/alterNikeName.do', data: {nikename: nikeName}})
 	}
+	
 	
 }

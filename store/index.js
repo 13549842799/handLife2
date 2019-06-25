@@ -26,6 +26,7 @@ const store = new Vuex.Store({
 			state.avatar = session.avatar || state.avatar
 			state.bindPhone = session.bindPhone
             state.hasLogin = true;
+			console.log('登录后...')
         },
         logout(state) {
             state.nikename = '';

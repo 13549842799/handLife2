@@ -14,3 +14,5 @@ export const reportUrl = baseUrl + '/api/article/finalresport'
 
 export const loginUrl = 'http://localhost:8082/oobusinessplan/#/login'
 // const loginUrl = 'http://localhost:8080/oobusinessplan/#/login'
+
+export const fileUrl = 'http://www.caiyangzhi.com/OOBusinessPlanFile'

@@ -33,11 +33,14 @@
 		mapGetters
 	} from 'vuex'
 	
-	import httpUtil from '../../http.js'
+	import {fileUrl} from '../../base_variable.js'
+	
+	import {loginKey} from '../../http.js'
+	import dataUtil from '../../common/dataUtil.js'
+	import fileUtil from '../../common/fileUtil.js'
 	
 	import loginApi from '../../api/login.js'
 	import centerApi from '../../api/center.js'
-	import dataUtil from '../../common/dataUtil.js'
 
     import listItem from '../../components/list-item.vue'
     import dialogView from '../../components/inputDlog.vue'
@@ -61,7 +64,7 @@
 			}
 		},
 		onLoad () {
-			console.log('进入accountmanager')
+			console.log('avatar:',this.avatar)
 			let v = this
 			centerApi.employeeInfo().then(res => {
 				v.employee = res			
@@ -94,31 +97,36 @@
 					}
 				})
 			},
+			/**
+			 * 修改头像
+			 */
 			changeAvatar () {
-				console.log('修改头像')
+				let v = this
 				uni.chooseImage({
 					count: 6, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['camera'], //从相册选择 
+					//sourceType: ['camera'], //从相册选择 
 					success: function (res) {
-						
-						let obj = uni.getStorageSync('loginState');
-						let tempFilePaths = res.tempFilePaths
-						console.log(JSON.stringify(res.tempFilePaths));
-						uni.uploadFile({
-							url: centerApi.avatarAlterUrl(), 
-							filePath: tempFilePaths[0],
-							name: 'img',
-							header: {
-								'X-user': obj.name,
-								'X-token': obj.token
-							},
-							formData: {
-							},
-							success: (uploadFileRes) => {
-								console.log(uploadFileRes.data);
+						let tempFilePath = res.tempFilePaths[0]
+						fileUtil.imageInfo(tempFilePath).then(image => {
+							if (image.width > 120 || image.height > 120) {
+								uni.showToast({ title: '图片大小超过规定 (120px*120px)', icon: "none" })
+								return
 							}
-						});
+							return centerApi.avatarAlter('img', tempFilePath)
+						}).then(res => {
+							switch (res.status) {
+								case 200:
+								    let map = new Map()
+									map.set('avatar', fileUrl + res.data)
+									v.alterCache(map)
+								    break
+								default: 
+								    console.log('other', typeof res)
+								    uni.showToast({ title: res.message, icon: "none" })
+							}
+							console.log(res);
+						}).catch(err => { console.log(err) })
 					}
 				});
 			}
