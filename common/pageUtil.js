@@ -44,10 +44,10 @@ function requestNextLine ({filter, params, reflush = true, type = true, validMax
 
 /**
  * 发送请求
- * filter
- * params:
- * pageNum:
- * reflush
+ * filter:  对参数的过滤
+ * params:  查询携带的参数
+ * pageNum: 查询的页码
+ * reflush: 是否开启刷新动画
  * type: 是否追加列表  
  */
 function requestLine ({filter, params, pageNum = 1, reflush = true, type = true}) {

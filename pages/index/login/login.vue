@@ -31,6 +31,9 @@
 	    mapState,
 	    mapMutations
 	} from 'vuex'
+	
+	import {fileUrl} from '../../../base_variable.js'
+	
 	import mInput from '../../../components/m-input.vue'
 	import httpApi from '../../../api/login.js'
 	
@@ -106,7 +109,7 @@
 				httpApi.userLogin({userName: this.account, password: this.password, code: '100100'}).then(res => {
 					console.log('成功调用', res.session)
 					let admin = res.admin
-					res.session.avatar = admin.avatar
+					res.session.avatar = fileUrl + admin.avatar
 					res.session.nikename = admin.nikename
 					res.session.bindPhone = admin.bindPhone
 					console.log(res.session)

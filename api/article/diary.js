@@ -42,5 +42,12 @@ export default {
 	 */
 	saveDiary(params) {
 		return $postLoading({url: diaryUrl + '/addOrUpdate.do', data: params})
+	},
+	/**
+	 * 根据参数查询标题列表
+	 * @param {Object} title
+	 */
+	searchTitle(title) {
+		return $get({url: diaryUrl + '', data:{title: title}})
 	}
 }
