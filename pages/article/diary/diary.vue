@@ -1,24 +1,31 @@
 <template>
 	<view class="diary-content">
-		<!-- <view class="search-bar">
-			<view><text>分类</text></view>
-			<text style="color: #F8F8F8;">|</text>
-			<view><text>搜索</text></view>
-			<text style="color: #F8F8F8;">|</text>
-			<view @tap="goToNewDiaryPage"><text>新建</text></view>
-		</view> -->
 		<view class="diary-content-head">
 			<view class="diary-content-head-titleSearch">
+				<view style="margin: auto 0;width: 100upx;"></view>
 				<view class="diary-content-head-titleSearch-view">
                      <view class="diary-content-head-titleSearch-view-icon">
-						 
+						 <!--  #ifdef  APP-PLUS -->
+						     <icon type="search" size="20"/>
+						 <!--  #endif -->
 					 </view>
 					<view class="diary-content-head-titleSearch-view-input">
-						<input type="text" v-model="page.params.title" placeholder="请输入标题搜索日记" 
+						<input type="text" placeholder="请输入标题搜索日记" 
 							class="diary-content-head-titleSearch-input"
-							placeholder-class="diary-content-head-titleSearch-placeholder" @input="searchTitle"/>
+							v-model="titleText"
+							placeholder-class="diary-content-head-titleSearch-placeholder" @input="searchTitle" @focus="visible = true"/>
 					</view>
-					<view class="input-search-dlog"></view>
+					<view style="width: 50upx;" @tap="clearSearchText">
+						<!--  #ifdef  APP-PLUS -->
+						    <icon type="clear" size="20"/>
+						<!--  #endif -->
+					</view>
+					<view class="input-search-dlog" v-show="visible">
+						<list-item v-for="o in searchTitles" :title="o.title" :key="o.id" @MyTap="searchDiary(o.id)" :sign="false"></list-item>
+					</view>
+				</view>
+				<view style="width: 120upx;margin: auto 0;hight: 100%;">
+					<text style="font-size: 30upx;height:50upx;line-height: 50upx;">搜索</text>
 				</view>
 			</view>
 		</view>
@@ -29,7 +36,7 @@
 				<my-button @MyClick="deleteDiaryEvent(l.id, l.title)">删除</my-button>			
 			</common-item>
 		</view>
-		<image @tap="goToNewDiaryPage" class="diary_add_icon" src="../../../static/icon/article/add.png"></image>
+		<image v-show="footVisable" @tap="goToNewDiaryPage" class="diary_add_icon" src="../../../static/icon/article/add.png"></image>
 	</view>
 </template>
 
@@ -50,17 +57,23 @@
 	
 	import commonItem from '../../../components/list/common-list-item'
 	
+	import listItem from '../../../components/list-item'
+	
 	
 	export default {
 		components: {
 			commonButton,
 			commonItem,
-			MyButton
+			MyButton,
+			listItem
 		},
 		data() {
 			return {
 				page: {},
-				searchTitles: []
+				titleText: '',
+				searchTitles: [],
+				visible: false,
+				footVisable: true,
 			}
 		},
 		computed: {
@@ -104,24 +117,46 @@
 			 * 查看日记
 			 */
 			readdiary (diary) {
-				console.log('查看日记')
 			},
-			searchTitle () {
+			searchTitle (e) {
 				let v = this
-				if (!v.page.params.title) {
+				let val = e.target.value
+				if (!val) {
 					v.searchTitles = []
 					return
 				}
-				diaryApi.searchTitle(v.page.params.title).then(res => {
-					
+				diaryApi.searchTitle(val).then(res => {
+					v.searchTitles = res
 				})
 				//this.page.requestLine({type: false})
+			},
+			/**
+			 * 通过点击标题列表悬浮框的对应标题，查询日记，隐藏悬浮框
+			 * @param {Object} id
+			 */
+			searchDiary(id) {
+				let v = this
+				v.page.requestLine({type: false, params: {id: id}})
+				v.visible = false
+			},
+			clearSearchText () {
+				this.titleText = ''
+				this.searchTitles = []
+				this.visible = false
 			}
  		},
 		onLoad() {
 			let v = this
+			console.log(JSON.stringify(v.$screen))
 			v.page = new MyPage({searchFunction: diaryApi.getDiaryList})
             console.log('onload')
+		},
+		/**
+		 * 屏幕尺寸监听事件
+		 * @param {Object} e
+		 */
+		onResize (e) {
+			this.footVisable = !(e.size.windowWidth === this.$screen.windowWidth && e.size.windowHeight < this.$screen.windowHeight/2)
 		},
 		onShow (e) {
 			console.log('onshow_diary')
@@ -178,12 +213,13 @@
 		height: 60upx;
 		padding-top: 20upx;
 		padding-bottom: 10upx;
+		flex-direction: row;
 	}
 	
 	.diary-content-head-titleSearch-view {
 		width: 450upx;
 		height: 50upx;
-		margin: auto auto;
+		margin: auto 50upx;
 		padding: 10upx 20upx;
 		background: rgba(255,255,0,1);
 		border-radius: 50upx;
@@ -202,20 +238,25 @@
 	.diary-content-head-titleSearch-placeholder {
 		color: #F2F2F2;
 		text-align: center;
-		font-size: 20upx;
+		font-size: 30upx;
 	}
 	
 	.diary-content-head-titleSearch-input {
 		color: #757575;
-		font-size: 20upx;
+		font-size: 30upx;
 	}
 	
 	.input-search-dlog {
 		position: absolute;
-		width: 450upx;
-		height: 50upx;
+		width: 650upx;
+		height: 300upx;
+		overflow-y: auto;
+		left: -90upx;
 		top: 75upx;
-		background: #0FAEFF;
+		border: 1px solid #CCCCCC;
+		border-radius: 10px;
+		background: #FFFFFF;
+		flex-direction: column;
 	}
 	
 	.diary-content-list {

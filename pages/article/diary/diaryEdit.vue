@@ -118,8 +118,7 @@
 				classify: [],
 				labels: [],
 				titleInput: false,
-				footVisable: true,
-				window: uni.getSystemInfoSync()
+				footVisable: true
 			}
 		},
 		onLoad (option) {
@@ -168,8 +167,8 @@
 		 * 屏幕尺寸监听事件
 		 * @param {Object} e
 		 */
-		onResize (e) { 
-			this.footVisable = !(e.size.windowWidth === this.window.windowWidth && e.size.windowHeight < this.window.windowHeight)
+		onResize (e) {
+			this.footVisable = !(e.size.windowWidth === this.$screen.windowWidth && e.size.windowHeight < this.$screen.windowHeight/2)
 		},
 		/**
 		 * 导航栏按钮响应事件 (保存日记)

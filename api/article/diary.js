@@ -48,6 +48,6 @@ export default {
 	 * @param {Object} title
 	 */
 	searchTitle(title) {
-		return $get({url: diaryUrl + '', data:{title: title}})
+		return $get({url: diaryUrl + '/searchTitle.re', data:{title: title}})
 	}
 }

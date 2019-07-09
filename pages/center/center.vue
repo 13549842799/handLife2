@@ -62,7 +62,7 @@
 			goLogin() {
 				console.log('点击重新登录')
 				if (!this.hasLogin) {
-					uni.reLaunch({url: '../index/login/login'})
+					uni.reLaunch({url: '/pages/index/login/login'})
 				}
 			}
 		}
