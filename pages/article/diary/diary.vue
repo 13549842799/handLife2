@@ -203,14 +203,16 @@
 	
 	.diary-content-head {
 		width: 100%;
-		height: 120upx;
+		height: 280upx;
 		margin-bottom: 50upx;
 		flex-direction: column;
+		background:url(../../../static/background/saber.png) no-repeat;
+		background-size: 100% 100%;
 	}
 	
 	.diary-content-head-titleSearch {
 		width: 100%;
-		height: 60upx;
+		height: 90upx;
 		padding-top: 20upx;
 		padding-bottom: 10upx;
 		flex-direction: row;
@@ -221,7 +223,7 @@
 		height: 50upx;
 		margin: auto 50upx;
 		padding: 10upx 20upx;
-		background: rgba(255,255,0,1);
+		background: rgba(0,0,0,0.3);
 		border-radius: 50upx;
 		flex-direction: row;
 		position: relative;
@@ -236,13 +238,13 @@
 	}
 	
 	.diary-content-head-titleSearch-placeholder {
-		color: #F2F2F2;
+		color: #F8F8F8;
 		text-align: center;
 		font-size: 30upx;
 	}
 	
 	.diary-content-head-titleSearch-input {
-		color: #757575;
+		color: #FFFFFF;
 		font-size: 30upx;
 	}
 	
@@ -255,7 +257,7 @@
 		top: 75upx;
 		border: 1px solid #CCCCCC;
 		border-radius: 10px;
-		background: #FFFFFF;
+		background: rgba(255,255,255,0.7);
 		flex-direction: column;
 	}
 	
