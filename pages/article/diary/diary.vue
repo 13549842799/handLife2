@@ -1,23 +1,24 @@
 <template>
 	<view class="diary-content">
-		<view class="diary-content-head">
+		<view class="diary-content-head" :style="{'background-image': img.bg1}">
 			<view class="diary-content-head-titleSearch">
 				<view style="margin: auto 0;width: 100upx;"></view>
 				<view class="diary-content-head-titleSearch-view">
                      <view class="diary-content-head-titleSearch-view-icon">
 						 <!--  #ifdef  APP-PLUS -->
-						     <icon type="search" size="20"/>
+						     <icon type="search" size="18" color="#FFFFFF" style="margin: auto auto;"/>
 						 <!--  #endif -->
 					 </view>
 					<view class="diary-content-head-titleSearch-view-input">
 						<input type="text" placeholder="请输入标题搜索日记" 
 							class="diary-content-head-titleSearch-input"
 							v-model="titleText"
+							ref="titleSearch"
 							placeholder-class="diary-content-head-titleSearch-placeholder" @input="searchTitle" @focus="visible = true"/>
 					</view>
-					<view style="width: 50upx;" @tap="clearSearchText">
+					<view style="width: 40upx;" @tap="clearSearchText">
 						<!--  #ifdef  APP-PLUS -->
-						    <icon type="clear" size="20"/>
+						    <icon type="clear" size="18" color="#FFFFFF" style="margin: auto auto;"/>
 						<!--  #endif -->
 					</view>
 					<view class="input-search-dlog" v-show="visible">
@@ -59,6 +60,11 @@
 	
 	import listItem from '../../../components/list-item'
 	
+	import {bgArray} from '../../../common/imageJs/backgroundImg.js'
+	
+	
+	var count = 0 //标题查询框触发的次数
+	var tempVal = '' //临时参数
 	
 	export default {
 		components: {
@@ -74,6 +80,9 @@
 				searchTitles: [],
 				visible: false,
 				footVisable: true,
+				img: {
+					bg1: 'url(' + bgArray[0] +')'
+				}
 			}
 		},
 		computed: {
@@ -118,7 +127,11 @@
 			 */
 			readdiary (diary) {
 			},
-			searchTitle (e) {
+			/**
+			 * 查询标题
+			 * @param {Object} e
+			 */
+			searchTitle (e) {	
 				let v = this
 				let val = e.target.value
 				if (!val) {
@@ -128,7 +141,6 @@
 				diaryApi.searchTitle(val).then(res => {
 					v.searchTitles = res
 				})
-				//this.page.requestLine({type: false})
 			},
 			/**
 			 * 通过点击标题列表悬浮框的对应标题，查询日记，隐藏悬浮框
@@ -147,7 +159,6 @@
  		},
 		onLoad() {
 			let v = this
-			console.log(JSON.stringify(v.$screen))
 			v.page = new MyPage({searchFunction: diaryApi.getDiaryList})
             console.log('onload')
 		},
@@ -206,7 +217,8 @@
 		height: 280upx;
 		margin-bottom: 50upx;
 		flex-direction: column;
-		background:url(../../../static/background/saber.png) no-repeat;
+		/* background: url(../../../static/background/sabe2.png); */
+		background-repeat: no-repeat;
 		background-size: 100% 100%;
 	}
 	
@@ -222,7 +234,7 @@
 		width: 450upx;
 		height: 50upx;
 		margin: auto 50upx;
-		padding: 10upx 20upx;
+		padding: 10upx 10upx;
 		background: rgba(0,0,0,0.3);
 		border-radius: 50upx;
 		flex-direction: row;
@@ -230,11 +242,11 @@
 	}
 	
 	.diary-content-head-titleSearch-view-icon {
-		width: 100upx;
+		width: 50upx;
 	}
 	
 	.diary-content-head-titleSearch-view-input {
-		width: 300upx;
+		width: 330upx;
 	}
 	
 	.diary-content-head-titleSearch-placeholder {

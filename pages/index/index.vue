@@ -20,15 +20,14 @@
 		},
 		computed: mapState(['forcedLogin', 'hasLogin', 'nikeName']),
 		onLoad() {
+			console.log('当前版本',plus.runtime.version)
 			const res = uni.getSystemInfoSync()
-			console.log(res)
 			let lk = loginApi.getLoginMessage() //同步获取缓存返回值是字符串
 			if (lk) {
 				this.login(lk);
 				console.log('存在缓存记录')
 				let time = lk.availableDate
 				console.log('超时时间：', time)
-				console.log("time:" + time)
 				if ((new Date()).getTime() < time) {
 					return
 				}
@@ -50,13 +49,9 @@
 						 * 如果需要强制登录，使用reLaunch方式
 						 */
 						if (this.forcedLogin) {
-							uni.reLaunch({
-								url
-							});
+							uni.reLaunch({ url });
 						} else {
-							uni.navigateTo({
-								url
-							});
+							uni.navigateTo({ url });
 						}
 					}
 				}
