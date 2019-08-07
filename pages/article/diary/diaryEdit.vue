@@ -2,17 +2,8 @@
 	<view class="diary-edit-content">
 		<!-- <uni-nav-bar left-icon="back" left-text="返回" right-text="菜单" title="导航栏组件" :fixed="true" :status-bar="true"></uni-nav-bar> -->
 		<view class="diary-edit-content-title">
-			<input class="diary-title-input" :adjust-position="false"  :class="{'diary-title-input-on': titleInput}" v-model="diary.title" placeholder="请输入标题" placeholder-class="diary-placeholder" maxlength="50"  @focus="titleInput=true" @blur="titleInput=false"/>
+			<input class="diary-title-input" :adjust-position="false" v-model="diary.title" placeholder="请输入标题" placeholder-class="diary-placeholder" maxlength="50"/>
 		    <view class="diary-title-date">
-				<!-- <text>{{diary.date}}</text> -->
-				<!-- <ruiDatePicker
-					fields="second"
-					start="2010-00-00 00:00:00"
-					end="2030-12-30 23:59:59"
-					:value="diary.date"
-					@change="bindChange"
-					@cancel="bindCancel"
-				></ruiDatePicker> -->
 				<picker mode="date" :value="diary.date" @change="bindDateChange">{{diary.date}}</picker>
 			</view>
 		</view>
@@ -24,49 +15,60 @@
 					  maxlength="-1"
 			></textarea>
 		</view>
-		<view class="diary-edit-foot" v-show="footVisable">
-            <buttom-menu>
-				<template v-slot:top>
-					<view style="width: 100%; height: 100%;flex-direction: column-reverse;">
-						<view>
-							<label-img v-for="l in checkedLabels" :name="l.name" :key="l.id" size="small"></label-img>
-						</view>
-					</view>
-				</template>
-				<menu-item :title="classifyName" ref="titleDiv">
-					<view class="menu-item-hover-view-classify">						
-						<view class="menu-item-hover-view-classify-list">
-							<view class="menu-item-hover-view-classify-list-view" v-for="c in classify"  :key="c.id" @tap="selectClassify(c.id)" hover-class="select-classify" :hover-start-time="0" :hover-stay-time="1000">
-								<text class="menu-item-hover-view-classify-list-text">{{c.name}}</text>
-							</view>
-						</view>
-						<view @tap="openClassifyDiog" hover-class="select-classify" :hover-start-time="0" :hover-stay-time="1000">
-							<text>创建分类</text>
-						</view>
-					</view>
-				</menu-item>
-				<menu-item title="标签">
-					<view class="menu-item-hover-view-labels">
-						<view class="menu-item-hover-view-labels-list">
-							<checkbox-group @change="checkboxChange">
-								<label class="checkbox-label" v-for="label in labels" :key="label.id">
-									<view>
-										<checkbox :value="label.id" :checked="label.check" style="transform:scale(0.7)"/>
-									</view>
-									<view>{{label.name}}</view>
-								</label>
-							</checkbox-group>
-						</view>
-						<view>
-							<text @tap="openLabelDlog">创建标签</text>
-						</view>
-					</view>
-				</menu-item>
-				<menu-item :title="typeName" :menuAble="false" :tapEvent="true" @MyClick="alterSaveType"></menu-item>
-			</buttom-menu>
+		<view class="diary-edit-foot" v-show="foot.footVisable">
+			<!-- 标签 -->
+			<view class="diary-edit-foot-label">
+				<label-img v-for="l in checkedLabels" :name="l.name" :key="l.id" size="small"></label-img>
+			</view>
+			<!-- 分类-->
+			<view class="diary-edit-foot-classify">
+				#{{classifyName}}#
+			</view>
+			<view class="diary-edit-foot-button" @tap="foot.button = !foot.button">
+				<text>···</text>
+			</view>
+			<!-- 列表 -->
+			<view class="diary-edit-foot-list" :class="{'diary-edit-foot-list-hide': !foot.button, 'diary-edit-foot-list-show': foot.button}">
+				<view @tap="openBottomModel"><text>分类</text></view>
+				<view @tap="openBottomLabel"><text>标签</text></view>
+				<view @tap="alterSaveType" :class="statusClass"><text>{{typeName}}</text></view>
+			</view>
 		</view>
 		<inputDlog ref="classifyDlog"></inputDlog>
 		<inputDlog ref="labelDlog"></inputDlog>
+		<bottom-model ref="bmodel" v-on:close="closeBottomModel">
+			<view class="bottom-model-classify">
+				<view class="bottom-model-title">
+					<text>日记分类选择</text>
+				</view>
+				<view class="bottom-model-classify-body">
+					<picker-view class="classify-picker" indicator-class="classify-selector" @change="classifyChange" :value="classifyIndex">
+						 <picker-view-column>
+							 <view class="bottom-model-classify-body-item" v-for="c in classify" :key="c.id">{{c.name}}</view>
+						 </picker-view-column>
+					</picker-view>
+				</view>
+				<view class="bottom-model-add"><text @tap="openClassifyDiog">新增</text></view>
+			</view>
+		</bottom-model>
+		<bottom-model ref="labelModel" v-on:close="closeBottomLabel">
+			<view class="bottom-model-label">
+				<view class="bottom-model-title">
+					<text>日记标签选择</text>
+				</view>
+				<view class="bottom-model-label-body">
+					<checkbox-group style="width: 100%;" @change="checkboxChange">
+						<label class="checkbox-label" v-for="label in labels" :key="label.id">
+							<label-img :name="label.name" size="small"></label-img>
+							<view>
+								<checkbox :value="label.id"  :checked="label.check" style="transform:scale(0.7)"/>
+							</view>
+						</label>
+					</checkbox-group>
+				</view>
+				<view class="bottom-model-add"><text @tap="openLabelDlog">新增</text></view>
+			</view>
+		</bottom-model>
 	</view>
 </template>
 
@@ -86,11 +88,9 @@
 	
 	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar"
 	
-	import buttomMenu from '../../../components/buttom-menu/buttom-menu'
-	
-	import menuItem from '../../../components/buttom-menu/menu-item'
-	
 	import inputDlog from '../../../components/inputDlog'
+	
+	import bottomModel from '../../../components/model/buttomModel.vue'
 	
 	import labelImg from '../../../components/label-img'
 	
@@ -101,9 +101,8 @@
 	export default {
 		components: {
 			uniNavBar,
-			buttomMenu,
-			menuItem,
-			labelImg
+			labelImg,
+			bottomModel
 		},
 		data () {
 			return {
@@ -113,12 +112,16 @@
 					content: '',
 					status: 0,
 					classify: null,
-					date: dataUtil.dateFormat('yyyy-MM-dd', new Date())
+					date: dataUtil.dateFormat('yyyy-MM-dd', new Date()),
+					source: 2
 				},
 				classify: [],
+				classifyIndex: [],
 				labels: [],
-				titleInput: false,
-				footVisable: true
+				foot: {
+					footVisable: true,
+					button: false
+				}
 			}
 		},
 		onLoad (option) {
@@ -161,6 +164,8 @@
 				v.labels.map((label, index) => {
 					label.check = v.diary.labelList.some(l => { return l.id.toString() === label.id })
 				})
+				//3 匹配分类
+				v.classifyIndex.push(v.classify !== null && v.classify !== undefined ? v.classify.findIndex(c => { return c.id === v.diary.classify }) : -1)
 			}).catch(err => { console.log(err) })
 		},
 		/**
@@ -168,7 +173,7 @@
 		 * @param {Object} e
 		 */
 		onResize (e) {
-			this.footVisable = !(e.size.windowWidth === this.$screen.windowWidth && e.size.windowHeight < this.$screen.windowHeight/2)
+			this.foot.footVisable = !(e.size.windowWidth === this.$screen.windowWidth && e.size.windowHeight < this.$screen.windowHeight/2)
 		},
 		/**
 		 * 导航栏按钮响应事件 (保存日记)
@@ -190,8 +195,8 @@
 			diaryApi.saveDiary(v.diary).then(res => {
 				if (v.diary.id === null) {
 					v.diary.id = res.id
-					v.alterListStatus(1) //修改日记模块状态 方便返回列表的时候刷新，否则日记列表页面不会显示新创建的日记
 				}
+				v.alterListStatus(1) //修改日记模块状态 方便返回列表的时候刷新，否则日记列表页面不会显示新创建的日记
 				uni.showToast({ title: '保存成功' })
 			}).catch(err => {
 				uni.showToast({ title: err.message, icon: 'none' })
@@ -202,17 +207,10 @@
 				 'alterListStatus': 'diary/alterStatus'
 			 }),
 			/**
-			 * 选择日记的分类
-			 * @param {Object} id
-			 */
-			selectClassify (id) {
-				this.diary.classify = id
-				this.$refs.titleDiv.closeMenu()
-			},
-			/**
 			 * 打开添加分类的弹窗,添加日记分类
 			 */
 			openClassifyDiog () {
+				this.$refs.bmodel.close()
 				console.log('open')
 				let v = this
 				this.$refs.classifyDlog.show({
@@ -222,9 +220,7 @@
 						classifyApi.addClassify( {name: name, childType: 1} ).then(res => {
 							v.classify.push(res)
 							v.diary.classify = res.id
-							uni.showToast({
-								title: '创建成功'
-							})
+							uni.showToast({ title: '创建成功'})
 						}).catch(err => {
 							uni.showToast({
 								title: err.message,
@@ -257,6 +253,7 @@
 			 */
 			openLabelDlog () {
 				let v = this
+				this.$refs.labelModel.close()
 				this.$refs.labelDlog.show({
 					title: '请输入标签名',
 					submit: (name) => {
@@ -280,6 +277,25 @@
 				if (e && e.detail) {
 					this.diary.date = e.detail.value
 				}
+			},
+			openBottomModel (e) {
+				this.$refs.bmodel.open()
+			},
+			closeBottomModel (e) {
+				console.log('关闭')
+				this.$refs.bmodel.close()
+			},
+			classifyChange (e) {
+				this.diary.classify = this.classify[e.detail.value[0]].id
+			},
+			openBottomLabel () {
+				this.$refs.labelModel.open()
+			},
+			closeBottomLabel (e) {
+				this.$refs.labelModel.close()
+			},
+			labelChange () {
+				
 			}
 		},
 		computed: {
@@ -292,6 +308,9 @@
 			},
 			typeName () {
 				return saveType[this.diary.status]
+			},
+			statusClass () {
+				return this.diary.status === 1 ? 'private-class' : (this.diary.status === 2 ? 'submit-class' : '')
 			},
 			checkedLabels () {
 				console.log(this.labels)
@@ -334,11 +353,6 @@
 		border-left: 1upx solid #EFEFF4;
 	}
 	
-	.diary-title-input-on {
-		border: 0.5upx solid #EFEFF4;
-		box-shadow: 1upx -1upx 1upx 1upx #CCCCCC inset;
-	}
-	
 	.diary-placeholder {
 		color: #D5D5D5;
 	}
@@ -354,83 +368,82 @@
 	}
 	
 	.diary-edit-foot {
-		position:position;
+		position: absolute;
 		bottom: 0upx;
-		height: 150upx;
+		height: 170upx;
 		width: 100%;
-		flex-direction: column;
+		flex-direction: column-reverse;
 	}
 	
-	.diary-edit-foot-label {
+	.diary-edit-foot-label,  .diary-edit-foot-classify{
 		height: 50upx;
-	}
-	
-	.diary-edit-foot-menu {
-		line-height: 100upx;
-		color: #C8C7CC;
+		margin-bottom: 10upx;
 		flex-direction: row;
-		height: 100upx;
-		border-top: 1upx solid #EFEFF4;
 	}
 	
-	.diary-edit-foot-menu-item {
-		width: 33%;
-		font-size: 30upx;
+	.diary-edit-foot-classify {
+        font-size: 30upx;
+		font-weight: 800;
+		border-top: 1upx solid #D5E4FD;
+		border-bottom: 1upx solid #D5E4FD;
 	}
 	
-	.diary-edit-foot-menu-item > view  > text {
+	.diary-edit-foot-button, .diary-edit-foot-list {
+		position: absolute;
+		width: 60upx;
+		right: 50upx;
+	}
+	
+	.diary-edit-foot-button {
+		border-radius: 150upx;
+		box-shadow: 1upx 5upx 1upx #E0E0E0;
+		background: #FFD700;
+		top: 0upx;
+		height: 60upx;
+	}
+	
+	.diary-edit-foot-list  view, .diary-edit-foot-button text {
 		width: 100%;
 		text-align: center;
 	}
 	
-	.menu-item-hover-view-classify, .menu-item-hover-view-labels {
-		height: 400upx;
-		width: 250upx;
-		flex-direction: column;
-		font-size: 25upx;
-		background-color: #FFFFFF;
+	.diary-edit-foot-button text {
+		height: 100%;
+		line-height: 60upx;
+		font-size: 40upx;
 	}
 	
-	.menu-item-hover-view-classify {
-		border-top: 1upx solid #C8C7CC;
-		border-right: 1upx solid #C8C7CC;
+	.diary-edit-foot-list {
+		transition: top 0.6s, height 0.6s, transform 0.6s;
+		overflow: hidden;
+		display: block;
 	}
 	
-	.menu-item-hover-view-classify text {
+	.diary-edit-foot-list-show {
+		height: 210upx;
+		top: -210upx;
+	}
+	
+	.diary-edit-foot-list-hide {
+		height: 0upx;
+		top: -10upx;
+	}
+	
+	.diary-edit-foot-list  view {
+		width: 60upx;
+		height: 60upx;
+		border-radius: 150upx;
+		box-shadow: 1upx 5upx 1upx #E0E0E0;
+		background: #87CEFA;
+		margin-bottom: 10upx;
+		
+	}
+	
+	.diary-edit-foot-list  view > text {
 		width: 100%;
-		text-align: center;
-	}
-	
-	.menu-item-hover-view-classify-list {
-		flex-direction: column;
-		height: 80%;
-		overflow: auto;
-	}
-	
-	.menu-item-hover-view-classify-list-view {
-	}
-	
-	.menu-item-hover-view-classify-list-text {	
-	}
-	
-	.select-classify {
-		background-color: #EFEFF4;
-		color: #999999;
-		box-shadow: 1upx -1upx 1upx 1upx #E0E0E0 inset;
-	}
-	
-	.menu-item-hover-view-labels {
-		border: 0.5upx solid #C8C7CC;
-	}
-	.menu-item-hover-view-labels-list {
-		flex-direction: column;
-		height: 80%;
-		overflow: auto;
-	}
-	
-	.menu-item-hover-view-labels > view  > text {
-		width: 100%;
-		text-align: center;
+		height: 100%;
+		font-size: 20upx;
+		line-height: 60upx;
 	}
 	
 	.checkbox-label {
@@ -441,5 +454,84 @@
 		line-height: 40upx;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		justify-content: space-between;
+	}
+	
+	.bottom-model-classify {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+	
+	.bottom-model-classify > view, .bottom-model-label > view {
+		width: 100%;
+	}
+	
+	.bottom-model-title{
+		height: 80upx;
+		justify-content: center;
+		border-bottom: 1upx solid #EFEFF4;
+	}
+	
+	.bottom-model-title text{
+		font-size: 30upx;
+		font-weight: 600;
+		height: 80upx;
+		line-height: 80upx;
+	}
+	
+	.bottom-model-classify-body {
+		height: 340upx;
+	}
+	
+	.bottom-model-classify-body-item {
+		text-align: center;
+		line-height: 70upx;
+		justify-content: center;
+	}
+	
+	.bottom-model-add {
+		height: 80upx;
+		justify-content: center;
+	}
+	
+	.bottom-model-add text {
+		width: 120upx;
+	    height: 50upx;
+		line-height: 50upx;
+		border-radius: 10upx;
+		box-shadow: 1upx 5upx 1upx #E0E0E0;
+		font-size: 20upx;
+		background: #FFD700;
+		text-align: center;
+	}
+
+	.classify-selector {
+		height: 340upx;
+		width: 100%;
+	}
+	
+	.classify-picker {
+	    width: 100%;
+	    height: 340upx;
+		font-size: 15upx;
+	}
+	
+	.bottom-model-label {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+	
+	.bottom-model-label-body {
+		height: 340upx;
+		overflow: auto;
+	}
+
+	.private-class {
+		background: #C7C7CD !important;
+	}
+	.submit-class {
+		background: #00FF7F !important;
 	}
 </style>

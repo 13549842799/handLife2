@@ -33,7 +33,7 @@
 		<view class="diary-content-list">
 			<common-item :obj="l" v-for="(l, index) in page.list" v-bind:key="index" @customizeEvent="longPressEvent" style="width: 100%">
 				<my-button @MyClick="readdiary(l)">查看</my-button>
-				<my-button @MyClick="goToEditPage(l.id, l.title)">编辑</my-button>
+				<my-button v-if="l.source === 2" @MyClick="goToEditPage(l.id, l.title)">编辑</my-button>
 				<my-button @MyClick="deleteDiaryEvent(l.id, l.title)">删除</my-button>			
 			</common-item>
 		</view>
@@ -91,6 +91,9 @@
 			})
 		},
 		methods: {
+			...mapMutations({
+				'alterListStatus': 'diary/alterStatus'
+			}),
 			/**
 			 * 跳转到新建日记的页面
 			 */
@@ -119,7 +122,6 @@
 				})
 			},
 			goToEditPage (id, title) {
-				this.status = 1
 				uni.navigateTo({ url: 'diaryEdit?id=' + id + '&title=' + title })
 			},
 			/**
@@ -173,6 +175,7 @@
 			console.log('onshow_diary')
 			if (this.status === 1) {
 				this.page.requestLine({type: false})
+				this.alterListStatus(0)
 			}
 		},
 		/* onPullDownRefresh (e) { //下拉刷新

@@ -48,7 +48,7 @@
 	.screen-foot-menu-top-menu {
 		color: #C8C7CC;
 		flex-direction: row;
-		border-top: 1upx solid #C8C7CC;
+		/* border-top: 1upx solid #C8C7CC; */
 		justify-content: space-between;
 	}
 </style>

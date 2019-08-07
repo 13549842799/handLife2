@@ -36,12 +36,9 @@
 			"style": {
 				"app-plus": {  
 					"titleNView": {						
-						"backgroundColor": "#2F85FC",
-						"searchInput": {
-							"placeholder": "请输入标题"
-						},
-						//"titleColor": "#FFFFFF",
-						//"titleText": "新建",
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#FFD700",
+						"titleText": "新建",
 						"buttons": [{
 							"float": "right",
 							"fontSrc": "/static/css/iconfont.ttf",
