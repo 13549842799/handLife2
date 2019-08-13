@@ -390,16 +390,17 @@
 	
 	.diary-edit-foot-button, .diary-edit-foot-list {
 		position: absolute;
-		width: 60upx;
+		width: 80upx;
 		right: 50upx;
+		z-index: 300;
 	}
 	
 	.diary-edit-foot-button {
 		border-radius: 150upx;
 		box-shadow: 1upx 5upx 1upx #E0E0E0;
 		background: #FFD700;
-		top: 0upx;
-		height: 60upx;
+		top: -100upx;
+		height: 80upx;
 	}
 	
 	.diary-edit-foot-list  view, .diary-edit-foot-button text {
@@ -409,8 +410,8 @@
 	
 	.diary-edit-foot-button text {
 		height: 100%;
-		line-height: 60upx;
-		font-size: 40upx;
+		line-height: 80upx;
+		font-size: 50upx;
 	}
 	
 	.diary-edit-foot-list {
@@ -420,18 +421,18 @@
 	}
 	
 	.diary-edit-foot-list-show {
-		height: 210upx;
-		top: -210upx;
+		height: 260upx;
+		top: -400upx;
 	}
 	
 	.diary-edit-foot-list-hide {
 		height: 0upx;
-		top: -10upx;
+		top: -100upx;
 	}
 	
 	.diary-edit-foot-list  view {
-		width: 60upx;
-		height: 60upx;
+		width: 80upx;
+		height: 80upx;
 		border-radius: 150upx;
 		box-shadow: 1upx 5upx 1upx #E0E0E0;
 		background: #87CEFA;
@@ -442,8 +443,8 @@
 	.diary-edit-foot-list  view > text {
 		width: 100%;
 		height: 100%;
-		font-size: 20upx;
-		line-height: 60upx;
+		font-size: 30upx;
+		line-height: 80upx;
 	}
 	
 	.checkbox-label {
@@ -504,17 +505,19 @@
 		font-size: 20upx;
 		background: #FFD700;
 		text-align: center;
+		margin-top: 10upx;
 	}
 
 	.classify-selector {
-		height: 340upx;
+		height: 80upx;
 		width: 100%;
+		font-size: 25upx;
+		line-height: 80upx;
 	}
 	
 	.classify-picker {
 	    width: 100%;
 	    height: 340upx;
-		font-size: 15upx;
 	}
 	
 	.bottom-model-label {
