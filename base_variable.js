@@ -12,6 +12,7 @@ export const classifyUrl = baseUrl + '/api/article/classify'
 export const diaryUrl = baseUrl + '/api/article/diary'
 export const labelUrl = baseUrl + '/api/article/label'
 export const reportUrl = baseUrl + '/api/article/finalresport'
+export const novelUrl = baseUrl + '/api/article/novel'
 
 export const loginUrl = 'http://localhost:8082/oobusinessplan/#/login'
 // const loginUrl = 'http://localhost:8080/oobusinessplan/#/login'

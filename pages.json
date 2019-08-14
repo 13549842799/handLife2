@@ -25,6 +25,12 @@
 			}
 		},
 		{
+			"path": "pages/article/novel/novel",
+			"style": {
+				"navigationBarTitleText": "小说"
+			}
+		},
+		{
 			"path": "pages/article/diary/diary",
 			"style": {
 				"navigationBarTitleText": "个人日记"/* ,
