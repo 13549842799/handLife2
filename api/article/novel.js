@@ -21,5 +21,15 @@ export default {
 			data: params
 		}
 		return $getLoading(p)
+	},
+	getNovel(id, config) {
+		return $getLoading({url: novelUrl + '/s/' + id + '/novel.re', config: config})
+	},
+	/**
+	 * 删除小说
+	 * @param {Object} id
+	 */
+	deleteNovel(id) {
+		return $post({url: novelUrl + '/s/' + id + '/delete.do'})
 	}
 }

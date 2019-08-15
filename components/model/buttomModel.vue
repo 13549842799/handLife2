@@ -1,6 +1,6 @@
 <template>
 	<view class="model-bg" :class="{'model-bg-show': !hide}" @tap.stop.self="empty">
-		<view class="bottom-model" :class="{'bottom-model-show': !hide}">
+		<view class="bottom-model" :style="{height: trueHeight}" >
 			<slot></slot>
 		</view>
 	</view>
@@ -8,6 +8,12 @@
 
 <script>
 	export default {
+		props: {
+			height: {
+				default: 500,
+				type: Number
+			}
+		},
 		data () {
 			return {
 				hide: true
@@ -23,6 +29,11 @@
 			empty (e) {
 				console.log('内部触发')
 				this.$emit('close', e)
+			}
+		},
+		computed: {
+			trueHeight () {
+				return this.hide ? '0upx' : this.height + 'upx'
 			}
 		}
 	}

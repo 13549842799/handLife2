@@ -31,6 +31,12 @@
 			}
 		},
 		{
+			"path": "pages/article/novel/novelEdit",
+			"style": {
+				"navigationBarTitleText": "新建"
+			}
+		},
+		{
 			"path": "pages/article/diary/diary",
 			"style": {
 				"navigationBarTitleText": "个人日记"/* ,
