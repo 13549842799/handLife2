@@ -33,7 +33,7 @@
 		{
 			"path": "pages/article/novel/novelEdit",
 			"style": {
-				"navigationBarTitleText": "新建"
+				"navigationBarTitleText": "新建作品"
 			}
 		},
 		{
