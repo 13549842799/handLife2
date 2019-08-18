@@ -163,13 +163,36 @@ export const $upload = function ({url, fileName, filePath, data}) {
             formData: data,
 			header: headers,
             success: (uploadFileRes) => {
+				console.log(uploadFileRes)
 				let status = uploadFileRes.statusCode
 				switch (status) {
 					case 200:
-					    resolve(JSON.parse(uploadFileRes.data))
-					    break;
+					    let data = JSON.parse(uploadFileRes.data)
+					    let code = parseInt(data.status)
+						console.log(code)
+					    switch (code) {
+					      case 200:
+					        resolve(data.data)
+					        break
+					      case 100:
+					      case 300:
+					        reject({
+								status: 100,
+								message: data.message
+							})
+					        break
+					      case 400:
+					        reject(data)
+					    	uni.reLaunch({
+					    	    url: '/pages/index/login/login'
+					    	});
+					    }
+						break
 					default:
-					    reject(uploadFileRes)
+					    reject({
+							code: 200,
+							message: uploadFileRes.errMsg
+						})
 				}
             }
         });

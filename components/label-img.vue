@@ -1,5 +1,10 @@
 <template>
-	<text class="text-label-style-baise" :class="{'text-label-style-small': Small, 'text-label-style-mini': Mini, 'text-label-style-large': large}">{{name}}</text>
+	<view class="text-label-view">
+		<text class="text-label-style-baise" 
+			:class="{'text-label-style-small': Small, 'text-label-style-mini': Mini, 'text-label-style-large': large}">
+			{{name}}
+		</text>
+	</view>
 </template>
 
 <script>
@@ -35,6 +40,12 @@
 </script>
 
 <style>
+    .text-label-view {
+		/* 通过以下两个设置view换行 */
+		width: auto;
+		display: inline-block;
+	}
+	
 	.text-label-style-baise {
 		color: #FFFFFF;
 		background-color: #0FAEFF;

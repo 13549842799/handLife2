@@ -7,7 +7,8 @@ import {
 	$post,
 	$getLoading,
 	$deleteLoading,
-	$postLoading
+	$postLoading,
+	$upload
 } from './../../http.js'
 
 export default {
@@ -31,5 +32,9 @@ export default {
 	 */
 	deleteNovel(id) {
 		return $post({url: novelUrl + '/s/' + id + '/delete.do'})
+	},
+	saveNovel ({fileName, filePath, data}) {
+		data.fileName = fileName
+		return $upload({'url': novelUrl + '/save.do', fileName, filePath, data})
 	}
 }

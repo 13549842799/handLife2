@@ -13,6 +13,9 @@
 					<text class="author">{{l.creatorName}}&nbsp;/&nbsp;{{l.wordsNum}}</text>
 					<text>创建：{{l.createTime}} / 更新：{{l.modifierTime}}</text>
 					<text>标签</text>
+					<view style="flex-direction: row;">
+						<label-img v-for="(label, index) in l.labelList" :key="index" :name="label.name" size="small"></label-img>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -36,6 +39,10 @@
 </template>
 
 <script>
+	import {
+	    mapState,
+	    mapMutations
+	} from 'vuex'
 	
 	import novelApi from '../../../api/article/novel.js'
 	
@@ -45,25 +52,38 @@
 	
 	import bottomModel from '../../../components/model/buttomModel.vue'
 	
+	import labelImg from '../../../components/label-img'
+	
 	export default {
 		components: {
-			bottomModel
+			bottomModel,
+			labelImg
 		},
 		data() {
 			return {
-				page: {
+				/* page: {
 					list: [{id: 1, cover: '/static/zd.jpg', title: '测试小说', creatorName: 'cyz', createTime: '2019年8月20日', modifierTime: '2019年8月22日', wordsNum: '100万字'}]
-				},
+				}, */
+				page: null,
 				bg: 'url(' + novelBg +')',
 				novel: {} //当前长按选择的小说
 			}
 		},
 		onLoad () {
 			let v = this
-			//v.page = new MyPage({size: 5, searchFunction: novelApi.getNovelList})
+			v.page = new MyPage({size: 5, searchFunction: novelApi.getNovelList})
 			console.log('onload')
 		},
+		onShow (e) {
+			if (this.status === 1) {
+				this.page.requestLine({type: false})
+				this.alterListStatus(0)
+			}
+		},
 		methods: {
+			...mapMutations({
+				'alterListStatus': 'novel/alterStatus'
+			}),
 			createNewNovel () {
 				uni.navigateTo({
 					url: './novelEdit'
@@ -91,6 +111,9 @@
 			}
 		},
 		computed: {
+			...mapState({
+				status: state => state.novel.status
+			}),
 			hasNovel () {
 				return this.page && this.page.list && this.page.list.length > 0
 			}

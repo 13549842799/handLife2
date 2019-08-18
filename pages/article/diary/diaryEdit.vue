@@ -36,39 +36,12 @@
 		</view>
 		<inputDlog ref="classifyDlog"></inputDlog>
 		<inputDlog ref="labelDlog"></inputDlog>
-		<bottom-model ref="bmodel" v-on:close="closeBottomModel">
-			<view class="bottom-model-classify">
-				<view class="bottom-model-title">
-					<text>日记分类选择</text>
-				</view>
-				<view class="bottom-model-classify-body">
-					<picker-view class="classify-picker" indicator-class="classify-selector" @change="classifyChange" :value="classifyIndex">
-						 <picker-view-column>
-							 <view class="bottom-model-classify-body-item" v-for="c in classify" :key="c.id">{{c.name}}</view>
-						 </picker-view-column>
-					</picker-view>
-				</view>
-				<view class="bottom-model-add"><text @tap="openClassifyDiog">新增</text></view>
-			</view>
-		</bottom-model>
-		<bottom-model ref="labelModel" v-on:close="closeBottomLabel">
-			<view class="bottom-model-label">
-				<view class="bottom-model-title">
-					<text>日记标签选择</text>
-				</view>
-				<view class="bottom-model-label-body">
-					<checkbox-group style="width: 100%;" @change="checkboxChange">
-						<label class="checkbox-label" v-for="label in labels" :key="label.id">
-							<label-img :name="label.name" size="small"></label-img>
-							<view>
-								<checkbox :value="label.id"  :checked="label.check" style="transform:scale(0.7)"/>
-							</view>
-						</label>
-					</checkbox-group>
-				</view>
-				<view class="bottom-model-add"><text @tap="openLabelDlog">新增</text></view>
-			</view>
-		</bottom-model>
+		<bottom-model-picker ref="bmodel" title="日记分类选择" text="新增" :list="classify"
+		    v-on:MyChange="classifyChange" v-on:action="openClassifyDiog">
+		</bottom-model-picker>
+		<bottom-model-check-box ref="labelModel" title="日记标签选择" text="新增" :list="labels" :role="{id: 'id', name: 'name', val: 'id'}"
+		    v-on:change="checkboxChange" v-on:tapButton="openLabelDlog">
+		</bottom-model-check-box>
 	</view>
 </template>
 
@@ -90,7 +63,9 @@
 	
 	import inputDlog from '../../../components/inputDlog'
 	
-	import bottomModel from '../../../components/model/buttomModel.vue'
+	import bottomModelPicker from '../../../components/model/bottomModelPicker.vue'
+	
+	import bottomModelCheckBox from '../../../components/model/BottomModelCheckBox.vue'
 	
 	import labelImg from '../../../components/label-img'
 	
@@ -102,7 +77,8 @@
 		components: {
 			uniNavBar,
 			labelImg,
-			bottomModel
+			bottomModelPicker,
+			bottomModelCheckBox
 		},
 		data () {
 			return {
@@ -116,7 +92,6 @@
 					source: 2
 				},
 				classify: [],
-				classifyIndex: [],
 				labels: [],
 				foot: {
 					footVisable: true,
@@ -165,7 +140,7 @@
 					label.check = v.diary.labelList.some(l => { return l.id.toString() === label.id })
 				})
 				//3 匹配分类
-				v.classifyIndex.push(v.classify !== null && v.classify !== undefined ? v.classify.findIndex(c => { return c.id === v.diary.classify }) : -1)
+			    v.$refs.bmodel.initVal(!v.classify ? null : v.classify.findIndex(c => { return c.id === v.diary.classify }))
 			}).catch(err => { console.log(err) })
 		},
 		/**
@@ -234,11 +209,11 @@
 			 * 标签的多选框选择事件
 			 * @param {Object} val
 			 */
-			checkboxChange (e) {
-				let v = this
-				let arr = e.detail.value
-				for (let i = 0; i < v.labels.length; i ++) {
-					v.labels[i].check =  arr.findIndex(o => { return o === v.labels[i].id }) !== -1
+			checkboxChange (arr) {
+				this.diary.labels = arr.toString()
+				for (let i = 0; i < this.labels.length; i ++) {
+					this.labels[i].check =  arr.findIndex(o => { return o === this.labels[i].id }) !== -1
+					console.log(this.labels[i])
 				}
 			},
 			/**
@@ -285,17 +260,14 @@
 				console.log('关闭')
 				this.$refs.bmodel.close()
 			},
-			classifyChange (e) {
-				this.diary.classify = this.classify[e.detail.value[0]].id
+			classifyChange (index) {
+				this.diary.classify = this.classify[index].id
 			},
 			openBottomLabel () {
 				this.$refs.labelModel.open()
 			},
 			closeBottomLabel (e) {
 				this.$refs.labelModel.close()
-			},
-			labelChange () {
-				
 			}
 		},
 		computed: {
@@ -313,7 +285,6 @@
 				return this.diary.status === 1 ? 'private-class' : (this.diary.status === 2 ? 'submit-class' : '')
 			},
 			checkedLabels () {
-				console.log(this.labels)
 				return this.labels.filter(l => {
 					return l.check
 				})
@@ -445,90 +416,6 @@
 		height: 100%;
 		font-size: 30upx;
 		line-height: 80upx;
-	}
-	
-	.checkbox-label {
-		flex-direction: row;
-		display: flex;
-		padding: 10upx 10upx;
-		height: 40upx;
-		line-height: 40upx;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		justify-content: space-between;
-	}
-	
-	.bottom-model-classify {
-		width: 100%;
-		height: 100%;
-		display: block;
-	}
-	
-	.bottom-model-classify > view, .bottom-model-label > view {
-		width: 100%;
-	}
-	
-	.bottom-model-title{
-		height: 80upx;
-		justify-content: center;
-		border-bottom: 1upx solid #EFEFF4;
-	}
-	
-	.bottom-model-title text{
-		font-size: 30upx;
-		font-weight: 600;
-		height: 80upx;
-		line-height: 80upx;
-	}
-	
-	.bottom-model-classify-body {
-		height: 340upx;
-	}
-	
-	.bottom-model-classify-body-item {
-		text-align: center;
-		line-height: 70upx;
-		justify-content: center;
-	}
-	
-	.bottom-model-add {
-		height: 80upx;
-		justify-content: center;
-	}
-	
-	.bottom-model-add text {
-		width: 120upx;
-	    height: 50upx;
-		line-height: 50upx;
-		border-radius: 10upx;
-		box-shadow: 1upx 5upx 1upx #E0E0E0;
-		font-size: 20upx;
-		background: #FFD700;
-		text-align: center;
-		margin-top: 10upx;
-	}
-
-	.classify-selector {
-		height: 80upx;
-		width: 100%;
-		font-size: 25upx;
-		line-height: 80upx;
-	}
-	
-	.classify-picker {
-	    width: 100%;
-	    height: 340upx;
-	}
-	
-	.bottom-model-label {
-		width: 100%;
-		height: 100%;
-		display: block;
-	}
-	
-	.bottom-model-label-body {
-		height: 340upx;
-		overflow: auto;
 	}
 
 	.private-class {

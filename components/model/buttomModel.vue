@@ -1,5 +1,6 @@
 <template>
-	<view class="model-bg" :class="{'model-bg-show': !hide}" @tap.stop.self="empty">
+	<view class="model-bg" :class="{'model-bg-show': !hide}" >
+		<view class="model-tap-bg" @tap ="empty"></view>
 		<view class="bottom-model" :style="{height: trueHeight}" >
 			<slot></slot>
 		</view>
@@ -27,7 +28,8 @@
 				this.hide = true
 			},
 			empty (e) {
-				console.log('内部触发')
+				console.log('内部触发,关闭弹出层')
+				console.log(e)
 				this.$emit('close', e)
 			}
 		},
@@ -52,6 +54,11 @@
 		transition: all .1s;
 		visibility: hidden;
 		opacity: 0;
+	}
+	
+	.model-tap-bg {
+		width: 100%;
+		height: 100%;
 	}
 	
 	.model-bg-show {
