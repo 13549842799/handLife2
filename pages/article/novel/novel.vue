@@ -1,21 +1,17 @@
 <template>
-	<view class="novel-content">
-		<view class="novel-content-head" :style="{'background-image': bg}">
-			
-		</view>
+	<view class="view-container">
+		<view class="novel-content-search"></view>
+		<view class="novel-content-head" :style="{'background-image': bg}"></view>
 		<view class="novel-content-list"  v-for="l in page.list" v-bind:key="l.id">
 			<view class="novel-list-item" @longpress="selectNovel(l)">
 				<view class="novel-list-item-img">
-					<image :src="l.cover"></image>
+					<image :src="fileUrl + l.cover"></image>
 				</view>
 				<view class="novel-list-item-text">
 					<text class="title">{{l.title}}</text>
-					<text class="author">{{l.creatorName}}&nbsp;/&nbsp;{{l.wordsNum}}</text>
+					<text class="author">{{l.createNikeName}}&nbsp;/&nbsp;{{l.wordsNum}}</text>
 					<text>创建：{{l.createTime}} / 更新：{{l.modifierTime}}</text>
-					<text>标签</text>
-					<view style="flex-direction: row;">
-						<label-img v-for="(label, index) in l.labelList" :key="index" :name="label.name" size="small"></label-img>
-					</view>
+					<text>分类：{{l.classifyName}}</text>
 				</view>
 			</view>
 		</view>
@@ -24,12 +20,12 @@
 			<text>点击下方按钮开始你的第一篇小说吧</text>
 		</view>
 		<view class="novel-bottom">
-			<image @tap="createNewNovel" src="../../../static/icon/novelEdit.png"></image>	
+			<image @tap="goToEdit" src="../../../static/icon/novelEdit.png"></image>	
 		</view>
 		<bottom-model :height="460" ref="bottomM" v-on:close="closeBottom">
 			<view class="novel-bottom-model-view">
 				<text>置顶</text>
-				<text>编辑</text>
+				<text @tap="goToEdit">编辑</text>
 				<text>书籍详情</text>
 				<text style="color: red;" @tap="deleteNovel">删除本书</text>
 				<text class="cancel-model" @tap="closeBottom">取消</text>
@@ -53,6 +49,8 @@
 	import bottomModel from '../../../components/model/buttomModel.vue'
 	
 	import labelImg from '../../../components/label-img'
+	
+	import {fileUrl} from '../../../base_variable.js'
 	
 	export default {
 		components: {
@@ -84,10 +82,11 @@
 			...mapMutations({
 				'alterListStatus': 'novel/alterStatus'
 			}),
-			createNewNovel () {
+			goToEdit () {
 				uni.navigateTo({
-					url: './novelEdit'
+					url: './novelEdit' + (this.novel.id ? '?id=' + this.novel.id : '')
 				})
+				this.closeBottom()
 			},
 			selectNovel (n) {
 				console.log(JSON.stringify(n))
@@ -95,19 +94,32 @@
 				this.$refs.bottomM.open()
 			},
 			closeBottom (e) {
+				this.novel = {}
 				this.$refs.bottomM.close()
 			},
 			/**
 			 * 删除小说
 			 */
 			deleteNovel () {
-				if (!this.novel.id) {
+				let v = this
+				if (!v.novel.id) {
 					console.log('请选择小说')
 					return
 				}
-				novelApi.deleteNovel(this.novel.id).then(res => {
-					uni.showToast({ title: '删除成功' })
-				}).catch(err => { console.log(err) })
+				uni.showModal({
+				    title: '提示',
+				    content: '你确定要删除 ' + v.novel.title + ' 这部作品吗',
+				    success: function (res) {
+				        if (res.confirm) {
+				            novelApi.deleteNovel(v.novel.id).then(res => {
+				            	uni.showToast({ title: '删除成功' })
+								v.page.deleteLine("id", v.novel.id)
+				            }).catch(err => { console.log(err) })
+				        } else if (res.cancel) {
+				            console.log('用户点击取消');
+				        }
+				    }
+				});
 			}
 		},
 		computed: {
@@ -116,6 +128,9 @@
 			}),
 			hasNovel () {
 				return this.page && this.page.list && this.page.list.length > 0
+			},
+			fileUrl () {
+				return fileUrl
 			}
 		}
 	}
@@ -125,10 +140,6 @@
     view {
   	    display: flex;
     }
-    .novel-content {
-	    width: 100%;
-	    flex-direction: column;
-    }
 	
 	.novel-content-head {
 		width: 100%;
@@ -136,6 +147,13 @@
 		flex-direction: column;
 		background-repeat: no-repeat;
 		background-size: 100% 100%;
+	}
+	
+	.novel-content-search {
+		width: 100%;
+		position: absolute;
+		left: 0;
+		top: 0;
 	}
 	
 	.novel-none {

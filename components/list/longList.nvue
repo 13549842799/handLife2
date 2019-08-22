@@ -1,0 +1,62 @@
+<template>
+	<cell class="cell-Item">
+		<div class="cell-Item-portion" @tap="controlShow">
+			<text class="cell-Item-portion-title">{{son.title}}</text>
+			<text style="font-size: 30upx;color: #E0E0E0;">{{son.wordsNum}}</text>
+		</div>
+		<div class="cell-Item-content" :class="{'cell-Item-show': visible}">
+			<div v-for="s in son.sections" :key="s.id">
+				<text>{{s.title}}</text>
+			</div>
+		</div>
+	</cell>
+</template>
+
+<script>
+	export default {
+		props: {
+			son: {
+				type: Object,
+				default: () => {
+					return {}
+				}
+			}
+		},
+		data () {
+			return {
+				visible: true
+			}
+		},
+		methods: {
+			controlShow () {
+				this.visible = !this.visible
+				this.$emit('action', this.visible)
+			}
+		}
+	}
+</script>
+
+<style>
+    .cell-Item {
+		
+	}
+	
+	.cell-Item-portion {
+		justify-content: space-between;
+		flex-direction: row;
+	}
+	
+	.cell-Item-portion .cell-Item-portion-title {
+		font-size: 30upx;
+		font-weight: 700;
+	}
+	
+	.cell-Item-content {
+		transition: height .1s;
+		height: auto;
+	}
+	
+	.cell-Item-show {
+		height: 0 !important;
+	}
+</style>

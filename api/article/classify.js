@@ -16,10 +16,13 @@ export default {
 	 * 获取对应类型的分类列表
 	 * @param {Object} params
 	 */
-	getClassifies (params) {
+	getClassifies (params, notLoad) {
 		let p = {
 			url: classifyUrl + '/list.re',
 			data: params
+		}
+		if (notLoad) {
+			return $get(p)
 		}
 		return $getLoading(p)
 	},

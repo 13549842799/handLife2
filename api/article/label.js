@@ -15,10 +15,13 @@ export default {
 	 * 获取用户自身的标签列表
 	 * @param {Object} params
 	 */
-	getLabelsList (params) {
+	getLabelsList (params, notLoad) {
 		let p = {
 			url: labelUrl + '/list.re',
 			data: params
+		}
+		if (notLoad) {
+			return $get(p)
 		}
 		return $getLoading(p)
 	},

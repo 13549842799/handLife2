@@ -155,6 +155,7 @@ export const $upload = function ({url, fileName, filePath, data}) {
 	    'X-token': obj.token
 	  }
 	}
+	console.log(data)
 	return new Promise(function (resolve, reject) {
 		uni.uploadFile({
             url: url, 

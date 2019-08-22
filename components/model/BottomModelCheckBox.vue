@@ -9,7 +9,7 @@
 					<label class="checkbox-label" v-for="l in list" :key="l[role['id']]">
 						<label-img :name="l[role['name']]" size="small"></label-img>
 						<view>
-							<checkbox :value="l[role['val']]"  :checked="l.check" style="transform:scale(0.7)"/>
+							<checkbox :value="l[role['val']].toString()"  :checked="l.check" style="transform:scale(0.7)"/>
 						</view>
 					</label>
 				</checkbox-group>

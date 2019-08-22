@@ -37,6 +37,48 @@
 			}
 		},
 		{
+			"path": "pages/article/novel/portion",
+			"style": {
+				"app-plus": {
+					"titleNView": {	
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#FFD700",
+						"titleText": "分卷",
+						"buttons": [{
+							"float": "right",
+							"fontSrc": "/static/css/addIcon/iconfont.ttf",
+							"text": "\ue693",
+							"fontSize": "30upx"
+						}]
+					}  
+				}
+			}
+		},
+		{
+			"path": "pages/article/novel/section",
+			"style": {
+				"app-plus": {
+					"titleNView": {
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#FFD700",
+						"titleText": "新章节",
+						"buttons": [{
+							"float": "right",
+							"fontSrc": "/static/css/iconfont.ttf",
+							"text": "\ue66b",
+							"fontSize": "40upx"
+						}]
+					}  
+				}
+			}
+		},
+		{
+			"path": "pages/article/novel/portionEdit",
+			"style": {
+				"navigationBarTitleText": "分卷编辑"
+			}
+		},
+		{
 			"path": "pages/article/diary/diary",
 			"style": {
 				"navigationBarTitleText": "个人日记"/* ,

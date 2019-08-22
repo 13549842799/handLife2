@@ -1,10 +1,10 @@
 <template>
-	<view class="n-edit-content">
+	<view class="view-container n-edit-content">
 		<view class="form">
 			<view class="form-item">
 				<view class="item-label"><text>作品名称</text></view>
 				<view class="title-input-view">
-					<input class="item-input" v-model="novel.title" placeholder-class="novel-form-placeholder-input" placeholder="请输入作品名称" :adjust-position="false"/>
+					<input class="item-input" v-model="novel.title" placeholder-class="common-placeholder" placeholder="请输入作品名称" :adjust-position="false"/>
 					<!-- #ifdef H5 -->
 					<text class="clear-item" size="20">X</text>
 					<!-- #endif -->
@@ -23,7 +23,7 @@
 				<view class="item-label"><text>简介</text></view>
 				<view>
 					<textarea style="width: 530upx;" v-model="novel.content" :adjust-position="false" placeholder="赶紧来为你的作品填上有趣的简介吧, 但请不要超过300字..."
-					    placeholder-class="novel-form-placeholder-input" :maxlength="300">
+					    placeholder-class="common-placeholder" :maxlength="300">
 					</textarea>
 				</view>
 			</view>
@@ -42,16 +42,20 @@
 				<view class="item-label"><text>选择封面</text></view>
 				<view class="form-image-content">
 					<view class="form-image-content-body">
-						<image @tap="selectImage" :src="imagePath" ></image>
+						<image @tap="selectImage" :src="hasCover" ></image>
 					</view>
 					<view class="form-image-content-text">
 						<text style="color: #DD524D;font-size: 25upx;">上传图片大小请不要超过150KB，长宽比为124px*172px</text>
 					</view>
 				</view>
 			</view>
-			<view class="form-item">
+			<view v-if="!isNewNovel" class="form-item">
+				<navigator :url="managerPortionUrl" style="width: 100%;height: 100%;text-align: center;font-size: 30upx;letter-spacing:20upx;font-weight: 700;">分卷管理</navigator>
+				<!-- <text @tap="goToManagerPortion" style="width: 100%;height: 100%;text-align: center;font-size: 30upx;letter-spacing:20upx;font-weight: 700;">分卷管理</text> -->
+			</view>
+			<view class="form-item" style="border-bottom: 0upx;">
 				<view style="width: 100%;justify-content: center;">
-					<button @tap="submitNovel" type="primary" style="height: 50upx; line-height: 50upx;font-size: 30upx;">提交</button>
+					<button @tap="submitNovel" type="primary" style="height: 50upx; line-height: 50upx;font-size: 30upx;">{{isNewNovel ? '提交' : '保存'}}</button>
 				</view>
 			</view>
 		</view>
@@ -63,10 +67,10 @@
 		    v-on:change="labelChange">
 			<view style="height: 80upx;">
 				<input v-model="editLabel"  style="margin: auto 30upx;width: 500upx;color: #8F8F94;font-size: 30upx;"  
-				    placeholder="自定义标签" placeholder-class="novel-form-placeholder-input"/> 
+				    placeholder="自定义标签" placeholder-class="common-placeholder"/> 
 				<button @tap="addLabel" style="height: 50upx;margin: auto 0upx;line-height: 50upx;" 
 				    size="mini" type="primary">
-					{{isNewNovel}}
+					增加
 				</button>
 			</view>
 		</bottom-model-check-box>
@@ -93,6 +97,8 @@
 	import inputDlog from '../../../components/inputDlog'
 	
 	import LabelImg from '../../../components/label-img.vue'
+	
+	import {fileUrl} from '../../../base_variable.js'
 	
 	export default {
 		components: {
@@ -124,42 +130,38 @@
 			plus.screen.lockOrientation('portrait-primary'); //锁定
 			// #endif
 			let id = option.id
-			let v = this
-			
-			classifyApi.getClassifies({'childType': 4}).then(res => {
-				this.classify = res
-			}).catch (err => { console.log(err) })
-		    //2.加载标签列表
-		    labelApi.getLabelsList().then (res => {
-		    	if (res === null || res === undefined || res.length === 0) {
-		    		v.labels = []
-		    		return
-		    	}
-		    	res.map(l => {
-		    		l.id = l.id.toString()
-		    		v.$set(l, 'check', false)
-		    	})
-		    	v.labels = res	
-		    }).catch(err => { console.log(err) })
-			//3.判断是编辑还是新建
-			if (!id) {
-				// 新建日记
-				return
+			if (id) {
+				uni.showLoading( { title: '加载中', mask: true } )
 			}
-			// 编辑日记
-			//1.设置导航栏为日记标题
-			uni.setNavigationBarTitle( { title: "编辑"} )
-			uni.showLoading( { title: '加载中', mask: true } )
-			//2.加载小说概况
-			novelApi.getNovel(id).then(res => {
+			let v = this			
+			classifyApi.getClassifies({'childType': 4}, true).then(res => {
+				this.classify = res
+				return labelApi.getLabelsList(null, true) 
+			}).then(res => {
+				//2.加载标签列表
+				v.labels = res === null || res === undefined || res.length === 0 ? [] : res	
+				//3.判断是编辑还是新建
+				if (!id) {
+					// 新建小说
+					return new Promise(res => {})
+				}
+				// 编辑日记
+				//1.设置导航栏为日记标题
+				uni.setNavigationBarTitle( { title: "编辑"} )
+				return novelApi.getNovel(id)
+			}).then (res => {
 				v.novel = res
 				//2.1 根据小说自己的所选标签通过id匹配总的标签确定是否已被选中，根据是否被选中添加check的值， 选中 true， 没有 false
-				/* v.labels.map((label, index) => {
-					label.check = v.novel.labelList.some(l => { return l.id.toString() === label.id })
-				}) */
+				v.labels.map((label, index) => {
+					label.check = v.novel.labelList.some(l => { return l.id === label.id })
+				})
 				//匹配分类
-				v.$refs.classifyModel.initVal(!v.classify ? null : v.classify.findIndex(c => { return c.id === v.diary.classify }))
-			}).catch(err => { console.log(err) })
+				v.$refs.classifyModel.initVal(!v.classify ? null : v.classify.findIndex(c => { return c.id === v.novel.classify }))
+				uni.hideLoading()
+			}).catch (err => {
+				uni.hideLoading()
+				console.log(err) 
+			})		    
 		},
 		computed: {
 			classifyName () {
@@ -173,7 +175,13 @@
 			 * 当前页面状态 true-新建 false-已有小说，编辑
 			 */
 			isNewNovel () {
-				return this.novel.id === null ? "提交" : "保存"
+				return this.novel.id === null || this.novel.id === undefined
+			},
+			hasCover () {
+				return this.imagePath ? this.imagePath : (this.novel && this.novel.cover ? fileUrl + this.novel.cover : '')
+			},
+			managerPortionUrl () {
+				return './portion' + (this.novel.id ? '?id=' + this.novel.id + '&title=' + this.novel.title : '')
 			}
 		},
 		methods: {
@@ -223,7 +231,7 @@
 			labelChange (arr) {
 				this.novel.labels = arr.toString()
 				for (let i = 0; i < this.labels.length; i ++) {
-					this.labels[i].check =  arr.findIndex(o => { return o === this.labels[i].id }) !== -1
+					this.labels[i].check =  arr.findIndex(o => { return o === this.labels[i].id.toString() }) !== -1
 				}
 			},
 			addLabel () {
@@ -267,7 +275,6 @@
 					uni.showToast({ title: "来为你的作品选择合适的分类吧！", icon: "none" })
 					return;
 				}
-				console.log(v.submiting)
 				if (v.submiting) {
 					return
 				}
@@ -281,6 +288,7 @@
 				novelApi.saveNovel(params).then(res => {
 					v.submiting = false
 					v.novel = res
+					v.imagePath = ''
 					uni.showToast({ title: "提交成功！" })
 					v.alterListStatus(1)
 				}).catch(err => {
@@ -299,7 +307,6 @@
 	}
 	
 	.n-edit-content {
-		width: 100%;
 		overflow: auto;
 	}
 	
@@ -328,11 +335,6 @@
 	.n-edit-content .form .form-item .item-input {
 		color: #8F8F94;
 		width: 500upx;
-	}
-	
-	.novel-form-placeholder-input {
-		font-size: 30upx;
-		color: #DDDDDD;
 	}
 	
 	.title-input-view {
@@ -365,4 +367,6 @@
 		height: 100%;
 		width: 250upx;
 	}
+	
+	
 </style>

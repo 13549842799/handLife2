@@ -165,4 +165,19 @@
 		background-color: #0faeff;
 	}
 	
+	/* 最外曾样式 */
+	.view-container {
+		width: 750upx;
+		flex-direction: column;
+	}
+	
+	/* 输入框placeHolder样式 */
+	.common-placeholder {
+		font-size: 30upx;
+		color: #DCDCDC;
+	}
+	
+	.common-input-size {
+		font-size: 30upx;
+	}
 </style>
