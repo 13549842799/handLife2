@@ -21,7 +21,7 @@
 				<input v-model="tempFile.name"  placeholder="请编辑图片名称" placeholder-class="common-placeholder"/>
 				<button @tap="saveImage" type="primary" size="mini" style="height: 40upx;line-height: 40upx;margin: 0;">保存</button>
 			</view>
-			<text v-show="section.remark !== ''" style="width: 100%;font-size: 25upx;overflow: hidden;text-overflow: ellipsis;color: red;">备注:&nbsp;&nbsp;{{section.remark}}</text>
+			<text v-show="section.remark !== ''" style="width: 100%;font-size: 25upx;overflow: hidden;text-overflow: ellipsis;color: red;margin-top: 20upx;border-top: 1upx solid #F1F1F1;">备注:&nbsp;&nbsp;{{section.remark}}</text>
 		</view>
 		<view class="section-bottom">
 			<text style="margin-right: 80upx;" @tap="addImage">插入图片</text>
