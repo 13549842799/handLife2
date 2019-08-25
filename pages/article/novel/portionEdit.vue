@@ -11,6 +11,7 @@
 		</view>
 		<view class="portion-info">
 			<text @tap="goToSectionEdit()">创建新一章</text>
+			<text @tap="reflush">刷新</text>
 		</view>
 		<text>所属章节</text>
 		<view class="portion-section-list">
@@ -71,7 +72,7 @@
 			},
 			goToSectionEdit (id) {
 				uni.navigateTo({
-					url: 'section?novel=' + this.novelTitle + '&portion=' + this.portion.title + (id ? '&id=' + id : '')
+					url: 'section?novel=' + this.novelTitle + '&portioinId=' + this.portion.id + '&portion=' + this.portion.title + (id ? '&id=' + id : '')
 				})
 			},
 			deleteSection (id, title) {
@@ -86,6 +87,14 @@
 				    v.portion.sections.splice( index, 1)
 					uni.showToast({ title: '章节《'+ title +'》删除成功' })
 				}).catch(err => { console.log(err) })
+			},
+			reflush () {
+				let v = this
+				sectionApi.getSectionList({portionId: v.portion.id}).then(res => {
+					v.portion.sections = res
+				}).catch(err => {
+					console.log(err)
+				})
 			}
 		}
 	}
@@ -125,6 +134,7 @@
 	.portion-info {
 		width: 710upx;
 		padding: 20upx;
+		justify-content: space-between;
 	}
 	
 	.view-container > text {

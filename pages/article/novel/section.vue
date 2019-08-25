@@ -11,17 +11,13 @@
 		<view class="section-other-content">
 			<view class="section-other-content-image" v-for="(f, index) in section.files" :key="index">
 				<text @tap="previewImage(1, index)">{{f.name}}</text>
-				<text style="color: #0FAEFF;">删除</text>
-			</view>
-			<view class="section-other-content-image" v-for="(f, index) in temFiles" :key="index">
-				<text @tap="previewImage(2, index)">{{f.name}}</text>
-				<text style="color: #0FAEFF;">删除</text>
+				<text @tap="delImage(f.id)" style="color: #0FAEFF;">删除</text>
 			</view>
 			<view class="section-images-name-save" v-show="tempFile.path !== ''">
 				<input v-model="tempFile.name"  placeholder="请编辑图片名称" placeholder-class="common-placeholder"/>
 				<button @tap="saveImage" type="primary" size="mini" style="height: 40upx;line-height: 40upx;margin: 0;">保存</button>
 			</view>
-			<text v-show="section.remark !== ''" style="width: 100%;font-size: 25upx;overflow: hidden;text-overflow: ellipsis;color: red;margin-top: 20upx;border-top: 1upx solid #F1F1F1;">备注:&nbsp;&nbsp;{{section.remark}}</text>
+			<text v-show="section.remark !== '' && section.remark !== null" style="width: 100%;font-size: 25upx;overflow: hidden;text-overflow: ellipsis;color: red;margin-top: 20upx;border-top: 1upx solid #F1F1F1;">备注:&nbsp;&nbsp;{{section.remark}}</text>
 		</view>
 		<view class="section-bottom">
 			<text style="margin-right: 80upx;" @tap="addImage">插入图片</text>
@@ -41,6 +37,8 @@
 <script>
 	import sectionApi from '../../../api/article/section.js'
 	
+	import uploadApi from '../../../api/upload.js'
+	
 	import objUtil from '../../../common/objUtil.js'
 	
 	import inputDlog from '../../../components/inputDlog'
@@ -57,16 +55,18 @@
 				novelTitle: null,
 				portionTitle: null,
 				section: {
+					portionId: null,
 					title: '',
 					content: '',
 					remark: '',
 					files: []
 				},
-				temFiles: [],
+				fileList: [],
 				tempFile: {
 					name: '',
 					path: ''
 				},
+				fileDelIds: [],
 				remarkVisible: true,
 				tempRemark: ''
 			}
@@ -77,13 +77,33 @@
 			this.portionTitle = option.portion
 			uni.setNavigationBarTitle( { title: this.novelTitle} )
 			if (!id) {
+				this.section.portionId = option.portioinId
 				return
 			}
 			let v = this
 			sectionApi.getSection(id).then(res => {
 				v.section = res
-				
+				v.fileList = v.section.files
 			}).catch(err => { console.log(err) })
+		},
+		onNavigationBarButtonTap () {
+			let v = this
+			let title = v.section.title
+			if (title === null || title === undefined || title.trim() === '') {
+				uni.showToast({title: '必须有标题',icon: "none"})
+				return
+			}
+			let content = v.section.content
+			if (content === null || content === undefined || content.trim() === '' || content.length < 500) {
+				uni.showToast({title: '内容不能少于500字',icon: "none"})
+				return
+			}
+			v.section.delImagesId = v.fileDelIds.toString()
+			sectionApi.saveSection(v.section).then(res => {
+				uni.showToast({title: '保存成功'})
+			}).catch (err => {
+				
+			})
 		},
 		computed: {
 			
@@ -113,9 +133,16 @@
 					uni.showToast({title: '请为图片编辑名称'})
 					return
 				}
-				v.temFiles.push(objUtil.newObj(v.tempFile))
+				let tf = objUtil.newObj(v.tempFile)
 				v.tempFile.name = ''
 				v.tempFile.path = ''
+				uploadApi.uploadFile({
+					'data': {'name': tf.name, 'relevance': 4},
+					'name': tf.name,
+					'path': tf.path
+				}).then(res => {
+					v.section.files.push(res)
+				}).catch(err => { console.log(err) })
 			},
 			previewImage (type, index) {
                 if (type !== 1 && type !==2) {
@@ -135,6 +162,11 @@
 						}
 					}
 				});
+			},
+			delImage (id) {
+				let index = this.section.files.findIndex(o => { return o.id === id })
+				this.fileDelIds.push(id)
+				this.section.files.splice(index, 1)
 			},
 			openRemark () {
 				this.remarkVisible = false
