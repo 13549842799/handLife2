@@ -3,13 +3,13 @@
 		<view class="novel-content-search"></view>
 		<view class="novel-content-head" :style="{'background-image': bg}"></view>
 		<view class="novel-content-list"  v-for="l in page.list" v-bind:key="l.id">
-			<view class="novel-list-item" @longpress="selectNovel(l)">
+			<view class="novel-list-item" @longpress="selectNovel(l)" @tap="gotToReadNovel(l.id)">
 				<view class="novel-list-item-img">
 					<image :src="fileUrl + l.cover"></image>
 				</view>
 				<view class="novel-list-item-text">
 					<text class="title">{{l.title}}</text>
-					<text class="author">{{l.createNikeName}}&nbsp;/&nbsp;{{l.wordsNum}}</text>
+					<text class="author">{{l.createNikeName}}&nbsp;/&nbsp;{{l.wordsNumStr}}</text>
 					<text>创建：{{l.createTime}} / 更新：{{l.modifierTime}}</text>
 					<text>分类：{{l.classifyName}}</text>
 				</view>
@@ -119,7 +119,12 @@
 				            console.log('用户点击取消');
 				        }
 				    }
-				});
+				})
+			},
+			gotToReadNovel (id) {
+				uni.navigateTo({
+					url: 'onlyReadMenu?id=' + id
+				})
 			}
 		},
 		computed: {

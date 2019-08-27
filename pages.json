@@ -79,6 +79,18 @@
 			}
 		},
 		{
+			"path": "pages/article/novel/onlyReadMenu",
+			"style": {
+				"app-plus": {
+					"titleNView": {
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#FFD700",
+						"titleText": "阅读作品"
+					}  
+				}
+			}
+		},
+		{
 			"path": "pages/article/diary/diary",
 			"style": {
 				"navigationBarTitleText": "个人日记"/* ,

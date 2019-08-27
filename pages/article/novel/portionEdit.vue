@@ -78,15 +78,13 @@
 			deleteSection (id, title) {
 				let v = this
 				//#ifdef APP-PLUS
-				plus.nativeUI.confirm("Are you sure ready?", function(e){
-					console.log("Close confirm: "+e.index);
+				plus.nativeUI.confirm("确认删除 "+title+" 吗?", function(e){
+					deleteSections(id, title, v)
 				});
 				//#endif
-				sectionApi.deleteSection(id).then(res => {
-					let index = v.portion.sections.findIndex(o => { return o.id === id })
-				    v.portion.sections.splice( index, 1)
-					uni.showToast({ title: '章节《'+ title +'》删除成功' })
-				}).catch(err => { console.log(err) })
+				//#ifdef H5
+				deleteSections(id, title, v)
+				//#endif
 			},
 			reflush () {
 				let v = this
@@ -97,6 +95,14 @@
 				})
 			}
 		}
+	}
+	
+	function deleteSections (id, title, v) {
+		sectionApi.deleteSection(id).then(res => {
+			let index = v.portion.sections.findIndex(o => { return o.id === id })
+		    v.portion.sections.splice( index, 1)
+			uni.showToast({ title: '章节《'+ title +'》删除成功' })
+		}).catch(err => { console.log(err) })
 	}
 </script>
 

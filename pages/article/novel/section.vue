@@ -252,7 +252,7 @@
 	}
 	
 	.section-other-content-image text {
-		font-size: 20upx;
+		font-size: 30upx;
 		margin-right: 20upx;
 	}
 	

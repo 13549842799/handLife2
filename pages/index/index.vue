@@ -20,7 +20,9 @@
 		},
 		computed: mapState(['forcedLogin', 'hasLogin', 'nikeName']),
 		onLoad() {
+			//#ifdef APP-PLUS
 			console.log('当前版本',plus.runtime.version)
+			//#endif
 			const res = uni.getSystemInfoSync()
 			let lk = loginApi.getLoginMessage() //同步获取缓存返回值是字符串
 			if (lk) {
