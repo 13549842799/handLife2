@@ -16,6 +16,7 @@ export const novelUrl = baseUrl + '/api/article/novel' //小说
 export const portionUrl = baseUrl + '/api/article/portion'  //分卷
 export const sectionUrl = baseUrl + '/api/article/section'  //章节
 export const uploadUrl = baseUrl + '/api/upload/uploadFile'
+export const allAccountUrl = baseUrl + '/api/admin/accountManager'
 
 export const loginUrl = 'http://localhost:8082/oobusinessplan/#/login'
 // const loginUrl = 'http://localhost:8080/oobusinessplan/#/login'

@@ -14,7 +14,14 @@
 					<text class="list-text">账号管理</text>
 					<text class="navigat-arrow">&#xe65e;</text>
 				</view>
-			</navigator>	
+			</navigator>
+			<navigator url="./allAccount/allAccount" hover-class="center_navitgator">
+				<view class="center-list-item border-bottom">	
+					<text class="list-icon">&#xe60f;</text>
+					<text class="list-text">私人管物</text>
+					<text class="navigat-arrow">&#xe65e;</text>
+				</view>
+			</navigator>
 			<view class="center-list-item">
 				<text class="list-icon">&#xe639;</text>
 				<text class="list-text">新消息通知</text>
