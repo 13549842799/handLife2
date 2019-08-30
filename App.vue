@@ -180,4 +180,5 @@
 	.common-input-size {
 		font-size: 30upx;
 	}
+	
 </style>

@@ -145,6 +145,18 @@
 				"navigationBarTitleText": "职员信息"
 			}
 		}
+        ,{
+            "path" : "pages/center/allAccount/allAccount",
+            "style" : {
+				"navigationBarTitleText": "私人管物"
+			}
+        },
+		{
+		    "path" : "pages/center/allAccount/allAccountAdd",
+		    "style" : {
+				"navigationBarTitleText": "添加新号信息"
+			}
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
