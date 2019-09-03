@@ -85,8 +85,16 @@
 					"titleNView": {
 						"backgroundColor": "#FFFFFF",
 						"titleColor": "#FFD700",
-						"titleText": "阅读作品"
+						"titleText": "《阅读作品》"
 					}  
+				}
+			}
+		},
+		{
+			"path": "pages/article/novel/readSection",
+			"style": {
+				"app-plus": {
+					"titleNView": false 
 				}
 			}
 		},

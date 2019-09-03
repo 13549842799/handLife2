@@ -1,0 +1,81 @@
+<template>
+	<div class="long-list-body">
+		<list class="novel-menu" v-if="portions.length > 0">
+			<list-cell class="novel-menu-portion" v-for="l in portions" :key="l.id" :son="l">
+			</list-cell>
+		</list>
+	</div>
+</template>
+
+<script>
+	import novelApi from '../../../api/article/novel.js'
+	
+	import portionApi from '../../../api/article/portion.js'
+	
+	import {$setStorage, $getStorage} from '../../../http.js'
+	
+	import listCell from '../../../components/list/longList.nvue'
+	
+	export default {
+		components: {
+			listCell
+		},
+		data () {
+			return {
+				portions: [],
+				id: null,
+				title: ''
+			}
+		},
+		onLoad (option) {
+			let v = this
+			v.id = option.id
+			v.title = option.title
+			let key = 'novelMenu_' + v.id
+			uni.setNavigationBarTitle({title: '《 ' + v.title + ' 》'})
+			let res = uni.getStorageSync(key)
+			if (res && res.validTime > new Date().getTime()) {
+				v.portions = res.list
+				return
+			}
+			portionApi.getPortionsList({'novel': v.id, 'expand': 1}).then(res => {
+				v.portions = res
+				let date = new Date()
+				date.setDate(date.getDate() + 3)
+				let data = {
+					list: v.portions,
+					validTime: date.getTime()
+				}
+				return $setStorage(key, data)
+			})
+			.then(res => {
+				console.log('缓存成功')
+			})
+			.catch(err => {
+				console.log(err)
+			})
+		}
+	}
+</script>
+
+<style>
+    div {
+		flex-direction: column;
+		font-size: 30wx;
+	}
+	
+	.long-list-body {
+		width: 360wx;
+		background-color: #FFFFFF;
+	}
+	
+	.novel-menu {
+		width: 360wx;
+		height: 500wx;
+	}
+	
+	.novel-menu-portion {
+		width: 360wx;
+	}
+	
+</style>

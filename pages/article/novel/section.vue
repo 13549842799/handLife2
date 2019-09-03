@@ -19,6 +19,7 @@
 			</view>
 			<text v-show="section.remark !== '' && section.remark !== null" style="width: 100%;font-size: 25upx;overflow: hidden;text-overflow: ellipsis;color: red;margin-top: 20upx;border-top: 1upx solid #F1F1F1;">备注:&nbsp;&nbsp;{{section.remark}}</text>
 		</view>
+		<text class="wordNum-section">{{curWordNum}}/12000</text>
 		<view class="section-bottom">
 			<text style="margin-right: 80upx;" @tap="addImage">插入图片</text>
 			<text style="margin-left: 80upx;" @tap="openRemark">备注</text>
@@ -93,11 +94,11 @@
 				uni.showToast({title: '必须有标题',icon: "none"})
 				return
 			}
-			let content = v.section.content
+			/* let content = v.section.content
 			if (content === null || content === undefined || content.trim() === '' || content.length < 500) {
 				uni.showToast({title: '内容不能少于500字',icon: "none"})
 				return
-			}
+			} */
 			v.section.delImagesId = v.fileDelIds.toString()
 			sectionApi.saveSection(v.section).then(res => {
 				uni.showToast({title: '保存成功'})
@@ -106,7 +107,9 @@
 			})
 		},
 		computed: {
-			
+			curWordNum () {			
+				return this.section.content.replace(' ', '').length + '字'
+			}
 		},
 		methods: {
 			/**
@@ -223,7 +226,15 @@
 	}
 	
 	.section-content-edit {
-		height: 650upx;
+		height: 750upx;
+	}
+	
+	.wordNum-section {
+		position: fixed;
+		bottom: 130upx;
+		right: 20upx;
+		font-size: 25upx;
+		color: #EFEFF4;
 	}
 	
 	.section-bottom {

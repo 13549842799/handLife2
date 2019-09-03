@@ -3,7 +3,7 @@
 		<view class="novel-content-search"></view>
 		<view class="novel-content-head" :style="{'background-image': bg}"></view>
 		<view class="novel-content-list"  v-for="l in page.list" v-bind:key="l.id">
-			<view class="novel-list-item" @longpress="selectNovel(l)" @tap="gotToReadNovel(l.id)">
+			<view class="novel-list-item" @longpress="selectNovel(l)" @tap="gotToReadNovel(l.id, l.title)">
 				<view class="novel-list-item-img">
 					<image :src="fileUrl + l.cover"></image>
 				</view>
@@ -121,9 +121,9 @@
 				    }
 				})
 			},
-			gotToReadNovel (id) {
+			gotToReadNovel (id, title) {
 				uni.navigateTo({
-					url: 'onlyReadMenu?id=' + id
+					url: 'onlyReadMenu?id=' + id + '&title=' + title
 				})
 			}
 		},

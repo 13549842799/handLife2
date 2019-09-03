@@ -63,6 +63,7 @@
 <style>
 
 	/*每个页面公共css */
+	/* #ifndef APP-PLUS-NVUE */
 	body,
 	page {
 		min-height: 100%;
@@ -180,5 +181,5 @@
 	.common-input-size {
 		font-size: 30upx;
 	}
-	
+	/* #endif */
 </style>

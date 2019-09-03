@@ -1,12 +1,17 @@
 <template>
-	<cell class="cell-Item">
-		<div class="cell-Item-portion" @tap="controlShow">
-			<text class="cell-Item-portion-title">{{son.title}}</text>
-			<text style="font-size: 30upx;color: #E0E0E0;">{{son.wordsNum}}</text>
+	<cell class="cell-body">
+		<div class="list-title-menu" @tap="controlShow">
+			<text class="list-text" style="color: #2F85FC;">{{son.title}}</text>
+			<div style="height: 50wx;flex-direction: row;justify-content: center;position: relative;">
+				<text class="list-text" style="color: #FFD700;margin-right: 30wx;">{{son.sectionNum}}章</text>
+				<image v-if="visible" style="width: 12wx;height: 12wx;position: absolute;right: 0;top: 20wx;" src="./../../../static/icon/up-icon.png"></image>
+			    <image v-if="!visible" style="width: 12wx;height: 12wx;position: absolute;right: 0;top: 20wx;" src="./../../../static/icon/down-icon.png"></image>
+			</div>
 		</div>
-		<div class="cell-Item-content" :class="{'cell-Item-show': visible}">
-			<div v-for="s in son.sections" :key="s.id">
-				<text>{{s.title}}</text>
+		<div class="menu-item" :style="{'height': realHeight}">
+			<div class="menu-section" v-for="s in realList" :key="s.id" @tap="selectItem(s.id)">
+				<text class="list-text">{{s.title}}</text>
+				<text class="list-wordnum">{{s.wordsNum}}</text>
 			</div>
 		</div>
 	</cell>
@@ -20,6 +25,10 @@
 				default: () => {
 					return {}
 				}
+			},
+			reversed: {
+				type: Boolean,
+				default: false
 			}
 		},
 		data () {
@@ -27,36 +36,76 @@
 				visible: true
 			}
 		},
+		computed: {
+			realHeight () {
+				return  this.visible ? this.son.sections.length * 50 + 'wx' : '0wx'
+			},
+			realList () {
+				return this.reversed ? this.son.sections.reversed() : this.son.sections
+			}
+		},
 		methods: {
 			controlShow () {
 				this.visible = !this.visible
 				this.$emit('action', this.visible)
+			},
+			selectItem (id) {
+				uni.redirectTo({
+					url: 'readSection?id=' + id
+				})
 			}
 		}
 	}
 </script>
 
 <style>
-    .cell-Item {
-		
+	.cell-body {
+		width: 360wx;
+		background-color: #EFEFF4;
 	}
 	
-	.cell-Item-portion {
-		justify-content: space-between;
+	.list-text {
+		line-height: 25wx;
+		height: 50wx;
+		font-size: 8wx;
+	}
+	
+	.menu-hide {
+		height: 0upx;
+	}
+	
+	.list-title-menu, .menu-section {
 		flex-direction: row;
+		justify-content: space-between;
+		height: 50wx;
+		background-color: #FFFFFF;
+		border-bottom-color:  #F5F5F5;
+		border-bottom-width: 1px;
+		font-weight: 600;
+		padding:0 20wx;
 	}
 	
-	.cell-Item-portion .cell-Item-portion-title {
-		font-size: 30upx;
-		font-weight: 700;
+	.list-title-menu {
+		font-weight: 900;
+		margin-top: 10wx;
 	}
 	
-	.cell-Item-content {
-		transition: height .1s;
-		height: auto;
+	.menu-item {
+		transition: height;
+		transition-duration: 100
 	}
 	
-	.cell-Item-show {
-		height: 0 !important;
+	.menu-section {
+	}
+	
+	.list-wordnum {
+		color: #FFFFFF;
+		background-color: #FFD700;
+		border-radius: 40;
+		height: 20wx;
+		line-height: 10wx;
+		font-size: 6wx;
+		margin-top: 15wx;
+		padding: 2wx 4wx;
 	}
 </style>

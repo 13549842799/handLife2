@@ -200,4 +200,34 @@ export const $upload = function ({url, fileName, filePath, data}) {
 	})
 }
 
+export const $setStorage = function (key, data) {
+	return new Promise(function (resolve, reject) {
+		uni.setStorage({
+		    'key': key,
+		    'data': data,
+		    success: function () {
+		        resolve()
+		    },
+			fail: function (err) {
+				reject(err)
+			}
+		});
+	})
+}
 
+export const $getStorage = function (key) {
+	return new Promise(function (resolve, reject) {
+		uni.getStorage({key: key, 
+			success: (res) => {
+				resolve(res.data)
+			},
+			fail: (err) => {
+				if (err.errMsg === 'getStorage:fail data not found') {
+					resolve(null)
+				} else {
+					reject(err)
+				}
+			}
+		});
+	})
+}

@@ -211,7 +211,7 @@
 					title: '请输入分类名',
 					placeholder: '分类名不能超过7个字',
 					submit: (name) => {
-						classifyApi.addClassify( {name: name, childType: 1} ).then(res => {
+						classifyApi.addClassify( {name: name, childType: 4} ).then(res => {
 							v.classify.push(res)
 							v.novel.classify = res.id
 							uni.showToast({ title: '创建成功'})
