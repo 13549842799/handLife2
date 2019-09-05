@@ -61,8 +61,6 @@
 	
 	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar"
 	
-	import inputDlog from '../../../components/inputDlog'
-	
 	import bottomModelPicker from '../../../components/model/bottomModelPicker.vue'
 	
 	import bottomModelCheckBox from '../../../components/model/BottomModelCheckBox.vue'

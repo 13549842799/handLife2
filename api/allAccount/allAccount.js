@@ -16,7 +16,7 @@ export default {
 			'url': allAccountUrl + '/list.re',
 			'data': params
 		}
-		return $getLoading(p)
+		return $get(p)
 	},
 	getAccount(id) {
 		return $getLoading({'url': allAccountUrl + '/s/' + id + '/read.re'})

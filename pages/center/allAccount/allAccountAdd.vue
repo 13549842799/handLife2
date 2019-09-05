@@ -52,7 +52,7 @@
 		},
 		methods: {
 			saveAccount () {
-				let v = this
+				let v = this						
 				if (v.account.password !== v.surePassword) {
 					uni.showToast({
 						title: '两次密码不一致',
@@ -60,6 +60,10 @@
 					})
 					return
 				}
+				v.save()
+			},
+			save () {
+				let v = this
 				allAccountApi.saveAccount(v.account).then(res => {
 					uni.showToast({
 						title: '保存成功'
@@ -76,7 +80,7 @@
 				});
 				//#endif
 				//#ifdef H5
-				this.deleteA(id)
+				this.deleteA(this.account.id)
 				//#endif
 			},
 			deleteA (id) {

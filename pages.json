@@ -156,7 +156,8 @@
         ,{
             "path" : "pages/center/allAccount/allAccount",
             "style" : {
-				"navigationBarTitleText": "私人管物"
+				"navigationBarTitleText": "私人管物",
+				"enablePullDownRefresh": true
 			}
         },
 		{

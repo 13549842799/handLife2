@@ -1,5 +1,6 @@
 <template>
 	<div class="long-list-body">
+		{{errMessage}}
 		<list class="novel-menu" v-if="portions.length > 0">
 			<list-cell class="novel-menu-portion" v-for="l in portions" :key="l.id" :son="l">
 			</list-cell>
@@ -24,7 +25,8 @@
 			return {
 				portions: [],
 				id: null,
-				title: ''
+				title: '',
+				errMessage: ''
 			}
 		},
 		onLoad (option) {
@@ -53,6 +55,7 @@
 			})
 			.catch(err => {
 				console.log(err)
+				v.errMessage += '||' + err
 			})
 		}
 	}

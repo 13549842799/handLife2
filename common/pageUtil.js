@@ -50,7 +50,7 @@ function requestNextLine ({filter, params, reflush = true, type = true, validMax
  * reflush: 是否开启刷新动画
  * type: 是否追加列表  
  */
-function requestLine ({filter, params, pageNum = 1, reflush = true, type = true}) {
+function requestLine ({filter, params, pageNum = 1, reflush = true, type = true, complete}) {
 		let f = createFilter(this.filter, filter)
 		this.pageNum = pageNum
 		let newParams = params !== null && params != undefined ? params : this.params
@@ -59,7 +59,10 @@ function requestLine ({filter, params, pageNum = 1, reflush = true, type = true}
 		let config = null
 		if (reflush) {
 			uni.startPullDownRefresh({})
-			config = {complete: () => { uni.stopPullDownRefresh() } }
+			config = {'complete': () => { uni.stopPullDownRefresh() } }
+		}
+		if (complete) {
+			config = {'complete': complete }
 		}
 		newParams = objUtil.newfilterObject(newParams, f.key, f.value)
 		this.search(newParams, config).then(res => {
