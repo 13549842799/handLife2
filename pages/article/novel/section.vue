@@ -7,7 +7,7 @@
 				<input v-model="section.title" placeholder="快起一个有趣的标题吧!" placeholder-class="common-placeholder" class="section-title" :adjust-position="false"/>
 			</view>
 		</view>
-		<textarea v-model="section.content" class="section-content-edit"  placeholder="来开始你新的故事!" placeholder-class="common-placeholder" maxlength="12000" :adjust-position="false"></textarea>
+		<textarea v-model="section.content" class="section-content-edit"  placeholder="来开始你新的故事!" placeholder-class="common-placeholder" maxlength="12000" :adjust-position="false" @linechange="lineChange"></textarea>
 		<view class="section-other-content">
 			<view class="section-other-content-image" v-for="(f, index) in section.files" :key="index">
 				<text @tap="previewImage(1, index)">{{f.name}}</text>
@@ -68,6 +68,7 @@
 					path: ''
 				},
 				fileDelIds: [],
+				fileAddIds: [],
 				remarkVisible: true,
 				tempRemark: ''
 			}
@@ -100,6 +101,7 @@
 				return
 			} */
 			v.section.delImagesId = v.fileDelIds.toString()
+			v.section.addImagesId = v.fileAddIds.toString()
 			sectionApi.saveSection(v.section).then(res => {
 				uni.showToast({title: '保存成功'})
 			}).catch (err => {
@@ -145,6 +147,7 @@
 					'path': tf.path
 				}).then(res => {
 					v.section.files.push(res)
+					v.fileAddIds.push(res.id)
 				}).catch(err => { console.log(err) })
 			},
 			previewImage (type, index) {
@@ -178,7 +181,8 @@
 			},
 			confirmSureResult () {
 				this.section.remark = this.tempRemark
-			}
+			},
+			lineChange (e) {}
 		}
 	}
 </script>
@@ -226,7 +230,9 @@
 	}
 	
 	.section-content-edit {
-		height: 750upx;
+		height: 800upx;
+		font-size: 30upx;
+		line-height: 50upx;
 	}
 	
 	.wordNum-section {
