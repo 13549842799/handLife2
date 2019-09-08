@@ -94,7 +94,13 @@
 			"path": "pages/article/novel/readSection",
 			"style": {
 				"app-plus": {
-					"titleNView": false 
+					"titleNView": false
+					/* "titleNView": {
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#E0E0E0",
+						"titleText": "章节",
+						"titleSize": "30upx"
+					} */
 				}
 			}
 		},

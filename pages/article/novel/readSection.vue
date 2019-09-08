@@ -1,7 +1,21 @@
 <template>
 	<view class="view-container read-page">
-		<view class="status_bar">{{section.title}}</view>
-		<textarea class="content-style" v-model="text" :disabled="true" :maxlength="-1" ></textarea>
+		<view class="status_bar">
+			<text>{{section.title}}</text>
+	    </view>
+		<swiper class="section-page-style" :current="page" @change="pageChange">
+			<swiper-item v-for="(p, index) in content" :key="index">
+				<textarea :value="p" class="content-style"  :disabled="true" :maxlength="-1" ></textarea>
+			</swiper-item>
+		</swiper>
+		<view class="read-bottom-menu">
+			<view>
+				<view>
+					<text>{{page + 1}}/{{content.length}}</text>
+				</view>
+				<view></view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -15,14 +29,13 @@
 					title: '标题'
 				},
 				text: '',
-				page: 1,
+				page: 0,
 				content: [],
-				fontSize: 37
+				fontSize: 37,
+				lineSize: 19
 			}
 		},
 		onLoad (option) {
-			let a = 'abc'
-			console.log(a.substring(0,3))
 			let v = this
 			sectionApi.getSection(option.id).then(res => {
 				v.section = res
@@ -47,20 +60,23 @@
 				for (let i = 0; i < arr.length; i++) {
 					let num =  Math.ceil(arr[i].length / v.lineWordsNum)
 					num = num === 0 ? 1 : num
-					if (lineNum + num <= 18) {
+					if (lineNum + num <= v.lineSize) {
 						lineNum += num
 						tempText += arr[i] + '\n'
-					} else {
-						let disWords = (18 - lineNum) * v.lineWordsNum
-						tempText += arr[i].substring(0, disWords)
-						v.content.push(tempText)
-						tempText = ''
-						lineNum = 0
-						arr[i] = arr[i].substring(disWords)
-						i = i -1
+						continue
 					}
+					let distanceWords = (v.lineSize - lineNum) * v.lineWordsNum
+					tempText += arr[i].substring(0, distanceWords)
+					v.content.push(tempText)
+					tempText = ''
+					lineNum = 0
+					arr[i] = arr[i].substring(distanceWords)
+					i = i -1
 				}
-				console.log(v.content)
+			},
+			pageChange (e) {
+				let v = this
+				v.page = e.detail.current
 			}
 		}
 	}
@@ -77,19 +93,54 @@
 		height: var(--status-bar-height);  
 		width: 100%;  
 		position: fixed;  
-		background-color: #F8F8F8;  
+		background-color: #FFFFFF;  
 		top: 0;  
-		z-index: 999;  
+		z-index: 999; 
+	}
+	
+	.status_bar text{
+		font-size: 30upx;
+		color: #E0E0E0;
+		padding: 10upx 20upx;
+	}
+	
+	.section-page-style {
+		width: 750upx;
+		height: 1190upx;
+		margin-top: 60upx;
+		background-color: #FFFFFF;
 	}
 	
 	.content-style {
-		margin-top: var(--status-bar-height);
 		width: 710upx;
 		height: 1150upx;
 		padding: 20upx;
 		font-size: 37upx;
 		font-weight: 100;
 		line-height: 60upx;
-		font-family: STKaiti;
+		font-family: PMingLiU;
+	}
+	
+	.read-bottom-menu {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+	}
+	
+	.read-bottom-menu view {
+		width: 710upx;
+		padding: 10upx 10upx;
+		justify-content: space-between;
+		flex-direction: row;
+	}
+	
+	.read-bottom-menu view view {
+		
+	}
+	
+	.read-bottom-menu view view text {
+		color: #DDDDDD;
+		font-size: 25upx;
 	}
 </style>
