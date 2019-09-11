@@ -1,9 +1,15 @@
 <template>
 	<view class="view-container read-page">
-		<view class="status_bar">
+		<view v-show="!barShow" class="status_bar">
 			<text>{{section.title}}</text>
 	    </view>
-		<swiper class="section-page-style" :current="page" @change="pageChange">
+		<view v-show="barShow" class="status_bar-show">
+			<view style="height: var(--status-bar-height);width: 100%;"></view>
+			<view class="status_bar-show-content">
+				<image src="../../../static/icon/goBack.png" @tap="goBack"></image>
+			</view>
+		</view>
+		<swiper class="section-page-style" :current="page" @change="pageChange" @animationfinish="tapEnd" @tap="clickTap">
 			<swiper-item v-for="(p, index) in content" :key="index">
 				<textarea :value="p" class="content-style"  :disabled="true" :maxlength="-1" ></textarea>
 			</swiper-item>
@@ -20,9 +26,18 @@
 </template>
 
 <script>
+	import uniBar from '../../../components/uni-nav-bar/uni-nav-bar.vue'
+	
 	import sectionApi from '../../../api/article/section.js'
 	
+	import {$setStorage, $getStorage} from '../../../http.js'
+	
+	var showBar = false //判断是否执行点击
+	
 	export default {
+		components: {
+			uniBar
+		},
 		data () {
 			return {
 				section: {
@@ -30,9 +45,11 @@
 				},
 				text: '',
 				page: 0,
+				canTap: false,
 				content: [],
 				fontSize: 37,
-				lineSize: 19
+				lineSize: 19,
+		        barShow: false
 			}
 		},
 		onLoad (option) {
@@ -40,7 +57,9 @@
 			sectionApi.getSection(option.id).then(res => {
 				v.section = res
 	            v.getPages()
-				
+				let page = option.page
+				v.page = page !== null && page !== undefined && page <= v.content.length ? (page === -1 ? v.content.length - 1 : page) : 0
+				v.cacheRate()
 			}).catch(err => { console.log(err) })
 		},
 		computed: {
@@ -63,6 +82,10 @@
 					if (lineNum + num <= v.lineSize) {
 						lineNum += num
 						tempText += arr[i] + '\n'
+						if (i === arr.length - 1) {
+							v.content.push(tempText)
+						}
+						//console.log(lineNum)
 						continue
 					}
 					let distanceWords = (v.lineSize - lineNum) * v.lineWordsNum
@@ -77,6 +100,62 @@
 			pageChange (e) {
 				let v = this
 				v.page = e.detail.current
+				v.canTap = true
+	            v.cacheRate()
+			},
+			cacheRate () {
+				$setStorage('novel_' + this.section.novelId, {id: this.section.id, page: this.page}).then(() => { }).catch(err => {console.log(err)})
+			},
+			/**
+			 * 因为 @animationfinish 事件哪怕是点击也会触发，
+			 * 为了防止在第一页或者最后一页中点击页面弹出导航栏的时候同时触发页面切换判断，
+			 * 增加showBar进行判断，因为click事件比animationfinish更早的触发，当触发了click就不触发tapEnd
+			 */
+			clickTap () {
+				console.log('tap')
+				showBar = true
+				this.barShow = !this.barShow
+			},
+			tapEnd (e) {
+					
+				let v = this
+				
+				if (showBar) {
+					showBar = false
+					return
+				}
+				v.barShow = false
+				console.log(e)
+                if (v.canTap) {
+					v.canTap = false
+					return
+				}
+				if (v.page === v.content.length - 1) {
+					if (v.section.nextSection === null || v.section.nextSection === undefined) {
+						//#ifdef APP-PLUS
+						plus.nativeUI.toast("已经是最后一章了");
+						//#endif
+						//#ifdef H5
+						uni.showToast({title: '已经是最后一章了', icon: "none"})
+						//#endif
+					} else {
+						uni.redirectTo({ url: 'readSection?id=' + v.section.nextSection })
+					}
+					return
+				}
+				if (v.section.lastSection === null || v.section.lastSection === undefined) {
+					//#ifdef APP-PLUS
+					plus.nativeUI.toast("已经是第一页了");
+					//#endif
+					//#ifdef H5
+					uni.showToast({title: '已经是第一页了', icon: "none"})
+					//#endif
+				} else {
+					uni.redirectTo({ url: 'readSection?id=' + v.section.lastSection + '&page=' + -1 })
+				}
+			},
+			goBack () {
+				uni.navigateBack({delta: 1})
 			}
 		}
 	}
@@ -89,19 +168,40 @@
 	.read-page {
 		background-color: #FFFFFF;
 	}
+	
+	.status_bar, .status_bar-show {
+		top: 0;
+		z-index: 999;
+		width: 100%;
+		position: fixed;
+	}
+	
 	.status_bar {
-		height: var(--status-bar-height);  
-		width: 100%;  
-		position: fixed;  
+		height: var(--status-bar-height);    
 		background-color: #FFFFFF;  
-		top: 0;  
-		z-index: 999; 
 	}
 	
 	.status_bar text{
 		font-size: 30upx;
 		color: #E0E0E0;
 		padding: 10upx 20upx;
+	}
+	
+	.status_bar-show {
+		background-color: #333333;
+		height: 120upx;
+		flex-direction: column;
+	}
+	
+	.status_bar-show-content {
+		width: 100%;
+		height: 50upx;
+		flex-direction: row;
+	}
+	
+	.status_bar-show-content image {
+		width: 30upx;
+		height: 30upx;
 	}
 	
 	.section-page-style {

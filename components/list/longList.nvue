@@ -8,7 +8,7 @@
 			    <image v-if="!visible" style="width: 12wx;height: 12wx;position: absolute;right: 0;top: 20wx;" src="./../../../static/icon/down-icon.png"></image>
 			</div>
 		</div>
-		<div class="menu-item" :style="{'height': realHeight}">
+		<div class="menu-item" v-if="visible">
 			<div class="menu-section" v-for="s in realList" :key="s.id" @tap="selectItem(s.id)">
 				<text class="list-text">{{s.title}}</text>
 				<text class="list-wordnum">{{s.wordsNum}}</text>
@@ -38,7 +38,8 @@
 		},
 		computed: {
 			realHeight () {
-				return  this.visible ? this.son.sections.length * 50 + 'wx' : '0wx'
+				//return  this.visible ? this.son.sections.length * 50 + 'wx' : '0wx'
+				return  this.son.sections.length * 50 
 			},
 			realList () {
 				return this.reversed ? this.son.sections.reversed() : this.son.sections
@@ -92,7 +93,7 @@
 	
 	.menu-item {
 		transition: height;
-		transition-duration: 100
+		transition-duration: 50
 	}
 	
 	.menu-section {

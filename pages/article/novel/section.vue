@@ -75,6 +75,7 @@
 		},
 		onLoad (option) {
 			let id = option.id
+			this.section.novelId = option.novelId
 			this.novelTitle = option.novel
 			this.portionTitle = option.portion
 			uni.setNavigationBarTitle( { title: this.novelTitle} )

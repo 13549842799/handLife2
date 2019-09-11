@@ -31,6 +31,14 @@
 			}
 		},
 		{
+			"path": "pages/article/novel/novelInfo",
+			"style": {
+				"app-plus": {
+					"titleNView": false
+				}
+			}
+		},
+		{
 			"path": "pages/article/novel/novelEdit",
 			"style": {
 				"navigationBarTitleText": "新建作品"

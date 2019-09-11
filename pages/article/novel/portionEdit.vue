@@ -2,11 +2,11 @@
 	<view class="view-container">
 		<view class="portion-edit-form">
 			<text>分卷名称：</text>
-			<input v-model="portion.title" placeholder="请输入分卷名" placeholder-class="common-placeholder" class="portion-edit-input"/>
+			<input :disabled="unEdit" v-model="portion.title" placeholder="请输入分卷名" placeholder-class="common-placeholder" class="portion-edit-input"/>
 			<text>分卷简介：</text>
-			<textarea class="textarea-style" v-model="portion.content" placeholder="快补充你的分卷简介吧!" placeholder-class="common-placeholder" :maxlength="80"></textarea>
+			<textarea :disabled="unEdit" class="textarea-style" v-model="portion.content" placeholder="快补充你的分卷简介吧!" placeholder-class="common-placeholder" :maxlength="80"></textarea>
 			<view style="margin:20upx 0;">
-				<button @tap="submitPortion" size="mini" type="primary">提交</button>
+				<button v-if="!unEdit" @tap="submitPortion" size="mini" type="primary">提交</button>
 			</view>
 		</view>
 		<view class="portion-info">
@@ -51,6 +51,11 @@
 				} 
 			}).catch(err => {console.log(err)})
 		},
+		computed: {
+			unEdit () {
+				return this.portion.type === 0
+			}
+		},
 		methods: {
 			backToTop () {
 				uni.pageScrollTo({
@@ -72,7 +77,7 @@
 			},
 			goToSectionEdit (id) {
 				uni.navigateTo({
-					url: 'section?novel=' + this.novelTitle + '&portioinId=' + this.portion.id + '&portion=' + this.portion.title + (id ? '&id=' + id : '')
+					url: 'section?novel=' + this.novelTitle + '&novelId=' + this.portion.novelId + '&portioinId=' + this.portion.id + '&portion=' + this.portion.title + (id ? '&id=' + id : '')
 				})
 			},
 			deleteSection (id, title) {

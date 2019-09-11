@@ -1,10 +1,12 @@
 <template>
 	<div class="long-list-body">
-		{{errMessage}}
 		<list class="novel-menu" v-if="portions.length > 0">
-			<list-cell class="novel-menu-portion" v-for="l in portions" :key="l.id" :son="l">
+			<list-cell class="novel-menu-portion" v-for="(l, index) in portions" :key="index" :son="l">
 			</list-cell>
 		</list>
+		<div class="reflush-button">
+			<image @click="reflushMenu" class="reflush-button-img" src="../../../static/icon/article/reflush.png"></image>
+		</div>
 	</div>
 </template>
 
@@ -16,6 +18,8 @@
 	import {$setStorage, $getStorage} from '../../../http.js'
 	
 	import listCell from '../../../components/list/longList.nvue'
+	
+	var key = null
 	
 	export default {
 		components: {
@@ -33,30 +37,35 @@
 			let v = this
 			v.id = option.id
 			v.title = option.title
-			let key = 'novelMenu_' + v.id
+			key = 'novelMenu_' + v.id
 			uni.setNavigationBarTitle({title: '《 ' + v.title + ' 》'})
 			let res = uni.getStorageSync(key)
 			if (res && res.validTime > new Date().getTime()) {
 				v.portions = res.list
 				return
 			}
-			portionApi.getPortionsList({'novel': v.id, 'expand': 1}).then(res => {
-				v.portions = res
-				let date = new Date()
-				date.setDate(date.getDate() + 3)
-				let data = {
-					list: v.portions,
-					validTime: date.getTime()
-				}
-				return $setStorage(key, data)
-			})
-			.then(res => {
-				console.log('缓存成功')
-			})
-			.catch(err => {
-				console.log(err)
-				v.errMessage += '||' + err
-			})
+			v.reflushMenu()
+		},
+		methods: {			
+			reflushMenu () {
+				let v = this
+				portionApi.getPortionsList({'novel': v.id, 'expand': 1}).then(res => {
+					v.portions = res
+					let date = new Date()
+					date.setDate(date.getDate() + 3)
+					let data = {
+						list: v.portions,
+						validTime: date.getTime()
+					}
+					return $setStorage(key, data)
+				})
+				.then(res => {
+					console.log('缓存成功')
+				})
+				.catch(err => {
+					console.log(err)
+				})
+			}
 		}
 	}
 </script>
@@ -80,5 +89,21 @@
 	.novel-menu-portion {
 		width: 360wx;
 	}
+	.reflush-button {
+		position: fixed;
+		right: 35wx;
+		bottom: 70wx;
+		width: 40wx;
+		height: 40wx;
+		border-radius: 150wx;
+		background-color: #DCDCDC;
+	}
 	
+	.reflush-button-img {
+		width: 30wx;
+		height: 30wx;
+		margin-left: 5wx;
+		margin-top: 5wx;
+	}
+
 </style>

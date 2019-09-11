@@ -52,6 +52,8 @@
 	
 	import {fileUrl} from '../../../base_variable.js'
 	
+	import {$setStorage, $getStorage} from '../../../http.js'
+	
 	export default {
 		components: {
 			bottomModel,
@@ -122,8 +124,14 @@
 				})
 			},
 			gotToReadNovel (id, title) {
+				/* let cacheLastSectionInfo = uni.getStorageSync('novel_' + id)
+				let obj = cacheLastSectionInfo === null || cacheLastSectionInfo === '' ? null : JSON.parse(cacheLastSectionInfo)
+				let url = obj === null  ? ('novelInfo?id=' + id) : 'readSection?id=' + obj.id + '&page=' + obj.page + '&novel=' + id
 				uni.navigateTo({
-					url: 'onlyReadMenu?id=' + id + '&title=' + title
+					'url': url
+				}) */
+				uni.navigateTo({
+					'url': 'onlyReadMenu?id='+id +'&title='+title
 				})
 			}
 		},
