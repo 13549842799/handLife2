@@ -106,10 +106,6 @@
 		align-items:center;
 	}
 	
-	.item-text {
-		font-family: texticons;
-	}
-	
 	.left-text {
 		color: #C8C7CC;
 	}

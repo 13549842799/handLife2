@@ -4,13 +4,15 @@
 			<text>{{section.title}}</text>
 	    </view>
 		<view v-show="barShow" class="status_bar-show">
-			<view style="height: var(--status-bar-height);width: 100%;"></view>
+			<view class="status_bar-show-bar"></view>
 			<view class="status_bar-show-content">
 				<image src="../../../static/icon/goBack.png" @tap="goBack"></image>
+				<text @tap="goToMenu">目录</text>
 			</view>
 		</view>
 		<swiper class="section-page-style" :current="page" @change="pageChange" @animationfinish="tapEnd" @tap="clickTap">
 			<swiper-item v-for="(p, index) in content" :key="index">
+				<text v-show="index === 0" class="article-section-title">{{section.title}}</text>
 				<textarea :value="p" class="content-style"  :disabled="true" :maxlength="-1" ></textarea>
 			</swiper-item>
 		</swiper>
@@ -34,12 +36,15 @@
 	
 	var showBar = false //判断是否执行点击
 	
+	var pageChanging = false
+	
 	export default {
 		components: {
 			uniBar
 		},
 		data () {
 			return {
+				novelTitle: '',
 				section: {
 					title: '标题'
 				},
@@ -54,20 +59,44 @@
 		},
 		onLoad (option) {
 			let v = this
-			sectionApi.getSection(option.id).then(res => {
-				v.section = res
-	            v.getPages()
-				let page = option.page
-				v.page = page !== null && page !== undefined && page <= v.content.length ? (page === -1 ? v.content.length - 1 : page) : 0
-				v.cacheRate()
-			}).catch(err => { console.log(err) })
+			v.novelTitle = option.novelTitle
+			v.requirePage(option.id, option.page)
 		},
 		computed: {
 			lineWordsNum () {
 				return Math.trunc(710/this.fontSize)
+			},
+			ls () {
+				return this.content.length === 0 ? this.lineSize - 2 : this.lineSize
 			}
 		},
 		methods: {
+			init () {
+				this.page = 0
+				this.text = ''
+				this.content = []
+			},
+			requirePage (id, page) {
+				let v = this
+				if (pageChanging) {
+					return
+				}
+				pageChanging = true
+				v.init()
+				sectionApi.getSection(id).then(res => {
+					v.section = res
+				    v.getPages()
+					console.log(v.content)
+					page = page !== null && page !== undefined && page <= v.content.length ? parseInt(page.toString()) : 0
+					v.page = page === -1 ? v.content.length - 1 : page
+					console.log(page)
+					v.cacheRate()
+					pageChanging = false
+				}).catch(err => { 
+					pageChanging = false
+					console.log(err)
+				})
+			},
 			/**
 			 * console.log(this.section.content.replace(/\n/g,"<br/>"))
 			 * 因为字符串中隐含了换行符 \n，有多少个换行符就代表了有多少行
@@ -75,11 +104,11 @@
 			 */
 			getPages () {
 				let v = this
-				let arr = this.section.content.split(/\n/g), lineNum = 0, tempText = ''
+				let arr = v.section.content.split(/\n/g), lineNum = 0, tempText = ''
 				for (let i = 0; i < arr.length; i++) {
-					let num =  Math.ceil(arr[i].length / v.lineWordsNum)
+					let num =  Math.ceil(arr[i].length / v.lineWordsNum) //当前字符串可以划分多少行
 					num = num === 0 ? 1 : num
-					if (lineNum + num <= v.lineSize) {
+					if (lineNum + num <= v.ls) { //如果已有行数 + 新增行数 <= 最大行数
 						lineNum += num
 						tempText += arr[i] + '\n'
 						if (i === arr.length - 1) {
@@ -88,7 +117,7 @@
 						//console.log(lineNum)
 						continue
 					}
-					let distanceWords = (v.lineSize - lineNum) * v.lineWordsNum
+					let distanceWords = (v.ls - lineNum) * v.lineWordsNum
 					tempText += arr[i].substring(0, distanceWords)
 					v.content.push(tempText)
 					tempText = ''
@@ -112,7 +141,6 @@
 			 * 增加showBar进行判断，因为click事件比animationfinish更早的触发，当触发了click就不触发tapEnd
 			 */
 			clickTap () {
-				console.log('tap')
 				showBar = true
 				this.barShow = !this.barShow
 			},
@@ -125,7 +153,6 @@
 					return
 				}
 				v.barShow = false
-				console.log(e)
                 if (v.canTap) {
 					v.canTap = false
 					return
@@ -139,11 +166,13 @@
 						uni.showToast({title: '已经是最后一章了', icon: "none"})
 						//#endif
 					} else {
-						uni.redirectTo({ url: 'readSection?id=' + v.section.nextSection })
+						v.requirePage(v.section.nextSection)
+						//uni.redirectTo({ url: 'readSection?id=' + v.section.nextSection })
 					}
 					return
 				}
 				if (v.section.lastSection === null || v.section.lastSection === undefined) {
+					console.log('已经是第一页了')
 					//#ifdef APP-PLUS
 					plus.nativeUI.toast("已经是第一页了");
 					//#endif
@@ -151,11 +180,15 @@
 					uni.showToast({title: '已经是第一页了', icon: "none"})
 					//#endif
 				} else {
-					uni.redirectTo({ url: 'readSection?id=' + v.section.lastSection + '&page=' + -1 })
+					console.log('翻页：前')
+					v.requirePage(v.section.lastSection, -1)
 				}
 			},
 			goBack () {
 				uni.navigateBack({delta: 1})
+			},
+			goToMenu () {
+				uni.navigateTo({ 'url': 'onlyReadMenu?id='+this.section.novelId +'&title='+ this.novelTitle })
 			}
 		}
 	}
@@ -193,15 +226,31 @@
 		flex-direction: column;
 	}
 	
+	.status_bar-show-bar {
+		height: 50upx;
+		width: 100%;
+	}
+	
 	.status_bar-show-content {
 		width: 100%;
 		height: 50upx;
 		flex-direction: row;
+		justify-content: space-between;
 	}
 	
 	.status_bar-show-content image {
-		width: 30upx;
-		height: 30upx;
+		margin-top: 7.5upx;
+		width: 35upx;
+		height: 35upx;
+		margin-left: 20upx;
+	}
+	
+	.status_bar-show-content text {
+		height: 50upx;
+		line-height: 50upx;
+		color: #F0AD4E;
+		margin-right: 20upx;
+		font-size: 35upx;
 	}
 	
 	.section-page-style {
@@ -213,7 +262,7 @@
 	
 	.content-style {
 		width: 710upx;
-		height: 1150upx;
+		height: 1100upx;
 		padding: 20upx;
 		font-size: 37upx;
 		font-weight: 100;
@@ -242,5 +291,11 @@
 	.read-bottom-menu view view text {
 		color: #DDDDDD;
 		font-size: 25upx;
+	}
+	
+	.article-section-title {
+		font-size: 50upx;
+		font-weight: 500;
+		padding-left: 10upx;
 	}
 </style>

@@ -1,7 +1,7 @@
 <template>
 	<div class="long-list-body">
 		<list class="novel-menu" v-if="portions.length > 0">
-			<list-cell class="novel-menu-portion" v-for="(l, index) in portions" :key="index" :son="l">
+			<list-cell class="novel-menu-portion" v-for="(l, index) in portions" :key="index" :son="l" :current="current.id" v-on:tapMenu="goToSection">
 			</list-cell>
 		</list>
 		<div class="reflush-button">
@@ -30,7 +30,8 @@
 				portions: [],
 				id: null,
 				title: '',
-				errMessage: ''
+				errMessage: '',
+				current: {}
 			}
 		},
 		onLoad (option) {
@@ -39,6 +40,12 @@
 			v.title = option.title
 			key = 'novelMenu_' + v.id
 			uni.setNavigationBarTitle({title: '《 ' + v.title + ' 》'})
+			
+			let report = uni.getStorageSync('novel_' + v.id)
+			if (report !== null && report !== '') {
+				v.current = report
+			}
+			
 			let res = uni.getStorageSync(key)
 			if (res && res.validTime > new Date().getTime()) {
 				v.portions = res.list
@@ -65,6 +72,13 @@
 				.catch(err => {
 					console.log(err)
 				})
+			},
+			goToSection (id) {
+				let pageParam = ''
+				if (this.current.id === id) {
+					pageParam += '&page=' + this.current.page
+				}
+				uni.redirectTo({ url: 'readSection?id=' + id +'&novelTitle=' + this.title + pageParam})
 			}
 		}
 	}

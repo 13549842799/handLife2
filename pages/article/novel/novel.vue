@@ -26,7 +26,7 @@
 			<view class="novel-bottom-model-view">
 				<text>置顶</text>
 				<text @tap="goToEdit">编辑</text>
-				<text>书籍详情</text>
+				<text @tap="goToInfo">书籍详情</text>
 				<text style="color: red;" @tap="deleteNovel">删除本书</text>
 				<text class="cancel-model" @tap="closeBottom">取消</text>
 			</view>
@@ -84,6 +84,10 @@
 			...mapMutations({
 				'alterListStatus': 'novel/alterStatus'
 			}),
+			goToInfo () {
+				uni.navigateTo({ url: 'novelInfo?id=' + this.novel.id })
+				this.closeBottom()
+			},
 			goToEdit () {
 				uni.navigateTo({
 					url: './novelEdit' + (this.novel.id ? '?id=' + this.novel.id : '')
@@ -123,16 +127,14 @@
 				    }
 				})
 			},
+			/**
+			 * 读取section的进度缓存，然后判断是否阅读过，读过则直接跳转到相应页面，否则跳转到小说详情页
+			 * @param {Object} id 小说id
+			 * @param {Object} title 小说标题
+			 */
 			gotToReadNovel (id, title) {
-				/* let cacheLastSectionInfo = uni.getStorageSync('novel_' + id)
-				let obj = cacheLastSectionInfo === null || cacheLastSectionInfo === '' ? null : JSON.parse(cacheLastSectionInfo)
-				let url = obj === null  ? ('novelInfo?id=' + id) : 'readSection?id=' + obj.id + '&page=' + obj.page + '&novel=' + id
-				uni.navigateTo({
-					'url': url
-				}) */
-				uni.navigateTo({
-					'url': 'onlyReadMenu?id='+id +'&title='+title
-				})
+				let cache = uni.getStorageSync('novel_' + id), url = (cache === null  ? ('novelInfo?id=' + id) : 'readSection?id=' + cache.id + '&page=' + cache.page + '&novel=' + id + '&novelTitle=' + title)
+				uni.navigateTo({ 'url': url})
 			}
 		},
 		computed: {

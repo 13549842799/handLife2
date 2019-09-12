@@ -9,8 +9,8 @@
 			</div>
 		</div>
 		<div class="menu-item" v-if="visible">
-			<div class="menu-section" v-for="s in realList" :key="s.id" @tap="selectItem(s.id)">
-				<text class="list-text">{{s.title}}</text>
+			<div class="menu-section" :class="{'read-section': s.id === current}" v-for="s in realList" :key="s.id" @tap="selectItem(s.id)">
+				<text class="list-text" :class="{'read-section-text': s.id === current}">{{s.title}}</text>
 				<text class="list-wordnum">{{s.wordsNum}}</text>
 			</div>
 		</div>
@@ -29,6 +29,10 @@
 			reversed: {
 				type: Boolean,
 				default: false
+			},
+			current: {
+				type: Number,
+				default: -1
 			}
 		},
 		data () {
@@ -51,9 +55,7 @@
 				this.$emit('action', this.visible)
 			},
 			selectItem (id) {
-				uni.redirectTo({
-					url: 'readSection?id=' + id
-				})
+				this.$emit('tapMenu', id)
 			}
 		}
 	}
@@ -108,5 +110,13 @@
 		font-size: 6wx;
 		margin-top: 15wx;
 		padding: 2wx 4wx;
+	}
+	
+	.read-section {
+		background-color: rgba(255,215,0, 0.2);		
+	}
+	
+	.read-section-text {
+		color: #FF9900;
 	}
 </style>

@@ -178,8 +178,25 @@
 		color: #DCDCDC;
 	}
 	
+	.item-text {
+		font-family: texticons;
+	}
+	
 	.common-input-size {
 		font-size: 30upx;
 	}
+	
+	.app-status-bar {
+		height: var(--status-bar-height);
+		width: 100%;
+	}
+	
+	.common-bottom-item {
+		width: 100%;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+	}
+	
 	/* #endif */
 </style>
