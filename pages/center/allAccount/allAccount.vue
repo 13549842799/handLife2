@@ -52,15 +52,16 @@
 					bind_email: '',
 					bind_phone: '',
 					remark: '' */
-				}
+				},
+				list: []
 			}
 		},
 		onLoad() {
             let v = this
-			v.page = new MyPage({'searchFunction': allAccountApi.getList})
-			console.log(v.page.list)
+			v.page = new MyPage({'searchFunction': allAccountApi.getList, 'size': 10})
 		},
 		onPullDownRefresh () {
+			console.log('下拉')
 			uni.startPullDownRefresh({
 				success: () => {
 					this.page.requestLine({reflush: false, type: false, complete: () => { uni.stopPullDownRefresh() }})
@@ -68,6 +69,7 @@
 			})
 		},
 		onReachBottom () { //上拉触底事件监听
+		console.log('上啦')
 			this.page.getNextLine({})
 		},
 		methods: {

@@ -133,8 +133,12 @@
 			 * @param {Object} title 小说标题
 			 */
 			gotToReadNovel (id, title) {
-				let cache = uni.getStorageSync('novel_' + id), url = (cache === null  ? ('novelInfo?id=' + id) : 'readSection?id=' + cache.id + '&page=' + cache.page + '&novel=' + id + '&novelTitle=' + title)
-				uni.navigateTo({ 'url': url})
+				let cache = uni.getStorageSync('novel_' + id)
+				if (cache === null || cache === '') {
+					uni.navigateTo({ url: 'novelInfo?id=' + id })
+				} else {
+					uni.navigateTo({ 'url': 'readSection?id=' + cache.id + '&page=' + cache.page + '&novel=' + id + '&novelTitle=' + title})
+				}
 			}
 		},
 		computed: {

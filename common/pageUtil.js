@@ -39,7 +39,7 @@ function requestNextLine ({filter, params, reflush = true, type = true, validMax
 		console.log('已经是最新一页了')
 		return
 	}
-	this.requestLine({filter, params, pn, reflush, type})
+	this.requestLine({filter, params,'pageNum': pn, reflush, type})
 }
 
 /**

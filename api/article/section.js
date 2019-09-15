@@ -15,8 +15,9 @@ export default {
 	/**
 	 * @param {Object} id
 	 */
-	getSection(id) {
-		return $getLoading({url: sectionUrl + '/s/' + id + '/read.re'})
+	getSection(id, novelId) {
+		
+		return $getLoading({url: sectionUrl + '/s/' + id + '/read.re', data: novelId ? {'novelId': novelId} : {}})
 	},
 	getSectionList(params) {
 		return $getLoading({url: sectionUrl + '/list.re', data: params})

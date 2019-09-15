@@ -13,6 +13,12 @@
 					<!-- #endif -->
 				</view>
 			</view>
+			<view class="form-item" v-if="!isNewNovel">
+				<view class="item-label"><text>状态</text></view>
+				<view @tap="openSelectClassify" style="width: 500upx;">
+					<text :style="{color: novel.classify ? '#0FAEFF' : '#DDDDDD'}">{{classifyName}}</text>
+				</view>
+			</view>
 			<view class="form-item">
 				<view class="item-label"><text>分类</text></view>
 				<view @tap="openSelectClassify" style="width: 500upx;">

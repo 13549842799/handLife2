@@ -60,7 +60,7 @@
 		onLoad (option) {
 			let v = this
 			v.novelTitle = option.novelTitle
-			v.requirePage(option.id, option.page)
+			v.requirePage(option.id, option.page, option.novelId)
 		},
 		computed: {
 			lineWordsNum () {
@@ -76,15 +76,15 @@
 				this.text = ''
 				this.content = []
 			},
-			requirePage (id, page) {
+			requirePage (id, page, novelId) {
 				let v = this
 				if (pageChanging) {
 					return
 				}
 				pageChanging = true
 				v.init()
-				sectionApi.getSection(id).then(res => {
-					v.section = res
+				sectionApi.getSection(id, novelId).then(res => {					
+					v.section = res ? res : {}
 				    v.getPages()
 					console.log(v.content)
 					page = page !== null && page !== undefined && page <= v.content.length ? parseInt(page.toString()) : 0

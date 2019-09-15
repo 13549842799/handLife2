@@ -72,6 +72,10 @@
 					uni.showToast({
 						title: '保存成功'
 					})
+					if (!v.account.id) {
+						uni.navigateBack({delta:1})
+						return
+					}
 					v.account = objUtil.newfilterObject(res, ['password'], [])
 					v.alterPasswod(false)
 				}).catch(err => {console.log(err)})

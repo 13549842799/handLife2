@@ -62,7 +62,9 @@
 		},
 		data () {
 			return {
-				novel: {},
+				novel: {
+					lastetSection: {}
+				},
 				autoHeight: false
 			}
 		},
@@ -74,13 +76,13 @@
 		},
 		computed: {
 			cover () {
-				return fileUrl + this.novel.cover
+				return this.novel.cover ? fileUrl + this.novel.cover : '../../../static/nullpic.jpg'
 			},
 			state () {
 				return stateName[this.novel.novelState]
 			},
 			content () {
-				return this.novel.content === null || this.novel.content.trim() === '' ? '暂无简介' : this.novel.content
+				return !this.novel.content || this.novel.content.trim() === '' ? '暂无简介' : this.novel.content
 			}
 		},
 		methods: {
@@ -91,7 +93,7 @@
 				uni.navigateTo({ 'url': 'onlyReadMenu?id='+this.novel.id +'&title='+ this.novel.title })
 			},
 			goToRead () {
-				uni.navigateTo({ 'url': 'readSection?id=-1&novelTitle='+ this.novel.title })
+				uni.navigateTo({ 'url': 'readSection?id=-1&novelTitle='+ this.novel.title + '&novelId=' + this.novel.id })
 			}
 		}
 	}
