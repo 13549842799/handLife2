@@ -58,6 +58,10 @@
 			}
 		},
 		onLoad (option) {
+			//#ifdef
+			plus.navigator.setFullscreen(true);
+			//#endif
+			
 			let v = this
 			v.novelTitle = option.novelTitle
 			v.requirePage(option.id, option.page, option.novelId)

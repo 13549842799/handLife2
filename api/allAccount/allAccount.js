@@ -11,10 +11,11 @@ import {
 } from './../../http.js'
 
 export default {
-	getList(params) {
+	getList(params, config) {
 		let p = {
 			'url': allAccountUrl + '/list.re',
-			'data': params
+			'data': params,
+			'config': config
 		}
 		return $get(p)
 	},

@@ -47,7 +47,7 @@ function requestNextLine ({filter, params, reflush = true, type = true, validMax
  * filter:  对参数的过滤
  * params:  查询携带的参数
  * pageNum: 查询的页码
- * reflush: 是否开启刷新动画
+ * reflush: 是否开启刷新动画b
  * type: 是否追加列表  
  */
 function requestLine ({filter, params, pageNum = 1, reflush = true, type = true, complete}) {
@@ -58,8 +58,8 @@ function requestLine ({filter, params, pageNum = 1, reflush = true, type = true,
 		newParams.pageSize = this.pageSize
 		let config = null
 		if (reflush) {
-			uni.startPullDownRefresh({})
-			config = {'complete': () => { uni.stopPullDownRefresh() } }
+			uni.showLoading()
+			config = {'complete': () => { uni.hideLoading() } }
 		}
 		if (complete) {
 			config = {'complete': complete }

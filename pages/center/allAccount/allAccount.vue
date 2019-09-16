@@ -7,7 +7,7 @@
 			暂无信息
 		</view>
 		<template v-else>
-			<list-item  v-for="l in page.list" :key="l.id" :title="l.source" :val="l.username" :sign="false" v-on:MyTap="openInfoMessage(l)"></list-item>
+			<list-item  v-for="(l, index) in page.list" :key="index" :title="l.source" :val="l.username" :sign="false" v-on:MyTap="openInfoMessage(l)"></list-item>
 		</template>
 		<buttom-model :height="460" ref="accountBottom" v-on:close="closeBottom">
 			<view class="buttom-model">
@@ -66,7 +66,7 @@
 				success: () => {
 					this.page.requestLine({reflush: false, type: false, complete: () => { uni.stopPullDownRefresh() }})
 				}
-			})
+			}) 
 		},
 		onReachBottom () { //上拉触底事件监听
 		console.log('上啦')
