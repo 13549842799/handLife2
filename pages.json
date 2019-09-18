@@ -138,6 +138,19 @@
 			}
 		},
 		{
+			"path": "pages/article/diary/read",
+			"style": {
+				"app-plus": {
+					"titleNView": {						
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#C8C7CC",
+						"titleText": ""
+					}  
+				}
+				
+			}
+		},
+		{
 			"path": "pages/article/classify/classify",
 			"style": {
 				"navigationBarTitleText": "分类"

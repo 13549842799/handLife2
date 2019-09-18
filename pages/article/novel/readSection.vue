@@ -58,7 +58,7 @@
 			}
 		},
 		onLoad (option) {
-			//#ifdef
+			//#ifdef APP-PLUS
 			plus.navigator.setFullscreen(true);
 			//#endif
 			
@@ -175,7 +175,10 @@
 					}
 					return
 				}
-				if (v.section.lastSection === null || v.section.lastSection === undefined) {
+				if (v.page !== 0) {
+					return
+				}
+				if ( v.section.lastSection === null || v.section.lastSection === undefined) {
 					console.log('已经是第一页了')
 					//#ifdef APP-PLUS
 					plus.nativeUI.toast("已经是第一页了");
@@ -203,7 +206,7 @@
 		display: flex;
 	}
 	.read-page {
-		background-color: #FFFFFF;
+		background-color: #D1BA74;
 	}
 	
 	.status_bar, .status_bar-show {
@@ -261,7 +264,7 @@
 		width: 750upx;
 		height: 1190upx;
 		margin-top: 60upx;
-		background-color: #FFFFFF;
+		background-color: #D1BA74;
 	}
 	
 	.content-style {

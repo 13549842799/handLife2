@@ -128,6 +128,7 @@
 			 * 查看日记
 			 */
 			readdiary (diary) {
+				uni.navigateTo({url: 'read?id=' + diary.id})
 			},
 			/**
 			 * 查询标题
