@@ -193,6 +193,12 @@
 				"navigationBarTitleText": "添加新号信息"
 			}
 		}
+        ,{
+            "path" : "pages/center/target/target",
+            "style" : {
+				"navigationBarTitleText": "目标管理"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

@@ -22,6 +22,13 @@
 					<text class="navigat-arrow">&#xe65e;</text>
 				</view>
 			</navigator>
+			<navigator url="./target/target" hover-class="center_navitgator">
+				<view class="center-list-item border-bottom">	
+					<text class="list-icon">&#xe60b;</text>
+					<text class="list-text">当前目标</text>
+					<text class="navigat-arrow">&#xe65e;</text>
+				</view>
+			</navigator>
 			<view class="center-list-item">
 				<text class="list-icon">&#xe639;</text>
 				<text class="list-text">新消息通知</text>
