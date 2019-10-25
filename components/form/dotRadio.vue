@@ -1,7 +1,7 @@
 <template>
 	<view class="form-radio">
 		<text v-if="title" class="title">{{title}}</text>
-		<!-- <text style="color: red;width: 100%;font-size: 25upx;line-height: 25upx;text-align: center;">{{obj === null ? '' : obj.name}}</text> -->
+		<text style="color: red;width: 100%;font-size: 25upx;line-height: 25upx;text-align: center;">{{obj === null ? '' : obj.name}}</text>
 		<view class="form-radio-dot">
 			<radio-group @change="radioChange">
 					<view class="radio-view" v-for="(item, index) in items" :key="index" :style="{width: cWidth(index)}" >
@@ -39,7 +39,7 @@
 		data() {
 			return {
 				curIndex: this.items.findIndex(o=> { return o.value === this.value}),
-				obj: this.items.find(o=> { return o.value === String(this.value) }),
+				obj: this.items.find(o=> { return o.value === this.value }),
 				valueStr: String(this.value)
 			}
 		},
