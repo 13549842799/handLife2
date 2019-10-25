@@ -7,8 +7,8 @@
 			</view>
 		</view>
 		<view class="target-menu">
-			<view class="target-menu-add">
-				<text class="iconfont icon-jiahao"></text>
+			<view class="target-menu-add" @tap="goToAddTarget">
+				<text class="icon">&#xe60e;</text>
 				<text>添加新目标</text>
 			</view>
 		</view>
@@ -27,7 +27,9 @@
 			}
 		},
 		methods: {
-			
+			goToAddTarget() {
+				uni.navigateTo({ url: 'targetAdd' })
+			}
 		}
 	}
 </script>
@@ -86,7 +88,12 @@ view {
 }
 
 .icon {
-	font-family: texticons;
+	font-family: "iconfont" !important;
+	  font-size: 30px;
+	  font-style: normal;
+	  -webkit-font-smoothing: antialiased;
+	  -moz-osx-font-smoothing: grayscale;
+
 }
 
 </style>

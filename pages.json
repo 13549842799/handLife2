@@ -198,7 +198,13 @@
             "style" : {
 				"navigationBarTitleText": "目标管理"
 			}
-        }
+        },
+		{
+		    "path" : "pages/center/target/targetAdd",
+		    "style" : {
+				"navigationBarTitleText": "快来创建你的新目标吧"
+			}
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
