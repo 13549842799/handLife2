@@ -204,6 +204,12 @@
 		    "style" : {
 				"navigationBarTitleText": "快来创建你的新目标吧"
 			}
+		},
+		{
+			"path": "pages/center/target/targetList",
+			"style" : {
+				"navigationBarTitleText": "目标库"
+			}
 		}
     ],
 	"globalStyle": {

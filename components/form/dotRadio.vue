@@ -81,6 +81,7 @@ view {
 .form-radio {
 	width: 100%;
 	flex-direction: column;
+	margin-top: 20rpx;
 }
 
 .form-radio .title{
