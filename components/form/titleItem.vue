@@ -4,6 +4,7 @@
 		<view class="form-content">
 			<slot></slot>
 		</view>
+		<text v-show="err" style="font-size: 15rpx;color: red;">{{err}}</text>
 	</view>
 </template>
 
@@ -12,6 +13,10 @@ export default {
 	props: {
 		title: {
 			type: String
+		},
+		err: {
+			type: String,
+			require: false
 		}
 	},
 	data() {

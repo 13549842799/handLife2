@@ -28,6 +28,10 @@
 				default: function () {
 					return dataUtil.dateFormat('yyyy-MM-dd', new Date())
 				}
+			},
+			err: {
+				type: String,
+				require: false
 			}
 		},
 		computed: {

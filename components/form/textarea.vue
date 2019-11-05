@@ -1,12 +1,17 @@
 <template>
-	<view class="form-textarea">
-		<text>{{title}}</text>
+	<title-item :title="title" :err="err">
 		<textarea :placeholder="placeholder" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" placeholder-class="placeholder-class" :auto-height="true"></textarea>
-	</view>
+	</title-item>
 </template>
 
 <script>
+	
+	import titleItem from './titleItem.vue'
+	
 	export default {
+	    components: {
+            titleItem
+		},
 		props: {
 			title: {
 				type: String,
@@ -18,6 +23,10 @@
 			value: {
 				type:String,
 				require: true
+			},
+			err: {
+				type: String,
+				require: false
 			}
 		}
 	}

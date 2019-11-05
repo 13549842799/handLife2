@@ -7,16 +7,14 @@
 		<view v-show="secondPart">
 			<text-area-item v-model="target.finishSign" title="完成的标志" placeholder="怎样才算完成呢？"></text-area-item>
 		</view>
-		<view v-show="thirdPart">
+		<view v-show="laststPart">
 		    <dot-radio current="1" :items="levelItems" title="目标等级" tip="请选择对应的目标等级吧" v-model="target.level" ></dot-radio>
 		    <radio-item @change="typeChange" title="目标类型" :items="typeItems" :defaultValue="typeStr" :dire="true"></radio-item>
-		</view>
-		<view v-show="laststPart">
-		    <date-input title="决定完成目标的预期时间吧" startDate="2019-10-25" :value="target.expectFinishTime" @change="dateChange"></date-input>
+			<date-input title="决定完成目标的预期时间吧" startDate="2019-10-25" :value="target.expectFinishTime" @change="dateChange"></date-input>
 		</view>
 		<view class="bottom-button-group">
 			<button type="default" size="mini" @tap="goLast" v-show="!firstPart">上一步</button>
-			<button type="primary" size="mini" v-if="target.state !== 1">存草稿</button>
+			<button type="primary" size="mini" @tap="submitTarget" v-if="target.state !== 1">存草稿</button>
 			<button type="primary" size="mini" @tap="validFirstPart" v-show="!laststPart">下一步</button>
 			<button type="primary" size="mini"  v-show="laststPart">提交</button>
 		</view>
@@ -24,15 +22,16 @@
 </template>
 
 <script>
-	import inputItem from '../../../components/form/input';
+	import inputItem from '../../../components/form/input'
 	import textAreaItem from '../../../components/form/textarea'    
 	import dotRadio from '../../../components/form/dotRadio'
     import radioItem from '../../../components/form/radio'
 	import dateInput from '../../../components/form/dateInput.vue'
 	
+	import targetApi from '../../../api/target/target.js'
 	import objUtil from '../../../common/objUtil.js'
 
-    const maxPage = 4 //最大页数
+    const maxPage = 3 //最大页数
 		
 	export default {
 		components: {
@@ -41,11 +40,6 @@
 			dotRadio,
 			radioItem,
 			dateInput
-		},
-		computed: {
-			typeStr () {
-				return String(objUtil.defaultVal(this.target.type, 0))
-			}
 		},
 		data () {
 			return {
@@ -75,6 +69,9 @@
 			},
 			laststPart() {
 				return this.curTap === maxPage
+			},
+			typeStr () {
+				return String(objUtil.defaultVal(this.target.type, 0))
 			}
 		},
 		methods: {
@@ -83,19 +80,32 @@
 			},
 			goLast() {
 				this.curTap = this.curTap === 1 ? this.curTap === 1 : this.curTap - 1
-			}
-		},
-		methods: {
+			},
 			typeChange (o) {
 				this.target.type = parseInt(o.value)
 			},
 			dateChange(date) {
 				this.target.expectFinishTime = date
 			},
+			submitFinish() {
+				this.target.state = 1
+				this.submitTarget()
+			},
 			submitTarget() {
-				uni.reLaunch({
-					url: 'targetList'
+				console.log('保存草稿')
+				targetApi.saveTarget(this.target).then(res => {
+					uni.reLaunch({
+						url: 'targetList'
+					})
+				}).catch(err => {
+					if (err.message) {
+						let arr = err.message.split(',')
+						if (arr != null && arr.length == 2) {
+							uni.showToast({ title: arr[1], icon: "none" })
+						}
+					}
 				})
+				
 			}
 		}
 	}
