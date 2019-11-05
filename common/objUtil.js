@@ -43,5 +43,29 @@ export default {
 				target[key] = origin[key]
 			}
 		}
+	},
+	/**
+	 * 判断对象是否非空
+	 * @param {Object} obj
+	 */
+	notNull(obj) {
+		return obj !== null && obj !== undefined
+	},
+	defaultVal(obj, val) {
+		return this.notNull(obj) ? obj : (val !== undefined ? val : null)
+	},
+	isDate(obj) {
+		return obj instanceof Date
+	},
+	isStr(obj) {
+		return typeof obj === 'string'
+	},
+	returnDate(str, date) {
+		if (date && this.isDate(date)) {
+			str = str.split('-')			
+			date.setFullYear(parseInt(str[0]), parseInt(str[1]) -1, parseInt(str[2]))
+			return date
+		}
+		return new Date(str)
 	}
 }
