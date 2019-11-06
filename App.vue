@@ -172,6 +172,12 @@
 		flex-direction: column;
 	}
 	
+	.view-padding-container {
+		width: 710rpx;
+		padding: 20rpx 20rpx;
+		flex-direction: column;
+	}
+	
 	/* 输入框placeHolder样式 */
 	.common-placeholder {
 		font-size: 30upx;

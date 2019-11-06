@@ -92,7 +92,6 @@
 				this.submitTarget()
 			},
 			submitTarget() {
-				console.log('保存草稿')
 				targetApi.saveTarget(this.target).then(res => {
 					uni.reLaunch({
 						url: 'targetList'

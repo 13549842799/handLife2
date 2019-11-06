@@ -12,7 +12,8 @@
 export default {
 	props: {
 		title: {
-			type: String
+			type: String,
+			require: false
 		},
 		err: {
 			type: String,

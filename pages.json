@@ -208,7 +208,19 @@
 		{
 			"path": "pages/center/target/targetList",
 			"style" : {
-				"navigationBarTitleText": "目标库"
+				"app-plus": {
+					"titleNView": {	
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#FFD700",
+						"titleText": "目标库",
+						"buttons": [{
+							"float": "right",
+							"fontSrc": "/static/css/addIcon/iconfont.ttf",
+							"text": "\ue693",
+							"fontSize": "30rpx"
+						}]
+					}  
+				}
 			}
 		}
     ],

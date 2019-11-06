@@ -17,5 +17,18 @@ export default {
 	 */
 	saveTarget(params) {
 		return $postLoading({url: targetUrl + '/save.do', data: params})
+	},
+	/**
+	 * 
+	 * @param {Object} params
+	 * @param {Object} config
+	 */
+	getTargetList(params, config) {
+		let p = {
+			url: targetUrl + '/list.re',
+			data: params,
+			config: config
+		}
+		return $get(p)
 	}
 }
