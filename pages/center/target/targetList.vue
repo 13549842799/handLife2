@@ -2,11 +2,14 @@
 	<view class="view-padding-container">
 		<view class="select-container">
 			<view>
-				<label-radio :items="typeItem" @change="selectType"></label-radio>
+				<label-radio :items="typeItem" attr="type" @change="selectList"></label-radio>
+			</view>
+			<view>
+				<label-radio :items="levelItem" attr="level" @change="selectList"></label-radio>
 			</view>
 		</view>
 		<view class="target-list-content">
-			<view class="target-list-item" v-for="(l, index) in page.list" :key="l.id">
+			<view class="target-list-item" v-for="(l, index) in page.list" :key="l.id" @tap="readOrEdit(l.id, l.state)">
 				<view class="target-list-item-head">
 					<uni-tag :text="l.levelName" size="small" :type="levelType[l.level]"></uni-tag>
 					<uni-tag :text="l.typeName" size="small" type="success" :inverted="true" style="margin-left: 20rpx;"></uni-tag>
@@ -40,8 +43,9 @@
 		data() {
 			return {
 				page: {},
-				levelType: {1: 'primary', 2: 'primary', 3: 'warning', 4: 'danger'},
-				typeItem: [{label: '全部类型', val: ''}, {label: '学习', val: 1}, {label: '工作', val: 2}, {label: '生活', val: 3}]
+				levelType: {1: 'primary', 2: 'primary', 3: 'warning', 4: 'error'},
+				typeItem: [{label: '全部类型', val: ''}, {label: '学习', val: 2}, {label: '工作', val: 3}, {label: '生活', val: 1}],
+				levelItem: [{label: '所有程度', val: ''}, {label: '紧急', val: 4}, {label: '近期', val: 3}, {label: '中期', val: 2}, {label: '远期', val: 1}]
 			}
 		},
 		onLoad() {
@@ -54,9 +58,18 @@
 			})
 		},
 		methods: {
-			selectType(val) {
-				this.page.params.type = val
+			selectList(val) {
+				this.page.params[val.name] = val.val
 				this.page.requestLine({type: false, filter: {value: ['']}})
+			},
+			readOrEdit(id, state) {
+				if (state === 0) {
+					uni.navigateTo({
+						url: 'targetAdd?id=' + id
+					})
+				} else {
+					
+				}
 			}
 		}
 	}
@@ -77,6 +90,7 @@
 	.select-container > view {
 		flex-direction: row;
 		height: 60rpx;
+		margin-bottom: 20rpx;
 	}
 	
 	.select-title {
@@ -123,7 +137,6 @@
 	}
 	
 	.target-list-item-content text {
-		
 	}
 	
 	.target-list-item-bottom {

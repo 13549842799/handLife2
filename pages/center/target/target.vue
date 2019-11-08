@@ -6,10 +6,21 @@
 				
 			</view>
 		</view>
+		<uni-drawer :visible="drawer" mode="right" @close="closeDrawer">
+		    <view style="padding:30upx;" class="drawer-list">
+				<navigator url="targetList">
+					<view class="drawer-item">
+						<text>列表</text>
+					</view>
+				</navigator>
+		    </view>
+		</uni-drawer>
 		<view class="target-menu">
 			<view class="target-menu-add" @tap="goToAddTarget">
-				<text class="icon">&#xe60e;</text>
 				<text>添加新目标</text>
+			</view>
+			<view class="target-menu-drawer" @tap="drawer = true" >
+				<text>展开</text>
 			</view>
 		</view>
 	</view>
@@ -20,15 +31,24 @@
 	
 	import '../../../api/target/target.js'
 	
+	import uniDrawer from "@/components/uni-drawer/uni-drawer.vue"
+	
 	export default {
+		components: {
+			uniDrawer
+		},
 		data() {
 			return {
-				
+				drawer: false
 			}
 		},
 		methods: {
 			goToAddTarget() {
 				uni.navigateTo({ url: 'targetAdd' })
+			},
+			closeDrawer() {
+				console.log('触发false')
+				this.drawer = false;
 			}
 		}
 	}
@@ -69,12 +89,12 @@ view {
 
 .target-menu > .target-menu-add {
 	position: absolute;
-	left: 250upx;
-	top: -50upx;
-	width: 250upx;
-	height: 100upx;
+	left: 250rpx;
+	top: -50rpx;
+	width: 250rpx;
+	height: 100rpx;
 	background: #007AFF;
-	border-radius: 80upx;
+	border-radius: 80rpx;
 	box-shadow: 0upx 10upx 10upx #DCDCDC;
 	flex-direction: row;
 	justify-content: center;
@@ -87,13 +107,31 @@ view {
 	line-height: 100upx;
 }
 
-.icon {
-	font-family: "iconfont" !important;
-	  font-size: 30px;
-	  font-style: normal;
-	  -webkit-font-smoothing: antialiased;
-	  -moz-osx-font-smoothing: grayscale;
-
+.target-menu > .target-menu-drawer {
+	position: absolute;
+	right: 50rpx;
+	top: 30rpx;
 }
 
+.target-menu-drawer text {
+	font-size: 25rpx;
+	color: #87CEFA;
+	border-radius: 150rpx;
+	border: 1rpx solid #0FAEFF;
+	padding: 10rpx 10rpx;
+}
+
+.drawer-list {
+	flex-direction: column;
+	width: 100%;
+}
+
+.drawer-item {
+	width: 100%;
+	justify-content: center;
+}
+
+.drawer-item text {
+	font-size: 30rpx;
+}
 </style>

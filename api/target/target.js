@@ -30,5 +30,12 @@ export default {
 			config: config
 		}
 		return $get(p)
+	},
+	/**
+	 * @param {Object} id
+	 * @param {Object} config
+	 */
+	getTarget(id, config) {
+		return $getLoading({url: targetUrl + '/s/' + id + '/target.re', config: config})
 	}
 }

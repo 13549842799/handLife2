@@ -38,21 +38,27 @@
 		},
 		data() {
 			return {
-				curIndex: this.items.findIndex(o=> { return o.value === this.value}),
+				//curIndex: this.items.findIndex(o=> { return o.value === this.value}),
 				obj: this.items.find(o=> { return o.value === this.value }),
-				valueStr: String(this.value)
+				//valueStr: String(this.value)
 			}
 		},
 		computed: {
 			lastIndex () {	
 				return this.items.length - 1
+			},
+			curIndex () {
+				return this.items.findIndex(o=> { return o.value === this.value})
+			},
+			valueStr () {
+				return String(this.value)
 			}
 		},
 		methods: {
 			radioChange(evt) {
 				for (let i = 0; i < this.items.length; i++) {
 					if (String(this.items[i].value) === evt.target.value) {
-						this.curIndex = i;
+						//this.curIndex = i;
 						this.obj = this.items[i]					
 						this.$emit('input', this.items[i].value)
 						break;

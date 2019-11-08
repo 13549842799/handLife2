@@ -8,7 +8,7 @@
 			<text-area-item v-model="target.finishSign" title="完成的标志" placeholder="怎样才算完成呢？"></text-area-item>
 		</view>
 		<view v-show="laststPart">
-		    <dot-radio current="1" :items="levelItems" title="目标等级" tip="请选择对应的目标等级吧" v-model="target.level" ></dot-radio>
+		    <dot-radio :items="levelItems" title="目标等级" tip="请选择对应的目标等级吧" v-model="target.level" ></dot-radio>
 		    <radio-item @change="typeChange" title="目标类型" :items="typeItems" :defaultValue="typeStr" :dire="true"></radio-item>
 			<date-input title="决定完成目标的预期时间吧" startDate="2019-10-25" :value="target.expectFinishTime" @change="dateChange"></date-input>
 		</view>
@@ -16,7 +16,7 @@
 			<button type="default" size="mini" @tap="goLast" v-show="!firstPart">上一步</button>
 			<button type="primary" size="mini" @tap="submitTarget" v-if="target.state !== 1">存草稿</button>
 			<button type="primary" size="mini" @tap="validFirstPart" v-show="!laststPart">下一步</button>
-			<button type="primary" size="mini"  v-show="laststPart">提交</button>
+			<button type="primary" size="mini" @tap="submitFinish"  v-show="laststPart">提交</button>
 		</view>
 	</view>
 </template>
@@ -52,7 +52,7 @@
 					expectFinishTime: new Date(),
 					state: 0
 				},
-				levelItems: [{name: '远期目标', value: 1}, {name: '近期目标', value: 2},{name: '紧急目标', value: 3},{name: '中期目标', value:5}],
+				levelItems: [{name: '远期目标', value: 1}, {name: '中期目标', value: 2},{name: '近期目标', value: 3},{name: '紧急目标', value:4}],
 				typeItems: [{name: '生活', value: '1'}, {name: '学习', value: '2'}, {name: '工作', value: '3'}],
 				curTap: 1
 			}
@@ -72,6 +72,16 @@
 			},
 			typeStr () {
 				return String(objUtil.defaultVal(this.target.type, 0))
+			}
+		},
+		onLoad(option) {
+			let id = option.id
+			let v = this
+			if (id) {
+				targetApi.getTarget(id).then(res => {
+					v.target = res
+					console.log(v.target)
+				}).catch(err => {console.log(err)})
 			}
 		},
 		methods: {

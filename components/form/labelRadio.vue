@@ -36,6 +36,10 @@
 			err: {
 				type: String,
 				require: false
+			},
+			attr: {
+				type: String,
+				require: false
 			}
 		},
 		data() {
@@ -47,7 +51,8 @@
 			checkSelf(e) {
 				let val = this.items[e.target.id].val
 				this.checked = val
-				this.$emit('change', val)
+				let obj = {'val': val, 'name': this.attr}
+				this.$emit('change', obj)
 			}
 		}
 	}
