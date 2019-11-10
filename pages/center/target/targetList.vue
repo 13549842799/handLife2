@@ -7,8 +7,14 @@
 			<view>
 				<label-radio :items="levelItem" attr="level" @change="selectList"></label-radio>
 			</view>
+			<view>
+				<label-radio :items="stateItem" attr="state" @change="selectList"></label-radio>
+			</view>
 		</view>
-		<view class="target-list-content">
+		<view v-show="!hasList" class="target-null-show">
+			<text>目标空空如也~~~</text>
+		</view>
+		<view class="target-list-content" v-show="hasList">
 			<view class="target-list-item" v-for="(l, index) in page.list" :key="l.id" @tap="readOrEdit(l.id, l.state)">
 				<view class="target-list-item-head">
 					<uni-tag :text="l.levelName" size="small" :type="levelType[l.level]"></uni-tag>
@@ -45,7 +51,8 @@
 				page: {},
 				levelType: {1: 'primary', 2: 'primary', 3: 'warning', 4: 'error'},
 				typeItem: [{label: '全部类型', val: ''}, {label: '学习', val: 2}, {label: '工作', val: 3}, {label: '生活', val: 1}],
-				levelItem: [{label: '所有程度', val: ''}, {label: '紧急', val: 4}, {label: '近期', val: 3}, {label: '中期', val: 2}, {label: '远期', val: 1}]
+				levelItem: [{label: '所有程度', val: ''}, {label: '紧急', val: 4}, {label: '近期', val: 3}, {label: '中期', val: 2}, {label: '远期', val: 1}],
+				stateItem: [{label: '所有状态', val: ''}, {label: '草稿', val: 0}, {label: '进行', val: 1}, {label: '完成', val: 2}, {label: '放弃', val: 3}]
 			}
 		},
 		onLoad() {
@@ -56,6 +63,11 @@
 			uni.navigateTo({
 				url: 'targetAdd'
 			})
+		},
+		computed: {
+			hasList() {
+				return this.page.list !== null && this.page.list !== undefined && this.page.list.length > 0
+			}
 		},
 		methods: {
 			selectList(val) {
@@ -82,7 +94,7 @@
 	
 	.select-container {
 		width: 100%;
-		height: 200rpx;
+		height: 250rpx;
 		border-bottom: 1rpx solid #F5F5F5;
 		flex-direction: column;
 	}
@@ -101,6 +113,18 @@
 		font-size: 30rpx;
 		margin-left: 55rpx;
 		font-weight: 600;
+	}
+	
+	.target-null-show {
+		width: 100%;
+		height: 350rpx;
+		justify-content: center;
+	}
+	
+	.target-null-show text {
+		font-size: 45rpx;
+		color: #E0E0E0;
+		margin-top: 100rpx;
 	}
 	
 	.target-list-content {
