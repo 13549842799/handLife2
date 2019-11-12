@@ -103,9 +103,15 @@
 			},
 			submitTarget() {
 				targetApi.saveTarget(this.target).then(res => {
-					uni.reLaunch({
-						url: 'targetList'
-					})
+					//#ifdef APP-PLUS
+					plus.nativeUI.confirm("是否立刻前往创建计划?", function(e){
+						if (e.index === 0) {
+							uni.reLaunch({ url: 'targetPlanAdd' })
+						} else {
+							uni.reLaunch({ url: 'targetList' })
+						}
+					}, {"buttons":["是的","返回列表"]});
+					//#endif
 				}).catch(err => {
 					if (err.message) {
 						let arr = err.message.split(',')

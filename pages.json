@@ -222,6 +222,30 @@
 					}  
 				}
 			}
+		},
+		{
+		    "path" : "pages/center/target/targetInfo",
+		    "style" : {
+				"navigationBarTitleText": "目标详情"
+			}
+		},
+		{
+		    "path" : "pages/center/target/targetPlans",
+		    "style" : {
+				"app-plus": {
+					"titleNView": {	
+						"backgroundColor": "#FFFFFF",
+						"titleColor": "#FFD700",
+						"titleText": "计划管理",
+						"buttons": [{
+							"float": "right",
+							"fontSrc": "/static/css/addIcon/iconfont.ttf",
+							"text": "\ue693",
+							"fontSize": "30rpx"
+						}]
+					}  
+				}
+			}
 		}
     ],
 	"globalStyle": {

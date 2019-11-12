@@ -145,7 +145,6 @@
 					success: function (r) {
 						if (r.confirm) {
 							classifyApi.deleteClassify(l.id).then(res => {
-								console.log('成功')
 								let index =  v.list[v.current - 1].indexOf(l)
 								if (index > -1) {
 									v.list[v.current - 1].splice(index, 1)

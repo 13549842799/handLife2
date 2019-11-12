@@ -94,7 +94,7 @@
 					console.log('index:' + e.index)
 					allAccountApi.deleteAccount(v.current.id).then(res => {
 						v.page.deleteLine('id', v.current.id)
-						ni.showToast({ title: '删除成功' })
+						uni.showToast({ title: '删除成功' })
 					}).catch(err => {console.log(err)})
 				});
 				//#endif				

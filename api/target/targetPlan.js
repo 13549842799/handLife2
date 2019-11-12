@@ -9,3 +9,14 @@ import {
 	$getLoading,
 	$postLoading
 } from './../../http.js'
+
+export default {
+	/**
+	 * 获取列表
+	 * @param {Object} params
+	 * @param {Object} config
+	 */
+	getTargetPlans(params, config) {
+		return $get({url: targetPlanUrl + '/list.re', data: params, config})
+	}
+}

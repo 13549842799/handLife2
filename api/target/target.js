@@ -37,5 +37,11 @@ export default {
 	 */
 	getTarget(id, config) {
 		return $getLoading({url: targetUrl + '/s/' + id + '/target.re', config: config})
+	},
+	/**
+	 * @param {Object} id
+	 */
+	giveUpTarget(id) {
+		return $postLoading({url: targetUrl + '/s/' + id + '/giveUp.do'})
 	}
 }
