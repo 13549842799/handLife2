@@ -14,7 +14,7 @@
 		},
 		onLoad(option) {
 			let targetId = option.id, v = this
-			//targetPlanApi.getTargetList
+			v.list = targetPlanApi.getTargetPlans({targetId})
 		}
 	}
 </script>

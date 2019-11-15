@@ -36,7 +36,7 @@
 			<view class="target-bottom-model-view">
 				<text @tap="readOrEdit" v-show="target.state === 0">编辑</text>
 				<text @tap="goToInfo">目标详情</text>
-				<text @tap="goToTargetPlans">计划管理</text>
+				<text @tap="goToTargetPlans"  v-show="target.state !== 3">计划管理</text>
 				<text style="color: red;" @tap="giveUpTarget" v-show="target.state !== 3">放弃目标</text>
 				<text class="cancel-model" @tap="closeBottom">取消</text>
 			</view>
@@ -93,6 +93,7 @@
 					height = height - 92
 				}
 				if (this.target.state === 3) {
+					height = height - 92
 					height = height - 92
 				}
 				return height
