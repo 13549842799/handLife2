@@ -15,6 +15,9 @@
 		onLoad(option) {
 			let targetId = option.id, v = this
 			v.list = targetPlanApi.getTargetPlans({targetId})
+		},
+		onNavigationBarButtonTap (e) {
+			uni.navigateTo({ url: 'targetPlanAdd'})
 		}
 	}
 </script>

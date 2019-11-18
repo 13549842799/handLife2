@@ -58,7 +58,7 @@
 		},
 		onLoad() {
             let v = this
-			v.page = new MyPage({'searchFunction': allAccountApi.getList, 'size': 10})
+			v.page = new MyPage({'searchFunction': allAccountApi.getList, 'size': 13})
 		},
 		onPullDownRefresh () {
 			console.log('下拉')

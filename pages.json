@@ -246,6 +246,12 @@
 					}  
 				}
 			}
+		},
+		{
+		    "path" : "pages/center/target/targetPlanAdd",
+		    "style" : {
+				"navigationBarTitleText": "添加计划"
+			}
 		}
     ],
 	"globalStyle": {
