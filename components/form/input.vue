@@ -1,12 +1,17 @@
 <template>
-	<view class="form-input">
-		<text>{{title}}</text>
-		<input :placeholder="placeholder" v-bind:value="value" v-on:input="$emit('input', $event.target.value)"  />
-	</view>
+	<title-item :title="title" :err="err">
+		<input :placeholder="placeholder" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" class="form-input" placeholder-class="form-input-placeholder-class"  />
+	</title-item>
 </template>
 
 <script>
+	
+	import titleItem from './titleItem.vue'
+	
 	export default {
+		components: {
+		    titleItem
+		},
 		props: {
 			title: {
 				type: String,
@@ -18,30 +23,24 @@
 			value: {
 				type:String,
 				require: true
+			},
+			err: {
+				type: String,
+				require: false
 			}
 		}
 	}
 </script>
 
 <style>
+
 .form-input {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	padding: 10upx 0;
-	margin-top: 20upx;
-}
-
-.form-input text {
-	font-size: 35upx;
-	margin-bottom: 20upx;
-	color: #CDCDCD;
-	/* text-align-last: justify; */
-}
-
-.form-input input {
 	font-size: 35upx;
 	border-bottom: 2upx solid #C8C7CC;
 	color:  #3299CC;
+}
+
+.form-input-placeholder-class {
+	color: #EFEFF4;
 }
 </style>
