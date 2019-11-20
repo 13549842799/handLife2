@@ -18,5 +18,12 @@ export default {
 	 */
 	getTargetPlans(params, config) {
 		return $get({url: targetPlanUrl + '/list.re', data: params, config})
+	},
+	/**
+	 * 保存计划
+	 * @param {Object} params
+	 */
+	savePlan(params) {
+		return $postLoading({url: targetPlanUrl + '/save.do', data: params})
 	}
 }

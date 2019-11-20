@@ -1,8 +1,8 @@
 <template>
 	<title-item :title="title" :err="err">
 		<view class="form-date-input">
-			<picker :mode="type" :value="time" start="09:01" end="21:01" @change="bindTimeChange">
-			    <view class="uni-input">{{time}}</view>
+			<picker :mode="type" :value="value"  @change="bindTimeChange">
+				<input v-bind:value="value" />
 			</picker>
 		</view>		
 	</title-item>
@@ -19,9 +19,6 @@
 			title: {
 				type: String,
 				require: true
-			},
-			placeholder: {
-				type:String
 			},
 			value: {
 				type:String,
@@ -42,6 +39,12 @@
 		data() {
 			return {
 				
+			}
+		},
+		methods: {
+			bindTimeChange(event) {
+                let val = event.detail.value
+				this.$emit('input', val)
 			}
 		}
 	}
