@@ -252,6 +252,12 @@
 		    "style" : {
 				"navigationBarTitleText": "添加计划"
 			}
+		},
+		{
+		    "path" : "pages/center/target/targetPlanInfo",
+		    "style" : {
+				"navigationBarTitleText": "计划详情"
+			}
 		}
     ],
 	"globalStyle": {
