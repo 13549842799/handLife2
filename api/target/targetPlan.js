@@ -7,10 +7,18 @@ import {
 	$post,
 	$delete,
 	$getLoading,
-	$postLoading
+	$postLoading,
+	$deleteLoading
 } from './../../http.js'
 
 export default {
+	/**
+	 * 获取指定的计划
+	 * @param {Object} id
+	 */
+	getPlan(id) {
+		return $getLoading({url: targetPlanUrl + '/s/' + id + 'read.re'})
+	},
 	/**
 	 * 获取列表
 	 * @param {Object} params
@@ -25,5 +33,8 @@ export default {
 	 */
 	savePlan(params) {
 		return $postLoading({url: targetPlanUrl + '/save.do', data: params})
+	},
+	deletePlan(id) {
+		return $deleteLoading({url: targetPlanUrl + '/s/' + id + '/delete.do'})
 	}
 }

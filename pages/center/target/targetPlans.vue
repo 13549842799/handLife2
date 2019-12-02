@@ -11,9 +11,9 @@
 			<view class="plan-time">
 				<text>执行时间</text>
 				<text>{{l.executeTime}}-{{l.endTime}}</text>
-				<navigator url="targetPlanInfo">详情</navigator>
-				<text style="color: #007AFF;">编辑</text>
-				<text style="color: red;" @tap="deletePlan(l.id)">删除</text>
+				<navigator url="targetPlanInfo?type=read" hover-class="na-hover-class">详情</navigator>
+				<navigator :url="'targetPlanAdd?id='+l.id" style="color: #007AFF;" hover-class="na-hover-class">编辑</navigator>
+				<text style="color: red;" @tap="deletePlan(l.id, l.targetName)">删除</text>
 			</view>
 		</view>
 	</view>
@@ -53,17 +53,20 @@
 				let v = this				
 				v.type = e.detail.value ? 1 : 0
 			},
-			goToInfo() {
-				uni.navigateTo({
-					url: 'targetPlanInfo'
-				})
-			},
 			/**
 			 * 删除计划
 			 * @param {Object} id
 			 */
-			deletePlan(id) {
-				
+			deletePlan(id, name) {
+				//#ifdef APP-PLUS
+				plus.nativeUI.confirm("确定删除计划："+ name +"?", function(e){
+					if (e.index === 1) {
+						targetPlanApi.deletePlan(id).then(res => {
+							plus.nativeUI.alert('删除成功');
+						}).catch(err => { console.log(err) })
+					}
+				});
+				//#endif
 			}
 		}
 	}
@@ -95,5 +98,9 @@
 	}
 	.paln-name {
 		font-size: 35rpx;
+	}
+	
+	.na-hover-class {
+		color: #DCDCDC;
 	}
 </style>

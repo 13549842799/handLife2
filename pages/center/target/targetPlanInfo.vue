@@ -5,7 +5,13 @@
 <script>
 	export default {
 		data() {
-			return {}
+			return {
+				type: 'read'
+			}
+		},
+		onLoad(option) {
+			let v = this
+			v.type = option.type
 		}
 	}
 </script>

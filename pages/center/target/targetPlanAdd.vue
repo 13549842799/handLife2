@@ -44,6 +44,15 @@
 				units: [{name:'小时', id: 1}, {name:'天', id: 2}, {name:'周', id: 3}, {name:'月', id: 4}]
 			}
 		},
+		onLoad(option) {
+			let v = this
+			let id = option.id
+			if (id) {
+				planApi.getPlan(id).then(res => {
+					v.plan = res
+				}).catch(err => { console.log(err) })
+			}
+		},
 		computed: {
 			unitName() {
 				let id = this.plan.unit
