@@ -17,7 +17,7 @@ export default {
 	 * @param {Object} id
 	 */
 	getPlan(id) {
-		return $getLoading({url: targetPlanUrl + '/s/' + id + 'read.re'})
+		return $getLoading({url: targetPlanUrl + '/s/' + id + '/read.re'})
 	},
 	/**
 	 * 获取列表

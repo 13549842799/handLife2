@@ -11,7 +11,7 @@
 			<view class="plan-time">
 				<text>执行时间</text>
 				<text>{{l.executeTime}}-{{l.endTime}}</text>
-				<navigator url="targetPlanInfo?type=read" hover-class="na-hover-class">详情</navigator>
+				<navigator :url="'targetPlanInfo?id='+l.id" hover-class="na-hover-class">详情</navigator>
 				<navigator :url="'targetPlanAdd?id='+l.id" style="color: #007AFF;" hover-class="na-hover-class">编辑</navigator>
 				<text style="color: red;" @tap="deletePlan(l.id, l.targetName)">删除</text>
 			</view>

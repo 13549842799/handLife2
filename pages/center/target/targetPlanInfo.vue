@@ -6,12 +6,13 @@
 	export default {
 		data() {
 			return {
-				type: 'read'
+				plan: {}
 			}
 		},
 		onLoad(option) {
 			let v = this
-			v.type = option.type
+			let id = option.id
+			console.log(v.type)
 		}
 	}
 </script>
