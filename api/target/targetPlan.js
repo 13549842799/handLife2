@@ -34,7 +34,7 @@ export default {
 	savePlan(params) {
 		return $postLoading({url: targetPlanUrl + '/save.do', data: params})
 	},
-	deletePlan(id) {
-		return $deleteLoading({url: targetPlanUrl + '/s/' + id + '/delete.do'})
+	deletePlan(id, reason) {
+		return $postLoading({url: targetPlanUrl + '/s/' + id + '/delete.do', data: {'deleteReason': reason}})
 	}
 }

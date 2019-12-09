@@ -59,13 +59,13 @@
 			 */
 			deletePlan(id, name) {
 				//#ifdef APP-PLUS
-				plus.nativeUI.confirm("确定删除计划："+ name +"?", function(e){
-					if (e.index === 1) {
-						targetPlanApi.deletePlan(id).then(res => {
+				plus.nativeUI.prompt("确定删除计划: "+ name +"?", function(e){
+					if (e.index === 0) {
+						targetPlanApi.deletePlan(id, e.value).then(res => {
 							plus.nativeUI.alert('删除成功');
 						}).catch(err => { console.log(err) })
 					}
-				});
+				}, "删除", "删除理由", ["确定","取消"]);
 				//#endif
 			}
 		}
