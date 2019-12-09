@@ -29,7 +29,8 @@
 
 <script>
 	
-	import '../../../api/target/target.js'
+	import targetApi from '../../../api/target/target.js'
+	import planApi from  '../../../api/target/targetPlan.js'
 	
 	import uniDrawer from "@/components/uni-drawer/uni-drawer.vue"
 	
@@ -39,8 +40,13 @@
 		},
 		data() {
 			return {
-				drawer: false
+				drawer: false,  //右边抽屉开关
+				nextAction: null,
+				willList: []
 			}
+		},
+		onLoad() {
+			this.loadWillActionList()
 		},
 		methods: {
 			goToAddTarget() {
@@ -49,6 +55,16 @@
 			closeDrawer() {
 				console.log('触发false')
 				this.drawer = false;
+			},
+			loadWillActionList() {
+				let v = this
+				planApi.getWillTargetPlans(res => {
+					if (!res || res.length === 0) {
+						return
+					}
+					v.nextAction = res.shift()
+					v.willList = res
+				}).catch(err => { console.log(err) })
 			}
 		}
 	}
