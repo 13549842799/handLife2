@@ -99,7 +99,8 @@
 			 */
 			goToNewDiaryPage () {
 				uni.navigateTo({
-					url: './diaryEdit'
+					// url: './diaryEdit'
+					url: './daryTest'
 				})
 			},
 			deleteDiaryEvent (id, title) {
