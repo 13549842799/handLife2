@@ -39,7 +39,7 @@
 		<bottom-model-picker ref="bmodel" title="日记分类选择" text="新增" :list="classify"
 		    v-on:MyChange="classifyChange" v-on:action="openClassifyDiog">
 		</bottom-model-picker>
-		<bottom-model-check-box ref="labelModel" title="日记标签选择" text="新增" :list="labels" :role="{id: 'id', name: 'name', val: 'id'}"
+		<bottom-model-check-box ref="labelModel" title="日记标签选择" text="新增" :list="diary.labelList" :role="{id: 'id', name: 'name', val: 'id'}"
 		    v-on:change="checkboxChange" v-on:tapButton="openLabelDlog">
 		</bottom-model-check-box>
 	</view>
@@ -87,7 +87,8 @@
 					status: 0,
 					classify: null,
 					date: dataUtil.dateFormat('yyyy-MM-dd', new Date()),
-					source: 2
+					source: 2,
+					labelList: []
 				},
 				classify: [],
 				labels: [],
@@ -109,16 +110,16 @@
 				v.classify = res
 			}).catch(err => {console.log(err)})
 			//2.加载标签列表
-			labelApi.getLabelsList().then (res => {
+			labelApi.getUsedList().then (res => {
 				if (res === null || res === undefined || res.length === 0) {
-					v.labels = []
+					// v.labels = []
 					return
 				}
-				res.map(l => {
+				/* res.map(l => {
 					l.id = l.id.toString()
 					v.$set(l, 'check', false)
 				})
-				v.labels = res	
+				v.labels = res	 */
 			}).catch(err => { console.log(err) })
 			//3.判断是编辑还是新建
 			if (!id) {
@@ -134,9 +135,10 @@
 				v.diary = res
 	            // 初始化已选标签
 				//2.1 根据日记自己的所选标签通过id匹配总的标签确定是否已被选中，根据是否被选中添加check的值， 选中 true， 没有 false
-				v.labels.map((label, index) => {
+				v.diary.labelList.forEach(o => { o.check = true })
+				/* v.labels.map((label, index) => {
 					label.check = v.diary.labelList.some(l => { return l.id.toString() === label.id })
-				})
+				}) */
 				//3 匹配分类
 			    v.$refs.bmodel.initVal(!v.classify ? null : v.classify.findIndex(c => { return c.id === v.diary.classify }))
 			}).catch(err => { console.log(err) })

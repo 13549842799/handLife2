@@ -25,6 +25,13 @@ export default {
 		}
 		return $getLoading(p)
 	},
+	getUsedList() {
+		let p = {
+			url: labelUrl + '/frequently-used.re',
+			data: {'type': 1}
+		}
+		return $get(p)
+	},
 	/**
 	 * 添加标签
 	 * @param {Object} params
