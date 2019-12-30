@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<script type="text/javascript">
+		if (navigator.userAgent.indexOf('AlipayClient') > -1) {
+			document.writeln('<script src="https://appx/web-view.min.js"' + '>' + '<' + '/' + 'script>');
+		}
+	</script>
+	<script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.1.js"></script>
+	<script type="text/javascript" src="wangEditor.min.js"></script>
+	<script type="text/javascript" src="vue.js"></script>
+	<!-- 引入样式 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>日记编辑页面</title>
+	
+	<style>
+    .diary-app {
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		left: 0;
+		top: 0;
+		background: #FFFFFF;
+	}
+	.diary-edit-content {
+		flex-direction: column;
+		width: 100%;
+	}
+	
+	.diary-edit-content-title {
+		width: 96%;
+		margin-top: 10px;
+		font-size:10px;
+		padding:2px 2%;
+		border-bottom: 1px solid #EFEFF4;
+		height: 35px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+	
+	.diary-title-input {
+		width: 50%;
+	}
+	
+	.diary-title-date {
+		width: 45%;
+		
+		/* line-height: 50upx;
+		justify-content: center;
+		border-left: 1upx solid #EFEFF4; */
+	}
+	
+	.diary-edit-content-body {
+		height: 70%;
+	}
+	
+	.diary-edit-content-body-text {
+		height: 100%;
+		z-index: 800 !important;
+	}
+	
+	.diary-edit-foot {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 20%;
+		width: 100%;
+		display: flex;
+		flex-direction: column-reverse;
+	}
+	
+	.diary-edit-foot-label,  .diary-edit-foot-classify{
+		height: 20px;
+		margin-bottom: 2px;
+		text-align: center;
+	}
+	
+	.diary-edit-foot-classify {
+	    font-size: 15px;
+		font-weight: 800;
+		border-top: 1px solid #D5E4FD;
+		border-bottom: 1px solid #D5E4FD;
+	}
+	
+	.diary-edit-foot-button, .diary-edit-foot-list {
+		position: absolute;
+		width: 35px;
+		right: 25px;
+	}
+	
+	.diary-edit-foot-button {
+		border-radius: 60px;
+		box-shadow: 1px 1px 1px #E0E0E0;
+		background: #FFD700;
+		top: -20px;
+		height: 35px;
+		z-index: 980;
+	}
+	
+	.diary-edit-foot-list  div, .diary-edit-foot-button span {
+		width: 100%;
+		text-align: center;
+	}
+	
+	.diary-edit-foot-button span {
+		height: 100%;
+		line-height: 35px;
+		font-size: 35px;
+		display: block;
+	}
+	
+	.diary-edit-foot-list {
+		transition: top 0.6s, height 0.6s, transform 0.6s;
+		overflow: hidden;
+		display: block;
+		z-index: 970;
+	}
+	
+	.diary-edit-foot-list-show {
+		height: 135px !important;
+		top: -155px !important;
+	}
+	
+	.diary-edit-foot-list-hide {
+		height: 0px;
+		top: -20px;
+	}
+	
+	.diary-edit-foot-list  div {
+		width: 100%;
+		height: 35px;
+		border-radius: 60px;
+		box-shadow: 1px 1px 1px #E0E0E0;
+		background: #87CEFA;
+		margin-bottom: 8px;
+		
+	}
+	
+	.diary-edit-foot-list  div > span {
+		width: 100%;
+		height: 100%;
+		font-size: 13px;
+		line-height: 35px;
+		font-weight: 800;
+	}
+	
+	.private-class {
+		background: #C7C7CD !important;
+	}
+	.submit-class {
+		background: #00FF7F !important;
+	}
+	</style>
+</head>
+<body>
+	<div id="app" class="diary-app">
+		<!-- 标题 -->
+		<div class="diary-edit-content-title">
+			<el-input size="small" v-model="diary.title"  placeholder="请输入标题" class="diary-title-input" :maxlength="20"></el-input>
+			<div class="diary-title-date">
+				<el-date-picker
+				  v-model="diary.date"
+				  type="date"
+				  size="small"
+				  style="width: 100%;margin: 0 auto;"
+				  format=" yyyy年MM月dd日"
+				  value-format="yyyy-MM-dd"
+				  placeholder="选择日期">
+				</el-date-picker>
+			</div>
+		</div>
+		<div class="diary-edit-content-body">
+			<div id="editorContent" class="diary-edit-content-body-text"></div>
+		</div>
+		<div  class="diary-edit-foot" v-show="foot.footVisable">
+			<div id="editorMenu"></div>
+			<!-- 分类-->
+			<div class="diary-edit-foot-classify">
+				#{{classifyName}}#&nbsp;&nbsp;#{{typeName}}#
+			</div>
+			<!-- 标签 -->
+			<div class="diary-edit-foot-label">
+				<el-tag type="success
+				 " v-for="l in diary.labels" :key="l.name" size="mini"
+				 style="margin-right: 3px;margin-bottom: 3px;" 
+				 v-show="l.delflag === 1">
+				     {{l.name}}
+				 </el-tag>
+			</div>
+			<div class="diary-edit-foot-button" @click="changeButton">
+				<span>···</span>
+			</div>
+			<!-- 列表 -->
+			<div class="diary-edit-foot-list diary-edit-foot-list-hide" :class="{'diary-edit-foot-list-show': foot.button}">
+				<div @click="openClassifyModel" ><span>分类</span></div>
+				<div @click="openLabelsModel"><span>标签</span></div>
+				<div :class="statusClass" @click="statusChange"><span>{{typeName}}</span></div>
+			</div>
+		</div>
+		<el-dialog
+		  title="选择分类"
+		  :visible.sync="classify.classifyVisible"
+		  :modal-append-to-body="false"
+		  width="80%">
+		  <el-select v-model="classify.temp" filterable placeholder="请选择分类">
+		    <el-option
+		    v-for="(item, index) in classify.classify"
+		    :key="index"
+		    :label="item.name"
+		    :value="item.id">
+		    </el-option>
+		  </el-select>
+		  <span slot="footer" class="dialog-footer">
+		      <el-button @click="classify.classifyVisible = false">取 消</el-button>
+		      <el-button type="primary" @click="closeClassifyModel">确 定</el-button>
+		  </span>
+		</el-dialog>
+		<el-dialog
+		  title="选择标签"
+		  :visible.sync="labels.labelsVisible"
+		  :modal-append-to-body="false"
+		  width="80%">
+		  <span>常用标签:</span>
+		  <div style="width: 100%; border-top: 1px solid #EBEDF0; border-bottom: 1px solid #EBEDF0;">
+			  <el-tag type="danger" v-for="(l, index) in labels.labels" :key="index" size="small"
+			  style="margin-right: 3px;margin-bottom: 3px;" @click="selLabel(l)">
+			      {{l}}
+			  </el-tag>
+		  </div>
+		  <div style="width: 100%; border-top: 1px solid #EBEDF0; border-bottom: 1px solid #EBEDF0;margin-bottom: 3px;">
+			  <span>已选标签:</span>
+			  <el-tag type="success
+			  " v-for="(l, index) in labels.temp" :key="l.name" size="small"
+			  style="margin-right: 3px;margin-bottom: 3px;"  closable
+			  v-show="l.delflag === 1"
+			  closable
+			 :disable-transitions="true"
+              @close="removeLabel(l.name)">
+			      {{l.name}}
+			  </el-tag>
+		  </div>
+		  <div style="width: 100%;">
+		      <div style="width: 70%;float: left;">
+				  <el-input
+				    v-model="labels.labelName"
+				    size="small"
+				  	placeholder="创建标签名"
+				  >
+			  </div>
+			  <div  style="float: left;width: 25%;margin-left: 6px;">
+				  <span style="color: red;height: 32px;line-height: 32px;" @click="selLabel()">添加</span>
+			  </div>
+			   <!-- <el-button size="small" round>小型按钮</el-button>
+			   <div style="float: left;"><span style="float: left;">增加</span></div> -->
+		  </div>
+		  <span slot="footer" class="dialog-footer">
+		      <el-button @click="labels.labelsVisible = false">取 消</el-button>
+		      <el-button type="primary" @click="closeLabelsModel">确 定</el-button>
+		  </span>
+		</el-dialog>
+	</div>
+</body>
+
+<!--  javascript -->
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script type="text/javascript">
+	var E = window.wangEditor
+	var editor = new E('#editorMenu', '#editorContent')
+	// 或者 var editor = new E( document.getElementById('editor') )
+	// 自定义菜单配置
+	editor.customConfig.menus = [
+		'head',
+		'fontSize',  // 字号
+		'fontName',
+		'underline',
+		'image',  // 插入图片
+		'foreColor',  // 文字颜色
+		'backColor'  // 背景颜色
+	]
+	editor.create()
+	
+	var plusReady = function (callback) {  
+		if (window.plus) {  
+			callback();  
+		} else {  
+			document.addEventListener('plusready', callback);  
+		}  
+	};
+	
+	/* plusReady(function () {
+		var xhr = new plus.net.XMLHttpRequest();
+		xhr.onreadystatechange = function () {
+			switch ( xhr.readyState ) {
+				case 0:
+					alert( "xhr请求已初始化" );
+				break;
+				case 1:
+					alert( "xhr请求已打开" );
+				break;
+				case 2:
+					alert( "xhr请求已发送" );
+				break;
+				case 3:
+					alert( "xhr请求已响应");
+					break;
+				case 4:
+					if ( xhr.status == 200 ) {
+						alert( "xhr请求成功："+xhr.responseText );
+					} else {
+						alert( "xhr请求失败："+xhr.readyState );
+					}
+					break;
+				default :
+					break;
+			}
+		}
+		xhr.open( "GET", "http://www.caiyangzhi.com/appServer/api/article/diary/s/' + 1 + '/diary.re" );
+		xhr.send();
+	}); */
+	const saveType = ['草稿', '私密', '发布'];
+	
+	var app = new Vue({
+		el: '#app',
+		data: {
+			diary: {
+				id: null,
+				title: '',
+				content: '',
+				status: 0,
+				classify: null,
+				date: null,
+				source: 2,
+				labels: []
+			},
+			classify: [],
+			foot: {
+				footVisable: true,
+				button: false
+			},
+			classify: {
+				temp: null,
+				classify: [],
+				classifyVisible: false
+			},
+			labels: {
+				labels: ['测试','哈哈是', '测试2','哈哈是2','测试3', '哈哈是3'],
+				temp: [],
+				labelsVisible: false,
+				labelName: ''
+			}
+		},
+		computed: {
+			/**
+			 * 通过点击修改保存的类型
+			 */
+			alterSaveType () {
+				this.diary.status = this.diary.status === 2 ? 0 : this.diary.status + 1
+			},
+			classifyName () {
+				let v = this
+				let cls = v.classify.classify.find(o => {
+					return v.diary.classify === o.id
+				})
+				return cls !== undefined && cls !== null ? cls.name : '分类'
+			},
+			typeName () {
+				return saveType[this.diary.status]
+			},
+			statusClass () {
+				return this.diary.status === 1 ? 'private-class' : (this.diary.status === 2 ? 'submit-class' : '')
+			}
+		},
+		methods: {
+			changeButton () {
+				this.foot.button = !this.foot.button
+			},
+			statusChange() {
+				this.diary.status = this.diary.status === 2 ? 0 : this.diary.status + 1
+			},
+			openClassifyModel () {
+				this.classify.temp = null
+				this.classify.classifyVisible = true
+			},
+			closeClassifyModel () {
+				this.classify.classifyVisible = false
+				this.diary.classify = this.classify.temp
+			},
+			openLabelsModel () {
+				this.labels.labelName = ''
+				let temp = []
+				this.diary.labels.forEach(o => { temp.push({'id': o.id, 'name': o.name, 'delflag': o.delflag}) })
+				this.labels.temp = temp
+				this.labels.labelsVisible = true
+			},
+			closeLabelsModel () {
+				this.diary.labels = this.labels.temp
+				this.labels.temp = []
+				this.labels.labelsVisible = false
+			},
+			selLabel (name) {
+				name = name !== undefined ? name : (this.labels.labelName.trim() !== '' ? this.labels.labelName : null)
+				if (name === null || this.labels.temp.findIndex( o => { return o.name === name }) > -1) {
+					return
+				}
+				this.labels.temp.push({'name': name, 'delflag': 1})
+				this.labels.labelName = ''
+			},
+			removeLabel (name) {
+				console.log('执行完毕')
+				let v = this
+				let t = v.labels.temp
+				let index = t.findIndex(o => { return o.name = name })
+				t[index].id === undefined || t[index].id === null ? t.splice(index, 1) : (t[index].delflag = 0)
+			}
+		}
+	})
+</script>
+</html>

@@ -1,6 +1,5 @@
-// export const baseUrl = 'http://192.168.188.137:8081/O.OBusinessPlan'
-// const baseUrl = 'http://39.97.99.250:8080/O.OBusinessPlan'
-// export const baseUrl = 'http://192.168.3.25:8081/O.OBusinessPlan'
+//export const baseUrl = 'http://192.168.188.137:8081/O.OBusinessPlan'
+// export const baseUrl = 'http://192.168.0.108:8081/O.OBusinessPlan'
 //export const baseUrl = 'http://localhost:8081/O.OBusinessPlan'
 export const baseUrl = 'http://www.caiyangzhi.com/appServer'
 export const adminUrl = baseUrl + '/api/admin'
