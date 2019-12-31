@@ -9,7 +9,7 @@
 			document.writeln('<script src="https://appx/web-view.min.js"' + '>' + '<' + '/' + 'script>');
 		}
 	</script>
-	<script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.1.js"></script>
+	<script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script>
 	<script type="text/javascript" src="wangEditor.min.js"></script>
 	<script type="text/javascript" src="vue.js"></script>
 	<!-- 引入样式 -->
@@ -179,16 +179,12 @@
 		<div  class="diary-edit-foot" v-show="foot.footVisable">
 			<div id="editorMenu"></div>
 			<!-- 分类-->
-			<div class="diary-edit-foot-classify">
-				#{{classifyName}}#&nbsp;&nbsp;#{{typeName}}#
-			</div>
+			<div class="diary-edit-foot-classify" v-text="menuMessage"></div>
 			<!-- 标签 -->
 			<div class="diary-edit-foot-label">
-				<el-tag type="success
-				 " v-for="l in diary.labels" :key="l.name" size="mini"
+				<el-tag type="success" v-for="l in diary.labels" :key="l.name" size="mini"
 				 style="margin-right: 3px;margin-bottom: 3px;" 
-				 v-show="l.delflag === 1">
-				     {{l.name}}
+				 v-show="l.delflag === 1" v-text="l.name">
 				 </el-tag>
 			</div>
 			<div class="diary-edit-foot-button" @click="changeButton">
@@ -198,10 +194,11 @@
 			<div class="diary-edit-foot-list diary-edit-foot-list-hide" :class="{'diary-edit-foot-list-show': foot.button}">
 				<div @click="openClassifyModel" ><span>分类</span></div>
 				<div @click="openLabelsModel"><span>标签</span></div>
-				<div :class="statusClass" @click="statusChange"><span>{{typeName}}</span></div>
+				<div :class="statusClass" @click="statusChange"><span v-text="typeName"></span></div>
 			</div>
 		</div>
 		<el-dialog
+		  style="display: none;"
 		  title="选择分类"
 		  :visible.sync="classify.classifyVisible"
 		  :modal-append-to-body="false"
@@ -220,6 +217,7 @@
 		  </span>
 		</el-dialog>
 		<el-dialog
+		  style="display: none;"
 		  title="选择标签"
 		  :visible.sync="labels.labelsVisible"
 		  :modal-append-to-body="false"
@@ -282,6 +280,7 @@
 		'foreColor',  // 文字颜色
 		'backColor'  // 背景颜色
 	]
+	editor.customConfig.onchange = (html) => { app.$data.diary.content = html }
 	editor.create()
 	
 	var plusReady = function (callback) {  
@@ -354,7 +353,13 @@
 				labelName: ''
 			}
 		},
+		created() {
+			
+		},
 		computed: {
+			menuMessage () {
+				return '#' + this.classifyName + '#  #' + this.typeName + '#'
+			},
 			/**
 			 * 通过点击修改保存的类型
 			 */
