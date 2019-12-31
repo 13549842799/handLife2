@@ -284,12 +284,21 @@
 	editor.create()
 	
 	var plusReady = function (callback) {  
+		console.log('少女祈祷2')
 		if (window.plus) {  
+			console.log('少女祈祷3')
 			callback();  
 		} else {  
+			console.log('少女祈祷4')
 			document.addEventListener('plusready', callback);  
 		}  
 	};
+	console.log('少女祈祷中....')
+	plusReady(function () {
+		console.log('测试以下')
+		var foo = plus.storage.getItem('loginState');
+		console.log(foo)
+	});
 	
 	/* plusReady(function () {
 		var xhr = new plus.net.XMLHttpRequest();
@@ -421,6 +430,11 @@
 				let t = v.labels.temp
 				let index = t.findIndex(o => { return o.name = name })
 				t[index].id === undefined || t[index].id === null ? t.splice(index, 1) : (t[index].delflag = 0)
+			},
+			saveToStore (key, value) {
+				plusReady(function () {
+					
+				});
 			}
 		}
 	})
