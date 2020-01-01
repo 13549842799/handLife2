@@ -141,17 +141,7 @@
 			"path": "pages/article/diary/daryTest",
 			"style": {
 				"app-plus": {  
-					"titleNView": {						
-						"backgroundColor": "#FFFFFF",
-						"titleColor": "#FFD700",
-						"titleText": "新建",
-						"buttons": [{
-							"float": "right",
-							"fontSrc": "/static/css/iconfont.ttf",
-							"text": "\ue66b",
-							"fontSize": "40upx"
-						}]
-					}  
+					"titleNView": null  
 				}
 			}
 		},
