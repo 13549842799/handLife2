@@ -329,7 +329,21 @@
 	});
 	
 	plusReady(function () {
+		let view = plus.webview.getWebviewById('diaryEditView')
+		view.addEventListener('close', function(e){
+		    console.log('日记编辑窗口关闭')
+		}, false );
 		
+		view.addEventListener('show', function (e) {
+			let data = getFromStore('diaryInfoData');
+			if (data === null || data === undefined) {
+				return
+			}
+			app.$data.classify.classify = data.classify
+			app.$data.labels.labels = data.labels
+			//1-表示编辑日记 0-新建日记
+			app.$data.diary = data.type === 1 ? data.diary : initDiary()
+		})
 	});
 	
 	var header = {}
@@ -370,22 +384,35 @@
 		})
 	}
 	
+	/**
+	 * 从本地存储中查找数据
+	 * @param {Object} key
+	 */
+	function getFromStore(key) {
+		return plusReady(() => { return plus.storage.getItem(key); });
+	}
+	
+	function initDiary () {
+		return {
+			id: null,
+			title: '',
+			content: '',
+			status: 0,
+			classify: null,
+			date: null,
+			source: 2,
+			labels: []
+		}
+	}
+	
+	
+	
 	const saveType = ['草稿', '私密', '发布'];
 	
 	var app = new Vue({
 		el: '#app',
 		data: {
-			diary: {
-				id: null,
-				title: '',
-				content: '',
-				status: 0,
-				classify: null,
-				date: null,
-				source: 2,
-				labels: []
-			},
-			classify: [],
+			diary: initDiary(),
 			foot: {
 				footVisable: true,
 				button: false
@@ -403,6 +430,14 @@
 			}
 		},
 		created() {
+			let data = getFromStore('diaryInfoData');
+			if (data === null || data === undefined) {
+				return
+			}
+			this.classify.classify = data.classify
+			this.labels.labels = data.labels
+			//1-表示编辑日记 0-新建日记
+			this.diary = data.type === 1 ? data.diary : initDiary()
 			
 		},
 		computed: {
@@ -475,7 +510,17 @@
 				t[index].id === undefined || t[index].id === null ? t.splice(index, 1) : (t[index].delflag = 0)
 			},
 			saveDiary () {
-				
+				let _this = this
+				let d = _this.diary
+				if (d.title === null || d.title.trim() === 0) {
+					plusReady(() => { plus.nativeUI.toast('请填写标题'); })
+					return
+				}
+				requestData('url', 'POST', d).then(res => {
+					plusReady(() => { plus.nativeUI.toast("保存成功") })
+					_this.diary = res
+					
+				}).catch(err => { console.log(err) })
 			},
 			goBackDiary () {
 				plusReady(function () {
