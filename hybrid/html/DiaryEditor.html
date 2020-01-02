@@ -188,7 +188,7 @@
 	<div id="app" class="diary-app">
 		<div class="nmenu-title"></div>
 		<div class="myself-menu">
-			<i class="el-icon-arrow-left"></i>
+			<i class="el-icon-arrow-left" @click="goBackDiary"></i>
 			<span v-text="showTitle"></span>
 			<i class="el-icon-s-order" @click="saveDiary"></i>
 		</div>
@@ -328,50 +328,48 @@
 		console.log(foo)
 	});
 	
-	document.addEventListener('UniAppJSBridgeReady', function () {
-		document.querySelector('.el-icon-arrow-left').addEventListener('click', function() {
-			uni.navigateTo({  
-				url: '/pages/article/diary/diary'  
-			}); 
-		});
+	plusReady(function () {
+		
 	});
 	
-	/* document.addEventListener('UniAppJSBridgeReady', function() {  
-	    uni.navigateTo({
-	    	url: '/pages/article/diary/diary'  
-	    }); 
-	}); */
+	var header = {}
 	
-	/* plusReady(function () {
-		var xhr = new plus.net.XMLHttpRequest();
-		xhr.onreadystatechange = function () {
-			switch ( xhr.readyState ) {
-				case 0:
-					alert( "xhr请求已初始化" );
-				break;
-				case 1:
-					alert( "xhr请求已打开" );
-				break;
-				case 2:
-					alert( "xhr请求已发送" );
-				break;
-				case 3:
-					alert( "xhr请求已响应");
+	var xhr = new plus.net.XMLHttpRequest();
+	function requestData(url, type, data) {
+		
+		return new Promise((resolve, reject) => {
+			xhr.onreadystatechange = function () {
+				switch ( xhr.readyState ) {
+					case 0:
+						alert( "xhr请求已初始化" );
 					break;
-				case 4:
-					if ( xhr.status == 200 ) {
-						alert( "xhr请求成功："+xhr.responseText );
-					} else {
-						alert( "xhr请求失败："+xhr.readyState );
-					}
+					case 1:
+						alert( "xhr请求已打开" );
 					break;
-				default :
+					case 2:
+						alert( "xhr请求已发送" );
 					break;
+					case 3:
+						alert( "xhr请求已响应");
+						break;
+					case 4:
+						if ( xhr.status == 200 ) {
+							alert( "xhr请求成功："+xhr.responseText );
+							resolve(xhr.responseText)
+						} else {
+							alert( "xhr请求失败："+xhr.readyState );
+							reject(xhr.readyState)
+						}
+						break;
+					default :
+						break;
+				}
 			}
-		}
-		xhr.open( "GET", "http://www.caiyangzhi.com/appServer/api/article/diary/s/' + 1 + '/diary.re" );
-		xhr.send();
-	}); */
+			xhr.open( type, url);
+			xhr.send();
+		})
+	}
+	
 	const saveType = ['草稿', '私密', '发布'];
 	
 	var app = new Vue({
@@ -478,6 +476,12 @@
 			},
 			saveDiary () {
 				
+			},
+			goBackDiary () {
+				plusReady(function () {
+					console.log('回退到日记页面')
+					plus.webview.getWebviewById('diaryEditView').hide();
+				})
 			}
 		}
 	})

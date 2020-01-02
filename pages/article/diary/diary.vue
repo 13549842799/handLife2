@@ -82,7 +82,8 @@
 				footVisable: true,
 				img: {
 					bg1: 'url(' + bgArray[0] +')'
-				}
+				},
+				editwebView: null
 			}
 		},
 		computed: {
@@ -98,10 +99,7 @@
 			 * 跳转到新建日记的页面
 			 */
 			goToNewDiaryPage () {
-				uni.navigateTo({
-					// url: './diaryEdit'
-					url: './daryTest'
-				})
+				this.editwebView.show()
 			},
 			deleteDiaryEvent (id, title) {
 				let v = this
@@ -123,7 +121,11 @@
 				})
 			},
 			goToEditPage (id, title) {
-				uni.navigateTo({ url: 'diaryEdit?id=' + id + '&title=' + title })
+				//uni.navigateTo({ url: 'diaryEdit?id=' + id + '&title=' + title })
+				//#ifdef APP-PLUS
+				this.editwebView.loadURL('/hybrid/html/DiaryEditor.html?id=' + id)
+				//#endif
+
 			},
 			/**
 			 * 查看日记
@@ -164,7 +166,12 @@
 		onLoad() {
 			let v = this
 			v.page = new MyPage({searchFunction: diaryApi.getDiaryList})
-            console.log('onload')
+            
+			//#ifdef APP-PLUS
+			this.editwebView = plus.webview.create('/hybrid/html/DiaryEditor.html', 'diaryEditView');
+			
+			//w.show(); // 显示窗口
+			//#endif 
 		},
 		/**
 		 * 屏幕尺寸监听事件
