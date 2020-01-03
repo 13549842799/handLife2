@@ -185,7 +185,7 @@
 	</style>
 </head>
 <body>
-	<div id="app" class="diary-app">
+	<div id="app" class="diary-app" >
 		<div class="nmenu-title"></div>
 		<div class="myself-menu">
 			<i class="el-icon-arrow-left" @click="goBackDiary"></i>
@@ -215,7 +215,7 @@
 			<div class="diary-edit-foot-classify" v-text="menuMessage"></div>
 			<!-- 标签 -->
 			<div class="diary-edit-foot-label">
-				<el-tag type="success" v-for="l in diary.labels" :key="l.name" size="mini"
+				<el-tag type="success" v-for="l in labelsNotNull" :key="l.name" size="mini"
 				 style="margin-right: 3px;margin-bottom: 3px;" 
 				 v-show="l.delflag === 1" v-text="l.name">
 				 </el-tag>
@@ -300,87 +300,66 @@
 <!-- 引入组件库 -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script type="text/javascript">
-	var E = window.wangEditor
-	var editor = new E('#editorMenu', '#editorContent')
-	// 或者 var editor = new E( document.getElementById('editor') )
-	// 自定义菜单配置
-	editor.customConfig.menus = [
-		'head',
-		'fontSize',  // 字号
-		'fontName',
-		'underline',
-		'image',  // 插入图片
-		'foreColor',  // 文字颜色
-		'backColor'  // 背景颜色
-	]
-	editor.customConfig.onchange = (html) => { app.$data.diary.content = html }
-	editor.create()
 	
 	var plusReady = function (callback) {  
 		if (window.plus) {  
-			callback();  
+			return callback();  
 		} else {  
 			document.addEventListener('plusready', callback);  
 		}  
 	};
+	
+	var xhr = null
+	var loginS = null
 	plusReady(function () {
 		var foo = plus.storage.getItem('loginState');
-		console.log(foo)
+		loginS = foo != null ? JSON.parse(JSON.parse(foo)) : {};
 	});
 	
-	plusReady(function () {
-		let view = plus.webview.getWebviewById('diaryEditView')
-		view.addEventListener('close', function(e){
-		    console.log('日记编辑窗口关闭')
-		}, false );
-		
-		view.addEventListener('show', function (e) {
-			let data = getFromStore('diaryInfoData');
-			if (data === null || data === undefined) {
-				return
-			}
-			app.$data.classify.classify = data.classify
-			app.$data.labels.labels = data.labels
-			//1-表示编辑日记 0-新建日记
-			app.$data.diary = data.type === 1 ? data.diary : initDiary()
-		})
-	});
+	window.onload=function(){
+	    console.log('页面加载完成')
+	}
 	
-	var header = {}
-	
-	var xhr = new plus.net.XMLHttpRequest();
 	function requestData(url, type, data) {
 		
 		return new Promise((resolve, reject) => {
-			xhr.onreadystatechange = function () {
-				switch ( xhr.readyState ) {
-					case 0:
-						alert( "xhr请求已初始化" );
-					break;
-					case 1:
-						alert( "xhr请求已打开" );
-					break;
-					case 2:
-						alert( "xhr请求已发送" );
-					break;
-					case 3:
-						alert( "xhr请求已响应");
+			//if (xhr == null) {
+				xhr = new plus.net.XMLHttpRequest();
+				xhr.onreadystatechange = function () {
+					switch ( xhr.readyState ) {
+						case 0:
+						console.log('请求初始化')
 						break;
-					case 4:
-						if ( xhr.status == 200 ) {
-							alert( "xhr请求成功："+xhr.responseText );
-							resolve(xhr.responseText)
-						} else {
-							alert( "xhr请求失败："+xhr.readyState );
-							reject(xhr.readyState)
-						}
+						case 1:
+						console.log('请求一打开')
 						break;
-					default :
+						case 2:
+							console.log('请求已发送')
 						break;
+						case 3:
+						    console.log('xhr请求已响应')
+							break;
+						case 4:
+						    console.log('xhr已响应结束')
+							if ( xhr.status == 200 && xhr.response.status == 200) {
+								resolve(xhr.response.data)						
+							} else {
+								console.log(xhr.responseText)
+								reject(xhr.response)
+							}
+							break;
+						default :
+							break;
+					}
 				}
-			}
+			//}			
 			xhr.open( type, url);
-			xhr.send();
+			console.log('open')
+			xhr.responseType = 'json'
+			xhr.setRequestHeader('Content-Type','application/json');
+			xhr.setRequestHeader('X-user', loginS.name);
+			xhr.setRequestHeader('X-token', loginS.token);
+			xhr.send(JSON.stringify(data));
 		})
 	}
 	
@@ -401,7 +380,7 @@
 			classify: null,
 			date: null,
 			source: 2,
-			labels: []
+			labelList: []
 		}
 	}
 	
@@ -423,7 +402,7 @@
 				classifyVisible: false
 			},
 			labels: {
-				labels: ['测试','哈哈是', '测试2','哈哈是2','测试3', '哈哈是3'],
+				labels: [],
 				temp: [],
 				labelsVisible: false,
 				labelName: ''
@@ -464,7 +443,10 @@
 				return this.diary.status === 1 ? 'private-class' : (this.diary.status === 2 ? 'submit-class' : '')
 			},
 			showTitle () {
-				return this.diary.title === null || this.diary.title.trim() === '' ? '快想个合适的标题吧...' : this.diary.title
+				return this.diary.title === null || this.diary.title === undefined || this.diary.title.trim() === '' ? '快想个合适的标题吧...' : this.diary.title
+			},
+			labelsNotNull () {
+				return this.diary.labelList !== null && this.diary.labelList !== undefined ? this.diary.labelList : []
 			}
 		},
 		methods: {
@@ -485,12 +467,12 @@
 			openLabelsModel () {
 				this.labels.labelName = ''
 				let temp = []
-				this.diary.labels.forEach(o => { temp.push({'id': o.id, 'name': o.name, 'delflag': o.delflag}) })
+				this.labelsNotNull.forEach(o => { temp.push({'id': o.id, 'name': o.name, 'delflag': o.delflag}) })
 				this.labels.temp = temp
 				this.labels.labelsVisible = true
 			},
 			closeLabelsModel () {
-				this.diary.labels = this.labels.temp
+				this.diary.labelList = this.labels.temp
 				this.labels.temp = []
 				this.labels.labelsVisible = false
 			},
@@ -503,7 +485,6 @@
 				this.labels.labelName = ''
 			},
 			removeLabel (name) {
-				console.log('执行完毕')
 				let v = this
 				let t = v.labels.temp
 				let index = t.findIndex(o => { return o.name = name })
@@ -512,15 +493,24 @@
 			saveDiary () {
 				let _this = this
 				let d = _this.diary
-				if (d.title === null || d.title.trim() === 0) {
+				if (d.title === null || d.title.trim() === '') {
 					plusReady(() => { plus.nativeUI.toast('请填写标题'); })
 					return
 				}
-				requestData('url', 'POST', d).then(res => {
+				const loading = this.$loading({
+				    lock: true,
+				    text: '保存中',
+				    spinner: 'el-icon-loading',
+				    background: 'rgba(0, 0, 0, 0.7)'
+				 });
+				requestData('http://192.168.188.137:8081/O.OBusinessPlan/api/article/diary/addOrUpdate.do', 'POST', d).then(res => {
 					plusReady(() => { plus.nativeUI.toast("保存成功") })
 					_this.diary = res
-					
-				}).catch(err => { console.log(err) })
+					loading.close();
+				}).catch(err => { 
+					console.log(err)
+					loading.close();
+				})
 			},
 			goBackDiary () {
 				plusReady(function () {
@@ -530,5 +520,36 @@
 			}
 		}
 	})
+	
+	var E = window.wangEditor
+	var editor = new E('#editorMenu', '#editorContent')
+	// 或者 var editor = new E( document.getElementById('editor') )
+	// 自定义菜单配置
+	editor.customConfig.menus = [
+		'head',
+		'fontSize',  // 字号
+		'fontName',
+		'underline',
+		'image',  // 插入图片
+		'foreColor',  // 文字颜色
+		'backColor'  // 背景颜色
+	]
+	editor.customConfig.onchange = (html) => { app.$data.diary.content = html }
+	editor.create()
+	
+	plusReady(function () {
+		let view = plus.webview.getWebviewById('diaryEditView')
+		let str = getFromStore('diaryInfoData');
+		if (str === null || str === undefined) {
+			return
+		}
+		var data = JSON.parse(str)
+	
+		app.$data.classify.classify = data.classify
+		app.$data.labels.labels = data.labels
+		//1-表示编辑日记 0-新建日记
+		app.$data.diary = data.type === 1 ? data.diary : initDiary()
+		editor.txt.html(app.$data.diary.content)
+	});
 </script>
 </html>

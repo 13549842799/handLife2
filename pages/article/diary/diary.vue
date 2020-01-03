@@ -33,7 +33,8 @@
 		<view class="diary-content-list">
 			<common-item :obj="l" v-for="(l, index) in page.list" v-bind:key="index" @customizeEvent="longPressEvent" style="width: 100%">
 				<my-button @MyClick="readdiary(l)">查看</my-button>
-				<my-button v-if="l.source === 2" @MyClick="goToEditPage(l.id, l.title)">编辑</my-button>
+				<my-button @MyClick="goToEditPage(l.id, l.title)">编辑</my-button>
+				<!-- <my-button v-if="l.source === 2" @MyClick="goToEditPage(l.id, l.title)">编辑</my-button> -->
 				<my-button @MyClick="deleteDiaryEvent(l.id, l.title)">删除</my-button>			
 			</common-item>
 		</view>
@@ -49,6 +50,10 @@
 	} from 'vuex'
 	
 	import diaryApi from '../../../api/article/diary.js'
+	
+	import classifyApi from '../../../api/article/classify.js'
+	
+	import labelApi from '../../../api/article/label.js'
 	
 	import {MyPage} from '../../../common/pageUtil.js'
 	
@@ -99,7 +104,9 @@
 			 * 跳转到新建日记的页面
 			 */
 			goToNewDiaryPage () {
-				this.editwebView.show()
+				this.requestDatas(null, () => {
+					this.editwebView.show()
+				})
 			},
 			deleteDiaryEvent (id, title) {
 				let v = this
@@ -121,11 +128,11 @@
 				})
 			},
 			goToEditPage (id, title) {
-				//uni.navigateTo({ url: 'diaryEdit?id=' + id + '&title=' + title })
-				//#ifdef APP-PLUS
-				this.editwebView.loadURL('/hybrid/html/DiaryEditor.html?id=' + id)
-				//#endif
-
+				console.log(id)
+				this.requestDatas(id, () => {
+					this.editwebView.loadURL('/hybrid/html/DiaryEditor.html')
+					this.editwebView.show() 
+				})
 			},
 			/**
 			 * 查看日记
@@ -161,17 +168,40 @@
 				this.titleText = ''
 				this.searchTitles = []
 				this.visible = false
+			},
+			requestDatas(id, response) {
+				let allArr = [classifyApi.getClassifies({'childType': 1}), labelApi.getUsedList()]
+				let type = 0
+				if (id) {
+					allArr.push(diaryApi.getDiary(id))
+					type = 1
+				}
+				uni.showLoading({ title: '加载中' })
+				Promise.all(allArr).then(results => {
+					let diaryInfo = {
+						'type': type,
+						'classify': results[0],
+						'labels': results[1],
+						'diary': results.length === 3 ? results[2] : {}
+					}
+					uni.setStorageSync('diaryInfoData', JSON.stringify(diaryInfo))
+					uni.hideLoading();
+					if (response) {
+						response()
+					}
+				}).catch(err => {
+					console.log(err)
+					uni.hideLoading();
+				})
 			}
  		},
 		onLoad() {
 			let v = this
 			v.page = new MyPage({searchFunction: diaryApi.getDiaryList})
-            
+           
 			//#ifdef APP-PLUS
-			this.editwebView = plus.webview.create('/hybrid/html/DiaryEditor.html', 'diaryEditView');
-			
-			//w.show(); // 显示窗口
-			//#endif 
+			this.editwebView = plus.webview.create('', 'diaryEditView');
+			//#endif
 		},
 		/**
 		 * 屏幕尺寸监听事件
