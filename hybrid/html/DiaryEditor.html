@@ -301,92 +301,8 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script type="text/javascript">
 	
-	var plusReady = function (callback) {  
-		if (window.plus) {  
-			return callback();  
-		} else {  
-			document.addEventListener('plusready', callback);  
-		}  
-	};
-	
-	var xhr = null
-	var loginS = null
-	plusReady(function () {
-		var foo = plus.storage.getItem('loginState');
-		loginS = foo != null ? JSON.parse(JSON.parse(foo)) : {};
-	});
-	
-	window.onload=function(){
-	    console.log('页面加载完成')
-	}
-	
-	function requestData(url, type, data) {
-		
-		return new Promise((resolve, reject) => {
-			//if (xhr == null) {
-				xhr = new plus.net.XMLHttpRequest();
-				xhr.onreadystatechange = function () {
-					switch ( xhr.readyState ) {
-						case 0:
-						console.log('请求初始化')
-						break;
-						case 1:
-						console.log('请求一打开')
-						break;
-						case 2:
-							console.log('请求已发送')
-						break;
-						case 3:
-						    console.log('xhr请求已响应')
-							break;
-						case 4:
-						    console.log('xhr已响应结束')
-							if ( xhr.status == 200 && xhr.response.status == 200) {
-								resolve(xhr.response.data)						
-							} else {
-								console.log(xhr.responseText)
-								reject(xhr.response)
-							}
-							break;
-						default :
-							break;
-					}
-				}
-			//}			
-			xhr.open( type, url);
-			console.log('open')
-			xhr.responseType = 'json'
-			xhr.setRequestHeader('Content-Type','application/json');
-			xhr.setRequestHeader('X-user', loginS.name);
-			xhr.setRequestHeader('X-token', loginS.token);
-			xhr.send(JSON.stringify(data));
-		})
-	}
-	
-	/**
-	 * 从本地存储中查找数据
-	 * @param {Object} key
-	 */
-	function getFromStore(key) {
-		return plusReady(() => { return plus.storage.getItem(key); });
-	}
-	
-	function initDiary () {
-		return {
-			id: null,
-			title: '',
-			content: '',
-			status: 0,
-			classify: null,
-			date: null,
-			source: 2,
-			labelList: []
-		}
-	}
-	
-	
-	
 	const saveType = ['草稿', '私密', '发布'];
+	var editor = null;
 	
 	var app = new Vue({
 		el: '#app',
@@ -406,18 +322,39 @@
 				temp: [],
 				labelsVisible: false,
 				labelName: ''
-			}
+			},
+			type: 0
 		},
 		created() {
-			let data = getFromStore('diaryInfoData');
-			if (data === null || data === undefined) {
+			let str = getFromStore('diaryInfoData');
+			if (str === null || str === undefined) {
 				return
 			}
+			var data = JSON.parse(str)
 			this.classify.classify = data.classify
 			this.labels.labels = data.labels
 			//1-表示编辑日记 0-新建日记
-			this.diary = data.type === 1 ? data.diary : initDiary()
+			this.diary = (this.type = data.type) === 1 ? data.diary : initDiary()
 			
+		},
+		mounted() {
+			var E = window.wangEditor
+			editor = new E('#editorMenu', '#editorContent')
+			// 或者 var editor = new E( document.getElementById('editor') )
+			// 自定义菜单配置
+			editor.customConfig.menus = [
+				'head',
+				'fontSize',  // 字号
+				'fontName',
+				'underline',
+				'image',  // 插入图片
+				'foreColor',  // 文字颜色
+				'backColor'  // 背景颜色
+			]
+			
+			editor.customConfig.onchange = (html) => { this.content = html }
+			editor.create()
+			editor.txt.html(this.diary.content)
 		},
 		computed: {
 			menuMessage () {
@@ -514,14 +451,90 @@
 			},
 			goBackDiary () {
 				plusReady(function () {
-					console.log('回退到日记页面')
 					plus.webview.getWebviewById('diaryEditView').hide();
 				})
 			}
 		}
 	})
 	
-	var E = window.wangEditor
+	var plusReady = function (callback) {  
+		if (window.plus) {  
+			return callback();  
+		} else {  
+			document.addEventListener('plusready', callback);  
+		}  
+	};
+
+	var loginS = null
+	plusReady(function () {
+		var foo = plus.storage.getItem('loginState');
+		loginS = foo != null ? JSON.parse(JSON.parse(foo)) : {};
+	});
+	
+	function requestData(url, type, data) {
+		
+		return new Promise((resolve, reject) => {
+			//if (xhr == null) {
+			var	xhr = new plus.net.XMLHttpRequest();
+				xhr.onreadystatechange = function () {
+					switch ( xhr.readyState ) {
+						case 0:
+						console.log('请求初始化')
+						break;
+						case 1:
+						console.log('请求一打开')
+						break;
+						case 2:
+							console.log('请求已发送')
+						break;
+						case 3:
+						    console.log('xhr请求已响应')
+							break;
+						case 4:
+						    console.log('xhr已响应结束')
+							if ( xhr.status == 200 && xhr.response.status == 200) {
+								resolve(xhr.response.data)						
+							} else {
+								console.log(xhr.responseText)
+								reject(xhr.response)
+							}
+							break;
+						default :
+							break;
+					}
+				}
+			//}			
+			xhr.open( type, url);
+			xhr.responseType = 'json'
+			xhr.setRequestHeader('Content-Type','application/json');
+			xhr.setRequestHeader('X-user', loginS.name);
+			xhr.setRequestHeader('X-token', loginS.token);
+			xhr.send(JSON.stringify(data));
+		})
+	}
+	
+	/**
+	 * 从本地存储中查找数据
+	 * @param {Object} key
+	 */
+	function getFromStore(key) {
+		return plusReady(() => { return plus.storage.getItem(key); });
+	}
+	
+	function initDiary () {
+		return {
+			id: null,
+			title: '',
+			content: '',
+			status: 0,
+			classify: null,
+			date: null,
+			source: 2,
+			labelList: []
+		}
+	}
+	
+	/* var E = window.wangEditor
 	var editor = new E('#editorMenu', '#editorContent')
 	// 或者 var editor = new E( document.getElementById('editor') )
 	// 自定义菜单配置
@@ -535,9 +548,9 @@
 		'backColor'  // 背景颜色
 	]
 	editor.customConfig.onchange = (html) => { app.$data.diary.content = html }
-	editor.create()
+	editor.create() */
 	
-	plusReady(function () {
+	/* plusReady(function () {
 		let view = plus.webview.getWebviewById('diaryEditView')
 		let str = getFromStore('diaryInfoData');
 		if (str === null || str === undefined) {
@@ -550,6 +563,6 @@
 		//1-表示编辑日记 0-新建日记
 		app.$data.diary = data.type === 1 ? data.diary : initDiary()
 		editor.txt.html(app.$data.diary.content)
-	});
+	}); */
 </script>
 </html>
