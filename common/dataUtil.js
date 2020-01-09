@@ -49,5 +49,14 @@ export default {
 		}
 	  }
 	  return fmt
+	},
+	/**
+	 * 把时分秒字符串 hh:mm:ss 转成当天的date对象
+	 * @param {Object} now
+	 * @param {Object} time
+	 */
+	timeToDate(now, time) {
+		let timeArr = time.split(':')
+		return new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeArr[0], timeArr[1], timeArr[2], 0);
 	}
 }

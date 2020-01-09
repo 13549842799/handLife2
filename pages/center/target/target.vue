@@ -2,8 +2,27 @@
 	<view class="view-container">
 		<!-- 目标列表 -->
 		<view class="targetContent">
-			<view class="action">
-				
+			<view class="emptyView" v-show="nextAction === null">
+				<text>放松啦，今天没有需要完成的目标了</text>
+			</view>
+			<view class="action" v-if="nextAction !== null">
+				{{nextAction.result}}
+				<view v-show="nextAction.action.result === 0">
+					<text style="margin-right: 20px;">剩余</text>
+					<uni-countdown :show-day="false" color="#FFFFFF" background-color="#00B26A" border-color="#00B26A" :hour="countdown.hour" :minute="countdown.min" :second="countdown.sec" @timeup="timeUp"></uni-countdown>
+				</view>
+				<view v-show="nextAction.action.result !== 0">
+					<button size="mini" style="height: 25px;line-height25px: 14px;" v-show="nextAction.action.result === 1" @tap="startAction">开始</button>
+					<button size="mini" type="primary" style="height: 25px;line-height25px: 14px;" v-show="nextAction.action.result === 2" @tap="completeAction">完成</button>
+					<button size="mini" type="warn" style="height: 25px;line-height25px: 14px;" @tap="getUpAction">放弃</button>
+				</view>
+				<text>{{nextAction.planName}}</text>
+				<text>执行时间：{{nextAction.executionTime}}{{culTime(nextAction.executionTime)}}</text>
+				<text>结束时间：{{nextAction.endTime}}{{culTime(nextAction.endTime)}}</text>
+			</view>
+			<view v-if="willList.length > 0" v-for="(w, index) in willList" :key="w.id" class="plan-will-list">
+			    <text>{{w.planName}}</text>
+				<text>执行时间：{{w.executionTime}}{{culTime(w.executionTime)}}</text>
 			</view>
 		</view>
 		<uni-drawer :visible="drawer" mode="right" @close="closeDrawer">
@@ -32,38 +51,135 @@
 	import targetApi from '../../../api/target/target.js'
 	import planApi from  '../../../api/target/targetPlan.js'
 	
+	import util from '../../../common/objUtil.js'
+	import dataUtil from '../../../common/dataUtil.js'
+	
 	import uniDrawer from "@/components/uni-drawer/uni-drawer.vue"
+	import uniCountdown from '@/components/uni-countdown/uni-countdown.vue'
+	
+	var endTimeOutId = null
+	var tapActionId = null
 	
 	export default {
 		components: {
-			uniDrawer
+			uniDrawer,
+			uniCountdown
 		},
 		data() {
 			return {
 				drawer: false,  //右边抽屉开关
 				nextAction: null,
+				countdown: {
+					hour: 0,
+					min: 0,
+					sec: 0
+				},
 				willList: []
 			}
 		},
 		onLoad() {
 			this.loadWillActionList()
 		},
+		onShow () {
+			
+		},
 		methods: {
 			goToAddTarget() {
 				uni.navigateTo({ url: 'targetAdd' })
 			},
 			closeDrawer() {
-				console.log('触发false')
 				this.drawer = false;
 			},
 			loadWillActionList() {
 				let v = this
-				planApi.getWillTargetPlans(res => {
+				v.nextAction = null
+				planApi.getWillTargetPlans().then(res => {
 					if (!res || res.length === 0) {
 						return
 					}
 					v.nextAction = res.shift()
 					v.willList = res
+					
+					let now = new Date()
+					
+					if (v.nextAction.action.result === 2) {
+						v.endTimeOutTip(v.nextAction, now)
+					} else {
+						var ex = dataUtil.timeToDate(now, v.nextAction.executionTime) //下一个需要执行的计划的执行时间
+						let dis = (ex.getTime() - now.getTime())/1000
+						if (dis > 0) {
+							v.countdown.hour = parseInt(dis/3600);    // 小时 60*60 总小时数-过去的小时数=现在的小时数 
+							v.countdown.min = parseInt(dis%3600/60); // 分钟 -(day*24) 以60秒为一整份 取余 剩下秒数 秒数/60 就是分钟数
+							v.countdown.sec = parseInt(dis%60);  // 以60秒为一整份 取余 剩下秒数
+						} else {
+							v.timeUp()
+						}
+					}					
+                    /* if (v.willList.length === 0) {
+						return
+					}
+					let nextEx =  dataUtil.timeToDate(now, v.willList[0].executionTime) //下下一个需要执行的计划的执行时间
+					let endTime =  dataUtil.timeToDate(now, v.nextAction.endTime) //下个执行计划的结束时间
+					if (endTime > nextEx) {
+						tapActionId = setTimeout(function (p) {
+							p.loadWillActionList()
+							clearTimeout(tapActionId)
+						}, nextEx - now, v)
+					} */
+				}).catch(err => { console.log(err) })
+			},
+			culTime(timeStr) {
+				return util.isStr(timeStr) ? (parseInt(timeStr.substring(0, timeStr.indexOf(':'))) <= 12 ? ' AM' : ' PM') : ''
+			},
+			/**
+			 * 当倒计时结束后执行此方法
+			 */
+			timeUp () {
+				let v = this
+				let data = {
+					'id': v.nextAction.action.id,
+					'result': (v.nextAction.action.result = 1)
+				}
+				planApi.alterActionState(data).then(res => {}).catch(err => { console.log(err) })
+			},
+			startAction () {
+				let v = this
+				let now = new Date()
+				let data = {
+					'id': v.nextAction.action.id,
+					'result': (v.nextAction.action.result = 2),
+					'startTime': parseInt(now.getTime()/1000)
+				}
+				v.endTimeOutTip(v.nextAction, now)
+				planApi.alterActionState(data).then(res => {}).catch(err => { console.log(err) })
+			},
+			endTimeOutTip (plan, now) {
+				let endTime = plan.endTime.split(':')
+				let end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endTime[0], endTime[1], endTime[2])
+				endTimeOutId = setTimeout(function (id, planName) {
+					clearTimeout(endTimeOutId)
+				}, end - now, plan.action.id, plan.planName)
+			},
+			completeAction() {
+				let v = this
+				let data = {
+					'id': v.nextAction.action.id,
+					'result': (v.nextAction.action.result = 3),
+					'endTime': parseInt(new Date().getTime()/1000)
+				}
+				planApi.alterActionState(data).then(res => {
+					v.loadWillActionList()
+				}).catch(err => { console.log(err) })
+			},
+			getUpAction() {
+				let v = this
+				let data = {
+					'id': v.nextAction.action.id,
+					'result': (v.nextAction.action.result = 3),
+					'endTime': parseInt(new Date().getTime()/1000)
+				}
+				planApi.alterActionState(data).then(res => {
+					v.loadWillActionList()
 				}).catch(err => { console.log(err) })
 			}
 		}
@@ -77,20 +193,60 @@ view {
 }
 
 .targetContent {
-	width: 710upx;
+	width: 100%;
 	flex-direction: column;
 	justify-content: center;
 }
 
-.targetContent .action {
-	width: 61.8%;
-	height: 200upx;
+.targetContent .emptyView {
+	width: 100%;
+	height: 120px;
+	justify-content: center;
+	margin-top: 100px;
+}
+
+.targetContent .emptyView text {
+	
+}
+
+.targetContent .action, .plan-will-list {
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 20upx;
-	border-radius: 35upx;
-	border: 1upx solid #0FAEFF;
+	flex-direction: column;
+}
+
+.targetContent .action {
+	width: 280px;
+	height: 120px;
+	margin-top: 20rpx;
+	border-radius: 35rpx;
+	border: 1rpx solid #0FAEFF;
 	background: rgba(0, 0, 0, 0.1);
+	padding: 10px 10px;
+}
+
+.targetContent .action > view {
+	width: 280px;
+	height: 50px;
+}
+
+.targetContent .action > text {
+	font-size: 18px;
+}
+
+.plan-will-list {
+	width: 175.4px;
+	height: 60.82px;
+	margin-top: 45rpx;
+	border: 1px solid #DCDCDC;
+	padding: 5px 5px;
+}
+
+.plan-will-list text {
+	font-size: 15px;
+	text-align: left;
+	height: 30.41px;
+	line-height: 30.41px;
 }
 
 .target-menu {

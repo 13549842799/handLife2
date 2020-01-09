@@ -18,6 +18,7 @@ export const uploadUrl = baseUrl + '/api/upload/uploadFile'
 export const allAccountUrl = baseUrl + '/api/admin/accountManager'
 export const targetUrl = baseUrl + '/api/target/target' //目标
 export const targetPlanUrl = baseUrl + '/api/target/targetPlan'
+export const actionUrl = baseUrl + '/api/target/planAction' //动作
 
 export const loginUrl = 'http://localhost:8082/oobusinessplan/#/login'
 // const loginUrl = 'http://localhost:8080/oobusinessplan/#/login'

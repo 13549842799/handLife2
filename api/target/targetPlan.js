@@ -1,6 +1,6 @@
 import {
 	targetPlanUrl,
-	
+	actionUrl
 } from './../../base_variable.js'
 	
 import {
@@ -78,7 +78,10 @@ export default {
 	deletePlan(id, params) {
 		return $getLoading({url: targetPlanUrl + '/s/' + id + '/del.do', data: {'reason': params.reason}})
 	},
-	alterActionState() {
-		
+	/**
+	 * 修改动作的状态
+	 */
+	alterActionState(data) {
+		return $post({url: actionUrl + '/alter.do', data: data})
 	}
 }
