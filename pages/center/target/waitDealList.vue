@@ -7,6 +7,7 @@
 				<my-button @MyClick="giveUpPlan(l.id)">放弃</my-button>			
 			</common-item>
 		</view>
+		<view class="empty-view"></view>
 	</view>
 </template>
 
@@ -58,5 +59,9 @@
 	
 	.deal-list {
 		flex-direction: column;
+	}
+	
+	.empty-view {
+		
 	}
 </style>
