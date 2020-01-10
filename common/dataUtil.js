@@ -58,5 +58,12 @@ export default {
 	timeToDate(now, time) {
 		let timeArr = time.split(':')
 		return new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeArr[0], timeArr[1], timeArr[2], 0);
+	},
+	/**
+	 * 获取时间的时段,并返回AM 或者 PM
+	 * @param {Object} timeStr
+	 */
+	getDateArea(timeStr) {
+		return typeof timeStr ? (parseInt(timeStr.substring(0, timeStr.indexOf(':'))) <= 12 ? ' AM' : ' PM') : ''
 	}
 }

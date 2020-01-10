@@ -83,5 +83,11 @@ export default {
 	 */
 	alterActionState(data) {
 		return $post({url: actionUrl + '/alter.do', data: data})
+	},
+	/**
+	 * 获取当天尚为处理的目标计划动作
+	 */
+	unCompleteList() {
+		return $getLoading({'url': targetPlanUrl + '/un-complete.re'})
 	}
 }

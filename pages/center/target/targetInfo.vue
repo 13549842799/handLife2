@@ -50,9 +50,7 @@
 			return {
 				target: {
 				},
-				plans: [{id: 1, name: '学习第一计划', content: '每天早上读书', executionTime: new Date(), endTime: new Date(), period: '1天'},
-				        {id:2, name: '学习阶梯计划', content: '每天早上读书', executionTime: new Date(), endTime: new Date(), period: '1天'},
-						{id:3, name: '学习高级计划', content: '每天早上读书', executionTime: new Date(), endTime: new Date(), period: '1天'}]
+				plans: []
 			}
 		},
 		onLoad(option) {

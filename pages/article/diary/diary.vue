@@ -57,13 +57,9 @@
 	
 	import {MyPage} from '../../../common/pageUtil.js'
 	
-	import commonButton from '../../../components/common-button.vue'
-	
 	import MyButton from '../../../components/button/MyButton'
 	
 	import commonItem from '../../../components/list/common-list-item'
-	
-	import listItem from '../../../components/list-item'
 	
 	import {bgArray} from '../../../common/imageJs/backgroundImg.js'
 	
@@ -73,10 +69,8 @@
 	
 	export default {
 		components: {
-			commonButton,
 			commonItem,
-			MyButton,
-			listItem
+			MyButton
 		},
 		data() {
 			return {

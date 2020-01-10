@@ -14,7 +14,7 @@
 				<view v-show="nextAction.action.result !== 0">
 					<button size="mini" style="height: 25px;line-height25px: 14px;" v-show="nextAction.action.result === 1" @tap="startAction">开始</button>
 					<button size="mini" type="primary" style="height: 25px;line-height25px: 14px;" v-show="nextAction.action.result === 2" @tap="completeAction">完成</button>
-					<button size="mini" type="warn" style="height: 25px;line-height25px: 14px;" @tap="getUpAction">放弃</button>
+					<button size="mini" type="warn" style="height: 25px;line-height25px: 14px;" @tap="giveUpAction">放弃</button>
 				</view>
 				<text>{{nextAction.planName}}</text>
 				<text>执行时间：{{nextAction.executionTime}}{{culTime(nextAction.executionTime)}}</text>
@@ -30,6 +30,11 @@
 				<navigator url="targetList">
 					<view class="drawer-item">
 						<text>列表</text>
+					</view>
+				</navigator>
+				<navigator url="waitDealList">
+					<view class="drawer-item">
+						<text>待处理计划</text>
 					</view>
 				</navigator>
 		    </view>
@@ -81,7 +86,7 @@
 			this.loadWillActionList()
 		},
 		onShow () {
-			
+			console.log('show')
 		},
 		methods: {
 			goToAddTarget() {
@@ -156,26 +161,40 @@
 			endTimeOutTip (plan, now) {
 				let endTime = plan.endTime.split(':')
 				let end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), endTime[0], endTime[1], endTime[2])
+				//首先情况之前的定时器，避免重复创建定时器
+				clearTimeout(endTimeOutId)
 				endTimeOutId = setTimeout(function (id, planName) {
-					clearTimeout(endTimeOutId)
 				}, end - now, plan.action.id, plan.planName)
 			},
 			completeAction() {
 				let v = this
+				let endTime = parseInt(new Date().getTime()/1000)
+				let exEnd = dataUtil.timeToDate(now, v.nextAction.endTime).getTime()/1000
 				let data = {
 					'id': v.nextAction.action.id,
-					'result': (v.nextAction.action.result = 3),
-					'endTime': parseInt(new Date().getTime()/1000)
+					'result': (endTime - exEnd) > 5*60 ? 4 : 3,
+					'endTime': endTime
 				}
-				planApi.alterActionState(data).then(res => {
-					v.loadWillActionList()
-				}).catch(err => { console.log(err) })
+				if (data.result === 4) {
+					//#ifdef APP-PLUS
+					plus.nativeUI.prompt('来总结一下超时的原因吧', e => {
+						data.reason = e.value === null || e.value === undefined ? '' : e.value
+						planApi.alterActionState(data).then(res => {
+							v.loadWillActionList()
+						}).catch(err => { console.log(err) })
+					}, '', '', ['确认']);
+					//#endif
+				} else {
+					planApi.alterActionState(data).then(res => {
+						v.loadWillActionList()
+					}).catch(err => { console.log(err) })
+				}
 			},
-			getUpAction() {
+			giveUpAction() {
 				let v = this
 				let data = {
 					'id': v.nextAction.action.id,
-					'result': (v.nextAction.action.result = 3),
+					'result': (v.nextAction.action.result = 6),
 					'endTime': parseInt(new Date().getTime()/1000)
 				}
 				planApi.alterActionState(data).then(res => {

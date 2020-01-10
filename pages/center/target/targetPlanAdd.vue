@@ -1,10 +1,10 @@
 <template>
 	<view class="view-padding-container">
-		<input-item title="计划名称" placeholder="请为你的计划命名吧" v-model="plan.name" ></input-item>
+		<input-item title="计划名称" placeholder="请为你的计划命名吧" v-model="plan.planName" ></input-item>
 		<text-area-item title="计划内容-在这个计划中,你需要完成的是什么!" placeholder="请填写你的动作吧" v-model="plan.content"></text-area-item>
 		<date-time-input v-model="plan.executionTime" title="计划执行时间" type="time"></date-time-input>
 		<date-time-input v-model="plan.endTime" title="执行期限" type="time"></date-time-input>
-		<date-time-input v-if="!afterStartDate" v-model="plan.startDate" title="计划首次执行日期" type="date"></date-time-input>
+		<date-time-input v-if="!afterStartDate" v-model="plan.startDate" title="计划首次执行日期" type="date" :formmat="2"></date-time-input>
 		<view class="form-unit-input">
 			<text>请选择执行周期</text>
 			<view>
@@ -15,7 +15,7 @@
 				</picker>
 			</view>
 		</view>
-		<button type="primary" size="mini" @tap="submitPlan">提交</button>
+		<button type="primary" size="mini" @tap="submitPlan">{{plan.id === null ? '提交' : '保存'}}</button>
 	</view>
 </template>
 
@@ -39,13 +39,14 @@
 			return {
 				plan: {
 					id: null,
+					targetId: null,
 					executionTime: '00:00',
 					endTime: '00:00',
 					period: 1,
-					unit: 1,
-					startDate: dataUtil.dateFormat('yyyy-MM-dd', new Date())
+					unit: 2,
+					startDate: dataUtil.dateFormat('yyyy年MM月dd日', new Date())
 				},
-				units: [{name:'小时', id: 1}, {name:'天', id: 2}, {name:'周', id: 3}, {name:'月', id: 4}]
+				units: [{name:'天', id: 2}, {name:'周', id: 3}, {name:'月', id: 4}]
 			}
 		},
 		onLoad(option) {
@@ -53,8 +54,13 @@
 			let id = option.id
 			if (id) {
 				planApi.getPlan(id).then(res => {
+					res.executionTime = res.executionTime.substring(0, 5)
+					res.endTime = res.endTime.substring(0, 5)
+					console.log(res.startDate)
 					v.plan = res
 				}).catch(err => { console.log(err) })
+			} else {
+				v.plan.targetId = option.targetId
 			}
 		},
 		computed: {
@@ -73,14 +79,18 @@
 			},
 			submitPlan() {
 				let v = this
-				planApi.savePlan(v.plan).then(res => {
+				let now = new Date()
+				let data = objUtil.newObj(v.plan)
+				data.executionTime = dataUtil.timeToDate(now, data.executionTime +':00').getTime()
+				data.endTime = dataUtil.timeToDate(now, data.endTime+':00').getTime()
+				planApi.savePlan(data).then(res => {
 					//#ifdef APP-PLUS
 					plus.nativeUI.alert("保存成功", function(){
-						uni.reLaunch({ url: 'targetPlans' })
+						uni.reLaunch({ url: 'targetPlans?id=' + data.targetId })
 					}, "", "OK");
 					//#endif
 					//#ifdef H5
-					uni.reLaunch({ url: 'targetPlans' })
+					uni.reLaunch({ url: 'targetPlans?id=' + data.targetId })
 					//#endif
 				}).catch(err => {
 					uni.showToast({

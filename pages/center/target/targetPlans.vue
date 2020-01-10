@@ -3,18 +3,26 @@
 		<view class="control-view">
 			<text style="margin-right: 10px;">{{typeName}}</text><switch :checked="true" @change="changeType"></switch>
 		</view>
-		<view class="plan-list" v-for="(l, index) in list" :key="index">
+		<view v-show="list.length > 0" class="plan-list" v-for="(l, index) in list" :key="l.id">
 			<view style="justify-content:space-between;">
-				<text class="paln-name">{{l.targetName}}</text>
-				<text style="font-size: 25rpx;color: #E0E0E0">周期：{{l.perion}}{{l.unionName}}</text>
+				<text class="paln-name">{{l.planName}}</text>
+				<text style="font-size: 25rpx;color: #E0E0E0">周期：{{l.period}}{{l.unitName}}</text>
 			</view>
 			<view class="plan-time">
 				<text>执行时间</text>
-				<text>{{l.executeTime}}-{{l.endTime}}</text>
+				<text>{{format(l.executionTime)}}-{{format(l.endTime)}}</text>
 				<navigator :url="'targetPlanInfo?id='+l.id" hover-class="na-hover-class">详情</navigator>
 				<navigator :url="'targetPlanAdd?id='+l.id" style="color: #007AFF;" hover-class="na-hover-class">编辑</navigator>
-				<text style="color: red;" @tap="deletePlan(l.id, l.targetName)">删除</text>
+				<text style="color: red;" @tap="deletePlan(l.id, l.planName)">删除</text>
 			</view>
+		</view>
+		<view class="empty-class" v-show="list.length === 0 && type === 1">
+			<text>计划空空如也</text>
+			<text>快去订立新的计划的</text>
+		</view>
+		<view class="empty-class" v-show="list.length === 0 && type === 0">
+			<text>计划空空如也</text>
+			<text>你还没有废弃过一个计划哦</text>
 		</view>
 	</view>
 </template>
@@ -22,6 +30,8 @@
 <script>
 	
 	import targetPlanApi from '../../../api/target/targetPlan.js'
+	
+    import dataUtil from '../../../common/dataUtil.js'
 	
 	import uniList from '../../../components/uni-list/uni-list.vue'
 	import uniListItem from "@/components/uni-list-item/uni-list-item.vue"
@@ -31,17 +41,24 @@
 		},
 		data() {
 			return {
-				list: [{id: 1, targetName: '计划1', perion: 10, unionName: '天', executeTime: 'AM 8:16', endTime: 'PM 12:12'},
-				       {id:2, targetName: '计划2', perion: 1, unionName: '月', executeTime: 'AM 8:16', endTime: 'PM 12:12'}],
-				type: 1 //当前列表的类型（0-已删除计划列表 1-运行计划列表）
+				/* list: [{id: 1, targetName: '计划1', perion: 10, unionName: '天', executeTime: 'AM 8:16', endTime: 'PM 12:12'},
+				       {id:2, targetName: '计划2', perion: 1, unionName: '月', executeTime: 'AM 8:16', endTime: 'PM 12:12'}], */
+			    list: [],
+				type: 1, //当前列表的类型（0-已删除计划列表 1-运行计划列表)
+				targetId: null
 			}
 		},
 		onLoad(option) {
-			let targetId = option.id, v = this
-			//v.list = targetPlanApi.getTargetPlans({targetId})
+			let v = this
+			v.targetId = option.id
+			targetPlanApi.getTargetPlans({'targetId': v.targetId}).then(res => {
+				v.list = res
+			}).catch(err => {
+				console.log(err)
+			})
 		},
 		onNavigationBarButtonTap (e) {
-			uni.navigateTo({ url: 'targetPlanAdd'})
+			uni.navigateTo({ url: 'targetPlanAdd?targetId=' + this.targetId})
 		},
 		computed: {
 			typeName() {
@@ -49,6 +66,9 @@
 			}
 		},
 		methods: {
+			format (str) {
+				return dataUtil.getDateArea(str) + ' ' + str
+			},
 			changeType(e) {
 				let v = this				
 				v.type = e.detail.value ? 1 : 0
@@ -102,5 +122,16 @@
 	
 	.na-hover-class {
 		color: #DCDCDC;
+	}
+	
+	.empty-class {
+		width: 100%;
+		flex-direction: column;
+		margin-top: 200px;
+	}
+	
+	.empty-class text {
+		text-align: center;
+		font-size: 20px;
 	}
 </style>

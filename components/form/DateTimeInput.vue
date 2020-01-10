@@ -34,6 +34,10 @@
 				validator: function (value) {
 					return value === 'date' || value === 'time'
 				}
+			},
+			formmat: {
+				type: Number,
+				default: 1
 			}
 		},
 		data() {
@@ -44,6 +48,10 @@
 		methods: {
 			bindTimeChange(event) {
                 let val = event.detail.value
+				if (this.formmat === 2) {
+					let a = val.split("-")
+					val = a[0] + '年' + a[1] + '月' + a[2] + '日'
+				}
 				this.$emit('input', val)
 			}
 		}

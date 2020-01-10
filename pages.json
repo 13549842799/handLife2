@@ -238,6 +238,12 @@
 			}
 		},
 		{
+		    "path" : "pages/center/target/waitDealList",
+		    "style" : {
+				"navigationBarTitleText": "待处理列表"
+			}
+		},
+		{
 		    "path" : "pages/center/target/targetPlans",
 		    "style" : {
 				"app-plus": {
