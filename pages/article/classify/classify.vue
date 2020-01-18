@@ -10,7 +10,7 @@
 			<view>
 				<view class="finalreport-pos" @tap="selectClassify(2)" :class="{'classify-select-selected': finalreportSelect}">
 					<image src="../../../static/icon/article/finalreport.png"></image>
-					<text>总结</text>
+					<text>备忘</text>
 				</view>
 			</view>
 			<view>

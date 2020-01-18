@@ -61,6 +61,8 @@
 	
 	import commonItem from '../../../components/list/common-list-item'
 	
+	import listItem from '../../../components/list-item.vue'
+	
 	import {bgArray} from '../../../common/imageJs/backgroundImg.js'
 	
 	
@@ -70,7 +72,8 @@
 	export default {
 		components: {
 			commonItem,
-			MyButton
+			MyButton,
+			listItem
 		},
 		data() {
 			return {
@@ -99,6 +102,7 @@
 			 */
 			goToNewDiaryPage () {
 				this.requestDatas(null, () => {
+					this.editwebView.loadURL('/hybrid/html/DiaryEditor.html')
 					this.editwebView.show()
 				})
 			},
@@ -173,6 +177,7 @@
 				uni.showLoading({ title: '加载中' })
 				Promise.all(allArr).then(results => {
 					let diaryInfo = {
+						'url': diaryApi.getUrl(),
 						'type': type,
 						'classify': results[0],
 						'labels': results[1],
@@ -205,7 +210,6 @@
 			this.footVisable = !(e.size.windowWidth === this.$screen.windowWidth && e.size.windowHeight < this.$screen.windowHeight/2)
 		},
 		onShow (e) {
-			console.log('onshow_diary')
 			if (this.status === 1) {
 				this.page.requestLine({type: false})
 				this.alterListStatus(0)

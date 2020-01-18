@@ -10,6 +10,9 @@ import {
 } from './../../http.js'
 
 export default {
+	getUrl () {
+		return diaryUrl
+	},
 	/**
 	 * 获取目标日记
 	 * @param {Object} id
