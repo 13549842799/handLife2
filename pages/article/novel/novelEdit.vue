@@ -15,8 +15,8 @@
 			</view>
 			<view class="form-item" v-if="!isNewNovel">
 				<view class="item-label"><text>状态</text></view>
-				<view @tap="openSelectClassify" style="width: 500upx;">
-					<text :style="{color: novel.classify ? '#0FAEFF' : '#DDDDDD'}">{{classifyName}}</text>
+				<view style="width: 500upx;">
+					<text style="color: #0FAEFF">{{novel.stateName}}</text>
 				</view>
 			</view>
 			<view class="form-item">
@@ -36,11 +36,11 @@
 			<view class="form-item">
 				<view class="item-label"><text>标签</text></view>
 				<view style="width: 530upx;display: block;" @tap="openLabels">
-					<template v-if="checkedLabels == null || checkedLabels.length === 0">
+					<template v-if="novel.labelList == null || novel.labelList === undefined || novel.labelList.length === 0">
 						<text style="color: #DDDDDD;">请点击选择...</text>
 					</template>
 					<template v-else>
-						<label-img v-for="l in checkedLabels" :name="l.name" :key="l.id" size="small"></label-img>
+						<label-img v-for="(l, index) in novel.labelList" :name="l.name" :key="l.id" size="small" v-if="l.delflag === 1" ></label-img>
 					</template>
 				</view>
 			</view>
@@ -69,7 +69,7 @@
 		<bottom-model-picker ref="classifyModel" title="小说分类选择" text="新增" :list="classify"
 		    v-on:MyChange="classifyChange" v-on:action="addClassify">
 		</bottom-model-picker>
-		<bottom-model-check-box ref="labelsModel" title="标签选择" text="新增" :list="labels" :role="{id: 'id', name: 'name', val: 'id'}"
+		<bottom-model-check-box ref="labelsModel" title="标签选择" text="新增" :list="labels" type="click"
 		    v-on:change="labelChange">
 			<view style="height: 80upx;">
 				<input v-model="editLabel"  style="margin: auto 30upx;width: 500upx;color: #8F8F94;font-size: 30upx;"  
@@ -106,6 +106,8 @@
 	
 	import {fileUrl} from '../../../base_variable.js'
 	
+	import util from '../../../common/objUtil.js'
+	
 	export default {
 		components: {
 			bottomModelPicker,
@@ -121,7 +123,8 @@
 					classify: null,
 					labels: '',
 					novelState: 0,
-					source: 2
+					source: 2,
+					labelList: []
 				},
 				classify: [],
 				labels: [],
@@ -141,8 +144,8 @@
 			}
 			let v = this			
 			classifyApi.getClassifies({'childType': 4}, true).then(res => {
-				this.classify = res
-				return labelApi.getLabelsList(null, true) 
+				v.classify = res
+				return labelApi.getUsedList() 
 			}).then(res => {
 				//2.加载标签列表
 				v.labels = res === null || res === undefined || res.length === 0 ? [] : res	
@@ -158,9 +161,7 @@
 			}).then (res => {
 				v.novel = res
 				//2.1 根据小说自己的所选标签通过id匹配总的标签确定是否已被选中，根据是否被选中添加check的值， 选中 true， 没有 false
-				v.labels.map((label, index) => {
-					label.check = v.novel.labelList.some(l => { return l.id === label.id })
-				})
+				
 				//匹配分类
 				v.$refs.classifyModel.initVal(!v.classify ? null : v.classify.findIndex(c => { return c.id === v.novel.classify }))
 				uni.hideLoading()
@@ -171,11 +172,8 @@
 		},
 		computed: {
 			classifyName () {
-				return this.novel.classify && this.novel.classify !== -1 ? 
-				    this.classify.find(val => { return val.id === this.novel.classify }).name : "请选择分类"
-			},
-			checkedLabels () {
-				return this.labels.filter(o => { return o.check })
+			    let c = this.novel.classify && this.novel.classify !== -1 ? this.classify.find(val => { return val.id === this.novel.classify }) : null
+				return c === null || c === undefined ? '请选择分类' : c.name
 			},
 			/**
 			 * 当前页面状态 true-新建 false-已有小说，编辑
@@ -231,27 +229,34 @@
 				})
 			},
 			openLabels () {
-				console.log('点击')
 				this.$refs.labelsModel.open()
 			},
-			labelChange (arr) {
-				this.novel.labels = arr.toString()
+			labelChange (res) {
+				/* this.novel.labels = arr.toString()
 				for (let i = 0; i < this.labels.length; i ++) {
 					this.labels[i].check =  arr.findIndex(o => { return o === this.labels[i].id.toString() }) !== -1
+				} */
+				let ll = this.novel.labelList !== null && this.novel.labelList != undefined ? this.novel.labelList : []
+				if (ll.findIndex(o => { return o.name === res.val }) > -1) {
+					return
 				}
+				this.novel.labelList.push({id: null, 'name': res.val, 'delflag': 1})
 			},
 			addLabel () {
 				let v = this
-				labelApi.addLabel({name: v.editLabel}).then(res => {
-					res.id = res.id.toString()
-					res.check  = true
-					v.labels.push(res)
-					v.editLabel = ''
-					uni.showToast({ title: '创建成功' })
-				}).catch(err => {
-					console.log(err)
-					uni.showToast({ title: err.message, icon: "none" })
-				})
+				let ll = v.novel.labelList !== null && v.novel.labelList != undefined ? v.novel.labelList : []
+				if (ll.findIndex(o => { return o.name === v.editLabel }) > -1) {
+					return
+				}
+				v.novel.labelList.push({id: null, 'name': v.editLabel, 'delflag': 1})
+				v.editLabel = ''
+			},
+			removeLabel (index) {
+				if (this.novel.labelList[index].id !== null) {
+					this.novel.labelList[index].delflag = 0
+				} else {
+					this.novel.labelList.splice(index, 1)
+				}
 			},
 			/**
 			 * 选择封面图片并进行预览
@@ -272,12 +277,13 @@
 			 * 提交表单，保存小说概况
 			 */
 			submitNovel () {
-				let v = this
-				if (v.novel.title === null || v.novel.title.trim() === '') {
+				let v = this				
+				let temp = util.newfilterObject(v.novel, ['lastetSection', 'createTime', 'modifierTime', 'labelList'], [null, ''])				
+				if (temp.title === null || temp.title.trim() === '') {
 					uni.showToast({ title: "不能没有作品名称喔！", icon: "none" })
 					return;
 				}
-				if (v.novel.classify === null) {
+				if (temp.classify === null) {
 					uni.showToast({ title: "来为你的作品选择合适的分类吧！", icon: "none" })
 					return;
 				}
@@ -288,7 +294,7 @@
 				let params = {
 					fileName: 'coverImage',
 					filePath: v.imagePath,
-					data: v.novel
+					data: temp
 				}
 				console.log('准备请求上传接口')
 				novelApi.saveNovel(params).then(res => {

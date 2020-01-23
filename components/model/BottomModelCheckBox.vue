@@ -5,14 +5,19 @@
 				<text>{{title}}</text>
 			</view>
 			<view class="bottom-model-body">
-				<checkbox-group style="width: 100%;" @change="checkboxChange">
-					<label class="checkbox-label" v-for="l in list" :key="l[role['id']]">
+				<checkbox-group style="width: 100%;" @change="checkboxChange" v-if="type === 'check'">
+					<label class="checkbox-label" v-for="l in theList" :key="l[role['id']]">
 						<label-img :name="l[role['name']]" size="small"></label-img>
 						<view>
 							<checkbox :value="l[role['val']].toString()"  :checked="l.check" style="transform:scale(0.7)"/>
 						</view>
 					</label>
 				</checkbox-group>
+				<view style="width: 100%;flex-direction: column;" v-else>
+					<label class="checkbox-label" v-for="l in theList" :key="l[role['id']]" @click="clickItem(l.val, l.id)">
+						<label-img :name="l[role['name']]" size="small" ></label-img>
+					</label>
+				</view>
 			</view>
 			<slot>
 			    <view class="bottom-model-button"><text @tap="tapButton">新增</text></view>
@@ -48,6 +53,15 @@
 				validator: val => {
 					return val.id && val.name && val.val
 				}
+			},
+			type: {
+				type: String,
+				default: () => {
+					return 'check'
+				},
+				validator: val => {
+					return val === 'click' || val === 'check'
+				}
 			}
 		},
 		data () {
@@ -56,7 +70,13 @@
 			}
 		},
 		computed: {
-			
+			theList () {
+				let v = this// v.role.id: index, v.role.name: o, v.role.val: o
+				if (v.list.length > 0 && typeof v.list[0] === 'string') {
+					return v.list.map((o, index) => { return {'id': index, 'name': o, 'val': o} }, this)
+				}
+				return v.list
+			}
 		},
 		methods: {
 			open () {
@@ -76,6 +96,9 @@
 			},
 			tapButton () {
 				this.$emit('tapButton')
+			},
+			clickItem (val, id) {
+				this.$emit('change', {id, val})
 			}
 		}
 	}

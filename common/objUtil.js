@@ -37,7 +37,6 @@ export default {
 		if (!target || !origin) {
 			return
 		}
-		console.log(filter)
 		for (let key in origin) {
 			if (filter.indexOf(key) === -1) {
 				target[key] = origin[key]
