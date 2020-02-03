@@ -1,5 +1,5 @@
 <template>
-	<view class="text-label-view">
+	<view class="text-label-view" @tap="clickEvent">
 		<text class="text-label-style-baise" 
 			:class="{'text-label-style-small': Small, 'text-label-style-mini': Mini, 'text-label-style-large': large}">
 			{{name}}
@@ -34,6 +34,11 @@
 			},
 			Small () {
 				return this.size === 'small'
+			}
+		},
+		methods: {
+			clickEvent () {
+				this.$emit('click', this.name)
 			}
 		}
 	}

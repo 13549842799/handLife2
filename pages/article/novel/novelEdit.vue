@@ -69,7 +69,7 @@
 		<bottom-model-picker ref="classifyModel" title="小说分类选择" text="新增" :list="classify"
 		    v-on:MyChange="classifyChange" v-on:action="addClassify">
 		</bottom-model-picker>
-		<bottom-model-check-box ref="labelsModel" title="标签选择" text="新增" :list="labels" type="click"
+		<!-- <bottom-model-check-box ref="labelsModel" title="标签选择" text="新增" :list="labels" type="click"
 		    v-on:change="labelChange">
 			<view style="height: 80upx;">
 				<input v-model="editLabel"  style="margin: auto 30upx;width: 500upx;color: #8F8F94;font-size: 30upx;"  
@@ -79,7 +79,25 @@
 					增加
 				</button>
 			</view>
-		</bottom-model-check-box>
+		</bottom-model-check-box> -->
+		<bottom-model ref="labelsModel" v-on:close="close">
+			<text style="color: red; font-size: 15px;">常用标签</text>
+			<view style="border-top: 1px solid #EBEDF0; border-bottom:  1px solid #EBEDF0; padding: 10rpx 0;">
+				<label-img v-for="(l, index) in labels" :name="l" :key="index" size="small" @tap="addLabel"></label-img>
+			</view>
+			<text style="font-size: 15px;">已选标签</text>
+			<view style="border-top: 1px solid #EBEDF0; border-bottom:  1px solid #EBEDF0; padding: 10rpx 0;">
+				<label-img v-for="(l, index) in novel.labelList" :name="l.name" :key="index" size="small" v-if="l.delflag === 1" @tap="removeLabel(index)"></label-img>
+			</view>
+			<view style="height: 80upx;">
+				<input v-model="editLabel"  style="margin: auto 30upx;width: 500upx;color: #8F8F94;font-size: 30upx;"  
+				    placeholder="自定义标签" placeholder-class="common-placeholder"/> 
+				<button @tap="addLabel" style="height: 50upx;margin: auto 0upx;line-height: 50upx;" 
+				    size="mini" type="primary">
+					增加
+				</button>
+			</view>
+		</bottom-model>
 		<inputDlog ref="classifyDlog"></inputDlog>
 	</view>
 </template>
@@ -100,6 +118,8 @@
 	
 	import bottomModelCheckBox from '../../../components/model/BottomModelCheckBox.vue'
 	
+	import bottomModel from '../../../components/model/buttomModel.vue'
+	
 	import inputDlog from '../../../components/inputDlog'
 	
 	import LabelImg from '../../../components/label-img.vue'
@@ -110,6 +130,7 @@
 	
 	export default {
 		components: {
+			bottomModel,
 			bottomModelPicker,
 			bottomModelCheckBox,
 			inputDlog,
@@ -231,6 +252,9 @@
 			openLabels () {
 				this.$refs.labelsModel.open()
 			},
+			close () {
+				this.$refs.labelsModel.close()
+			},
 			labelChange (res) {
 				/* this.novel.labels = arr.toString()
 				for (let i = 0; i < this.labels.length; i ++) {
@@ -242,14 +266,15 @@
 				}
 				this.novel.labelList.push({id: null, 'name': res.val, 'delflag': 1})
 			},
-			addLabel () {
+			addLabel (e) {
 				let v = this
+				let name = typeof e === 'string' ? e : v.editLabel
 				let ll = v.novel.labelList !== null && v.novel.labelList != undefined ? v.novel.labelList : []
-				if (ll.findIndex(o => { return o.name === v.editLabel }) > -1) {
+				if (name === '' || ll.findIndex(o => { return o.name === name }) > -1) {
 					return
 				}
-				v.novel.labelList.push({id: null, 'name': v.editLabel, 'delflag': 1})
-				v.editLabel = ''
+				v.novel.labelList.push({id: null, 'name': name, 'delflag': 1})
+				v.editLabel = typeof e !== 'string' ? '' : v.editLabel
 			},
 			removeLabel (index) {
 				if (this.novel.labelList[index].id !== null) {
@@ -278,7 +303,8 @@
 			 */
 			submitNovel () {
 				let v = this				
-				let temp = util.newfilterObject(v.novel, ['lastetSection', 'createTime', 'modifierTime', 'labelList'], [null, ''])				
+				let temp = util.newfilterObject(v.novel, ['lastetSection', 'createTime', 'modifierTime', 'labelList', 'coverFile'], [null, ''])				
+				temp.labelListJson = JSON.stringify(v.novel.labelList)
 				if (temp.title === null || temp.title.trim() === '') {
 					uni.showToast({ title: "不能没有作品名称喔！", icon: "none" })
 					return;

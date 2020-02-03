@@ -106,7 +106,7 @@
 					//#ifdef APP-PLUS
 					plus.nativeUI.confirm("是否立刻前往创建计划?", function(e){
 						if (e.index === 0) {
-							uni.reLaunch({ url: 'targetPlanAdd' })
+							uni.reLaunch({ url: 'targetPlanAdd?targetId=' + res.id})
 						} else {
 							uni.reLaunch({ url: 'targetList' })
 						}

@@ -21,6 +21,10 @@
 				<list-item title="密码" ></list-item>
 				<list-item title="手机绑定" :val="encryptionPhone"></list-item>
 			</view>
+			<!-- 账号登录状态设置 -->
+			<view class="account-list-item">
+				<list-item title="注销" @MyTap="loginOut"></list-item>
+			</view>
 		</view>
 		<dialog-view ref="dialog"></dialog-view>
 	</view>
@@ -129,6 +133,23 @@
 						}).catch(err => { console.log(err) })
 					}
 				});
+			},
+			loginOut() {
+				let v = this
+				//#ifdef APP-PLUS
+				plus.nativeUI.confirm("确定注销此次登录吗?", function(e){
+					console.log(typeof e.index);
+					switch (e.index) {
+						case 0:
+						    console.log(v.accountName)
+						    loginApi.loginOut(v.accountName)
+							console.log('11')
+						    break
+						default: 
+						    console.log(e.index)
+					}
+				});
+				//#endif
 			}
 		}
 	}

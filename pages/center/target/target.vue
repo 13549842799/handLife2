@@ -43,7 +43,7 @@
 			<view class="target-menu-add" @tap="goToAddTarget">
 				<text>添加新目标</text>
 			</view>
-			<view class="target-menu-drawer" @tap="drawer = true" >
+			<view class="target-menu-drawer" @tap="openDrawer" >
 				<text>展开</text>
 			</view>
 		</view>
@@ -91,6 +91,9 @@
 		methods: {
 			goToAddTarget() {
 				uni.navigateTo({ url: 'targetAdd' })
+			},
+			openDrawer() {
+				this.drawer = true
 			},
 			closeDrawer() {
 				this.drawer = false;

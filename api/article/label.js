@@ -28,7 +28,7 @@ export default {
 	getUsedList() {
 		let p = {
 			url: labelUrl + '/frequently-used.re',
-			data: {'type': 1}
+			data: {'type': 4}
 		}
 		return $get(p)
 	},

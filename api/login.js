@@ -1,3 +1,4 @@
+
 import {
 	adminUrl
 } from './../base_variable.js'
@@ -65,5 +66,16 @@ export default {
 	 */
 	getLoginMessage () {
 		return uni.getStorageSync(loginKey)
+	},
+	loginOut (accountName) {
+		console.log(accountName)
+		// return $get({url: adminUrl + '/' + accountName + '/signout.do'})
+		$get({url: adminUrl + '/' + accountName + '/signout.do'}).then(res => {
+			
+			uni.removeStorageSync(loginKey)
+			uni.navigateTo({
+				url: '/pages/index/login/login'
+			})
+		}).catch(err => { console.log(err) })
 	}
 }
