@@ -171,7 +171,8 @@
 			},
 			completeAction() {
 				let v = this
-				let endTime = parseInt(new Date().getTime()/1000)
+				let now = new Date()
+				let endTime = parseInt(now.getTime()/1000)
 				let exEnd = dataUtil.timeToDate(now, v.nextAction.endTime).getTime()/1000
 				let data = {
 					'id': v.nextAction.action.id,
