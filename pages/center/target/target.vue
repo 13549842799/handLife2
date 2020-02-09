@@ -156,7 +156,7 @@
 				let data = {
 					'id': v.nextAction.action.id,
 					'result': (v.nextAction.action.result = 2),
-					'startTime': parseInt(now.getTime()/1000)
+					'startTime': now.getTime()
 				}
 				v.endTimeOutTip(v.nextAction, now)
 				planApi.alterActionState(data).then(res => {}).catch(err => { console.log(err) })
@@ -172,11 +172,11 @@
 			completeAction() {
 				let v = this
 				let now = new Date()
-				let endTime = parseInt(now.getTime()/1000)
-				let exEnd = dataUtil.timeToDate(now, v.nextAction.endTime).getTime()/1000
+				let endTime = now.getTime()
+				let exEnd = dataUtil.timeToDate(now, v.nextAction.endTime).getTime()
 				let data = {
 					'id': v.nextAction.action.id,
-					'result': (endTime - exEnd) > 5*60 ? 4 : 3,
+					'result': (endTime - exEnd)/1000 > 5*60 ? 4 : 3,
 					'endTime': endTime
 				}
 				if (data.result === 4) {
