@@ -2,7 +2,7 @@
 	<view class="view-container">
 		<view class="deal-list" v-show="list.length > 0">
 			<common-item :obj="l" v-for="(l, index) in list" v-bind:key="l.id" style="width: 100%">
-				<my-button v-if="l.actions[0].result === 1" @MyClick="startPlan(l)">开始</my-button>
+				<my-button v-if="l.actions[0].result === 1" @MyClick="startPlan(l.id)">开始</my-button>
 				<my-button v-if="l.actions[0].result === 2" @MyClick="completePlan(l)">结束</my-button>
 				<my-button @MyClick="giveUpPlan(l.id)">放弃</my-button>			
 			</common-item>
@@ -39,8 +39,13 @@
 			}).catch(err => { console.log(err) })
 		},
 		methods: {
-			startPlan () {
-				
+			startPlan (id) {
+				let data = {
+					'id': id,
+					'result': 2,
+					'startTime': parseInt(now.getTime()/1000)
+				}
+				planApi.alterActionState(data).then(res => {}).catch(err => { console.log(err) })
 			},
 			completePlan () {
 				
