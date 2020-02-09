@@ -5,6 +5,7 @@
 		<date-time-input v-model="plan.executionTime" title="计划执行时间" type="time"></date-time-input>
 		<date-time-input v-model="plan.endTime" title="执行期限" type="time"></date-time-input>
 		<date-time-input v-if="!afterStartDate" v-model="plan.startDate" title="计划首次执行日期" type="date" :formmat="2"></date-time-input>
+		<date-time-input v-if="!afterStartDate" v-model="plan.endDate" title="计划结束日期" type="date" :formmat="2"></date-time-input>
 		<view class="form-unit-input">
 			<text>请选择执行周期</text>
 			<view>
@@ -44,7 +45,8 @@
 					endTime: '00:00',
 					period: 1,
 					unit: 2,
-					startDate: dataUtil.dateFormat('yyyy年MM月dd日', new Date())
+					startDate: dataUtil.dateFormat('yyyy年MM月dd日', new Date()),
+					endDate: dataUtil.dateFormat('yyyy年MM月dd日', new Date())
 				},
 				units: [{name:'天', id: 2}, {name:'周', id: 3}, {name:'月', id: 4}]
 			}
@@ -56,7 +58,6 @@
 				planApi.getPlan(id).then(res => {
 					res.executionTime = res.executionTime.substring(0, 5)
 					res.endTime = res.endTime.substring(0, 5)
-					console.log(res.startDate)
 					v.plan = res
 				}).catch(err => { console.log(err) })
 			} else {

@@ -4,7 +4,7 @@ import objUtil from './objUtil.js'
  * 分页工具，包含了分页需要的一系列变量
  */
 export class MyPage {
-	constructor ({size, searchFunction}) {
+	constructor ({size, searchFunction, params = {}}) {
 		this.pages = 1 // 总页数
 		this.pageNum = 1 //当前页
 		if (size) {
@@ -15,7 +15,7 @@ export class MyPage {
 		this.currentCount = 0;
 		this.total = 1 // 总条数
 		this.list = []
-		this.params = {}
+		this.params = params
 		this.requestUrl = null
 		this.filter = {
 		  value: [null],
@@ -27,6 +27,8 @@ export class MyPage {
 	requestLine = requestLine
 	deleteLine = deleteLine
 	getNextLine = requestNextLine
+	getNextLineFree = getNextLineFreeFun
+	hasNextPage = function () { return this.pageNum < this.pages }
 }
 
 /**
@@ -40,6 +42,11 @@ function requestNextLine ({filter, params, reflush = true, type = true, validMax
 		return
 	}
 	this.requestLine({filter, params,'pageNum': pn, reflush, type})
+}
+
+function getNextLineFreeFun ({filter, params, type = true, complete, pageNum}) {
+	
+	this.requestLine({filter, params,'pageNum': pageNum !== undefined ? pageNum : this.pageNum + 1, reflush: false, type, complete})
 }
 
 /**

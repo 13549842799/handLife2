@@ -50,6 +50,13 @@ export default {
 	notNull(obj) {
 		return obj !== null && obj !== undefined
 	},
+	/**
+	 * 判断是否为非空的字符串
+	 * @param {Object} str
+	 */
+	strNotNull(str) {
+		return this.notNull(str) && str.trim() !== ''
+	},
 	defaultVal(obj, val) {
 		return this.notNull(obj) ? obj : (val !== undefined ? val : null)
 	},

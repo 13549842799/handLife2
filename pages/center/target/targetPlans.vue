@@ -5,7 +5,7 @@
 		</view>
 		<view v-show="list.length > 0" class="plan-list" v-for="(l, index) in list" :key="l.id">
 			<view style="justify-content:space-between;">
-				<text class="paln-name">{{l.planName}}</text>
+				<text @tap="goToActions(l.id)" class="paln-name">{{l.planName}}</text>
 				<text style="font-size: 25rpx;color: #E0E0E0">周期：{{l.period}}{{l.unitName}}</text>
 			</view>
 			<view class="plan-time">
@@ -24,6 +24,7 @@
 			<text>计划空空如也</text>
 			<text>你还没有废弃过一个计划哦</text>
 		</view>
+		<navigator url="target" class="goBackBtn">回到目标页</navigator>
 	</view>
 </template>
 
@@ -72,6 +73,9 @@
 			changeType(e) {
 				let v = this				
 				v.type = e.detail.value ? 1 : 0
+			},
+			goToActions (id) {
+				uni.navigateTo({ url: 'planActions?planId=' + id})
 			},
 			/**
 			 * 删除计划
@@ -133,5 +137,18 @@
 	.empty-class text {
 		text-align: center;
 		font-size: 20px;
+	}
+	
+	.goBackBtn {
+	    position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+		font-size: 18px;
+		color: #CDCDCD;
+		border-top: 1px solid #EFEFF4;
 	}
 </style>

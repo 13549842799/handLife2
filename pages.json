@@ -272,6 +272,19 @@
 		    "style" : {
 				"navigationBarTitleText": "计划详情"
 			}
+		},
+		{
+		    "path" : "pages/center/target/planActions",
+			"style" : {
+				"enablePullDownRefresh": true,
+				"app-plus": {
+					"titleNView": {	
+						"backgroundColor": "#FFD700",
+						"titleColor": "#FFFFFF",
+						"titleText": "计划执行情况"
+					}  
+				}
+			}
 		}
     ],
 	"globalStyle": {

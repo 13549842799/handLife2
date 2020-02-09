@@ -89,5 +89,13 @@ export default {
 	 */
 	unCompleteList() {
 		return $getLoading({'url': targetPlanUrl + '/un-complete.re'})
+	},
+	/**
+	 * 分页获取计划执行结果列表
+	 * @param {Object} params
+	 * @param {Object} config
+	 */
+	getActionsPage(params, config) {
+		return $get({ url: actionUrl + '/page.re', data: params, config: config })
 	}
 }
